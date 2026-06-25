@@ -78,16 +78,19 @@ If the grep is empty the run crashed — `tail -n 50 run.log` for the traceback.
 
 ## Logging results
 
-Append one tab-separated line per experiment to `results.tsv` (NOT comma —
-commas break descriptions). Do **not** commit `results.tsv` (it is gitignored so
-it survives discards). Columns:
+Do **not** hand-edit `results.tsv`. After committing an experiment, run:
+```bash
+make exp DESC="short description of what changed"
 ```
-commit	research_score	status	description
+This runs the scorecard, parses the score + component errors, and appends one
+uniform row (iter, timestamp, elapsed, agent, commit, scores, status). Identical
+logging for every agent — that is what makes the runs comparable. `results.tsv`
+is gitignored so it survives the `git reset` used to discard a regression.
+
+Tag the run with the agent under test once, before you start:
+```bash
+export AR_AGENT=claude     # or: codex, human
 ```
-- short commit hash (or `none` before first commit)
-- `research_score` (e.g. `0.412300`) — use `9.999999` for a crash
-- status: `keep`, `discard`, or `crash`
-- short description of what the experiment tried
 
 ## The experiment loop
 
@@ -96,12 +99,15 @@ Run on the dedicated branch. LOOP:
 1. Look at git state (current branch/commit) and `results.tsv` (what worked/failed).
 2. Pick ONE focused idea. Edit `solution.py`.
 3. `git commit -am "<idea>"` (commit before verifying).
-4. `make eval > run.log 2>&1`, then `grep '^research_score:' run.log`.
-5. Empty grep → crash. Read `tail -n 50 run.log`. Fix if trivial (typo, import);
-   otherwise log `crash`, `git reset --hard HEAD~1`, move on.
-6. Log the result line in `results.tsv`.
-7. If the score **improved** (lower): keep — the commit stays, the branch advances.
-8. If it is equal or worse: `git reset --hard HEAD~1` back to the last kept commit.
+4. `make exp DESC="<idea>"`. It prints `research_score` and `status`.
+5. `status=crash` → read `tail -n 50 run.log` or rerun `make eval`. Fix if trivial
+   (typo, import); otherwise `git reset --hard HEAD~1` and move on.
+6. If `status=keep` (score improved): keep — the commit stays, the branch advances.
+7. If `status=discard` (equal or worse): `git reset --hard HEAD~1` back to the last
+   kept commit.
+
+Every few experiments, `make plot` regenerates `progress.png` so you (and the
+human) can see the curve. At the end of a run: `make archive AGENT=$AR_AGENT`.
 
 You are autonomous. Once the loop has begun, do **not** stop to ask "should I keep
 going?" — keep iterating until you plateau (≈15 consecutive non-improving

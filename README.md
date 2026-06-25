@@ -37,13 +37,30 @@ data/
 
 ## Run
 
+Uses the `env313` pyenv interpreter (Python 3.13 + matplotlib); the Makefile
+resolves it via `pyenv which python`. Otherwise `pip install -r requirements.txt`.
+
 ```bash
-make eval                      # score solution.py against the dataset
-make baseline DESC="note"      # score + append a row to results.tsv
-python3 eval.py --json         # machine-readable
+make eval                       # score solution.py against the dataset
+make exp DESC="what changed"    # score + append a uniform row to results.tsv
+make plot                       # render this run -> progress.png
+make archive AGENT=claude       # save run log -> runs/claude-<ts>.tsv
+make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"   # -> comparison.png
 ```
 
-See **PROGRAM.md** for the full loop and the rules on what may/may not change.
+- **PROGRAM.md** — the loop and the rules on what may/may not change.
+- **METHODOLOGY.md** — how to run the Claude-vs-Codex comparison for the paper.
+
+## Launching an agent
+
+```bash
+cd autoresearch
+export AR_AGENT=claude            # tags every logged row with the agent
+claude --dangerously-skip-permissions
+# then: "Read PROGRAM.md and kick off a new experiment — do the setup first."
+```
+
+`CLAUDE.md` / `AGENTS.md` auto-prime Claude Code / Codex with the same task.
 
 ## Data & provenance
 

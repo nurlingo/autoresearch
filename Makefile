@@ -1,18 +1,27 @@
-.PHONY: eval eval-json baseline
+# Resolve the env313 interpreter (matplotlib + 3.13) via pyenv; fall back to python3.
+PYTHON ?= $(shell pyenv which python 2>/dev/null || command -v python3)
 
-# Run the fixed scorecard against solution.py.
+.PHONY: eval exp plot compare archive
+
+# Score solution.py against the fixed dataset.
 eval:
-	@python3 eval.py
+	@$(PYTHON) eval.py
 
-eval-json:
-	@python3 eval.py --json
+# One experiment: run eval + append a uniform row to results.tsv.
+# Usage: make exp DESC="increase detector trigram weight"
+exp:
+	@$(PYTHON) tools/log_experiment.py "$(DESC)"
 
-# Run eval, append a row to results.tsv, and echo the score.
-# Usage: make baseline DESC="what changed"
-baseline:
-	@python3 eval.py > run.log 2>&1; \
-	score=$$(grep '^research_score:' run.log | awk '{print $$2}'); \
-	commit=$$(git rev-parse --short HEAD 2>/dev/null || echo none); \
-	printf "%s\t%s\t%s\n" "$$commit" "$$score" "$${DESC:-run}" >> results.tsv; \
-	cat run.log; \
-	echo "logged: $$commit  $$score  $${DESC:-run}"
+# Render this run's progress -> progress.png
+plot:
+	@$(PYTHON) tools/plot.py
+
+# Overlay multiple runs -> comparison.png
+# Usage: make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"
+compare:
+	@$(PYTHON) tools/plot.py --compare $(RUNS)
+
+# Archive the current run log for the paper. Usage: make archive AGENT=claude
+archive:
+	@mkdir -p runs && cp results.tsv runs/$(AGENT)-$$(date +%y%m%d-%H%M).tsv && \
+	  echo "archived -> runs/$(AGENT)-$$(date +%y%m%d-%H%M).tsv"

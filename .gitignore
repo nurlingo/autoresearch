@@ -7,3 +7,9 @@ run.log
 
 # Loop log — untracked so it survives git reset during discards
 results.tsv
+
+# Transient run artifacts
+.ar_run_start
+*.tsv.bak
+/progress.png
+/comparison.png
