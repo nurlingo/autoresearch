@@ -35,6 +35,22 @@ def _norm(word: str) -> str:
     return _HARAKAT.sub("", word)
 
 
+def _toks(text: str) -> list[str]:
+    return [t for t in (_norm(w) for w in text.split()) if t]
+
+
+# Leading isti'adha / basmala are not part of the recited ayah text (gold excludes
+# them), so strip them before detection and splitting.
+ISTIADHA = _toks("اعوذ بالله من الشيطان الرجيم")
+BASMALA = _toks("بسم الله الرحمن الرحيم")
+
+
+def _strip_prefix(pairs: list[tuple[str, str]], prefix: list[str]) -> list[tuple[str, str]]:
+    if len(pairs) > len(prefix) and [n for _, n in pairs[:len(prefix)]] == prefix:
+        return pairs[len(prefix):]
+    return pairs
+
+
 class Solution:
     def __init__(self) -> None:
         quran: dict[str, list[dict[str, str]]] = json.loads(REF_PATH.read_text(encoding="utf-8"))
@@ -64,6 +80,8 @@ class Solution:
         orig = transcript.split()
         pairs = [(o, _norm(o)) for o in orig]
         pairs = [(o, n) for o, n in pairs if n]
+        pairs = _strip_prefix(pairs, ISTIADHA)
+        pairs = _strip_prefix(pairs, BASMALA)
         if len(pairs) < 2:
             return {"abstain": True}
         orig_w = [o for o, _ in pairs]
