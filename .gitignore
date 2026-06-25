@@ -4,3 +4,6 @@ data/bot_review.csv
 __pycache__/
 *.pyc
 run.log
+
+# Loop log — untracked so it survives git reset during discards
+results.tsv
