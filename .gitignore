@@ -1,0 +1,6 @@
+# Production-derived dataset (real user transcripts + learner ids). Local only.
+data/bot_review.csv
+
+__pycache__/
+*.pyc
+run.log
