@@ -88,23 +88,57 @@ class Solution:
         if best_start is None or best_cov < ABSTAIN_COVERAGE:
             return {"abstain": True}
 
-        # 2) Greedily split transcript words across consecutive ayahs,
-        #    proportional to each reference ayah's length.
+        # 2) Build a reference token stream from the start ayah, then align the
+        #    transcript to it (Needleman-Wunsch). Each transcript word inherits the
+        #    ayah of the reference token it aligns to; word→ayah groups are the split.
         surah = self.ayahs[best_start]["surah"]
-        out: list[dict] = []
-        wi, gi = 0, best_start
-        while wi < len(orig_w) and gi < len(self.ayahs) and self.ayahs[gi]["surah"] == surah:
-            ref_len = max(1, len(self.ayahs[gi]["toks"]))
-            take = min(ref_len, len(orig_w) - wi)
-            # if this is the final chunk, absorb any leftover words
-            if wi + ref_len >= len(orig_w):
-                take = len(orig_w) - wi
-            chunk = orig_w[wi:wi + take]
-            if chunk:
-                out.append({"id": self.ayahs[gi]["id"], "text": " ".join(chunk)})
-            wi += take
+        ref_tok: list[str] = []
+        ref_ayah: list[int] = []
+        gi = best_start
+        while gi < len(self.ayahs) and self.ayahs[gi]["surah"] == surah and len(ref_tok) < 2 * len(w) + 20:
+            for t in self.ayahs[gi]["toks"]:
+                ref_tok.append(t)
+                ref_ayah.append(gi)
             gi += 1
 
-        if not out:
-            return {"abstain": True}
-        return {"ayahs": out}
+        assign = self._align(w, ref_tok, ref_ayah, best_start)
+
+        out: list[dict] = []
+        for word, gi in zip(orig_w, assign):
+            if out and out[-1]["_gi"] == gi:
+                out[-1]["text"] += " " + word
+            else:
+                out.append({"id": self.ayahs[gi]["id"], "text": word, "_gi": gi})
+        for seg in out:
+            del seg["_gi"]
+        return {"ayahs": out} if out else {"abstain": True}
+
+    @staticmethod
+    def _align(w: list[str], ref_tok: list[str], ref_ayah: list[int], start_gi: int) -> list[int]:
+        """Needleman-Wunsch; return the ayah index each transcript word maps to."""
+        n, m = len(w), len(ref_tok)
+        MATCH, MIS, GAP = 2, -1, -1
+        dp = [[0] * (m + 1) for _ in range(n + 1)]
+        for i in range(1, n + 1):
+            dp[i][0] = i * GAP
+        for j in range(1, m + 1):
+            dp[0][j] = j * GAP
+        for i in range(1, n + 1):
+            wi = w[i - 1]
+            for j in range(1, m + 1):
+                diag = dp[i - 1][j - 1] + (MATCH if wi == ref_tok[j - 1] else MIS)
+                dp[i][j] = max(diag, dp[i - 1][j] + GAP, dp[i][j - 1] + GAP)
+        # backtrack
+        assign = [start_gi] * n
+        i, j, last = n, m, start_gi
+        while i > 0:
+            if j > 0 and dp[i][j] == dp[i - 1][j - 1] + (MATCH if w[i - 1] == ref_tok[j - 1] else MIS):
+                last = ref_ayah[j - 1]
+                assign[i - 1] = last
+                i, j = i - 1, j - 1
+            elif dp[i][j] == dp[i - 1][j] + GAP:
+                assign[i - 1] = last  # insertion in transcript → keep current ayah
+                i -= 1
+            else:
+                j -= 1
+        return assign
