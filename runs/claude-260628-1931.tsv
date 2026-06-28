@@ -1,0 +1,6 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-06-25T14:24:52+00:00	0.0	claude	49cbc41	2.000000	1.0	1.0	0.0	keep	baseline: abstain-everything stub
+2	2026-06-25T14:27:22+00:00	150.0	claude	55a258f	1.682644	0.6974	0.6519	0.3333	keep	bigram anchor detection + proportional split
+3	2026-06-25T14:28:16+00:00	203.8	claude	173b62d	1.656300	0.6842	0.6388	0.3333	keep	DP alignment split instead of proportional
+4	2026-06-25T15:29:50+00:00	3897.6	claude	62f8a0c	0.535021	0.1579	0.0438	0.3333	keep	strip leading istiadha/basmala
+5	2026-06-25T15:31:32+00:00	4000.3	claude	f791398	0.561337	0.1711	0.057	0.3333	discard	abstain on low alignment match-rate
