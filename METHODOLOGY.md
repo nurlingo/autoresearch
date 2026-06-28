@@ -74,9 +74,10 @@ Telegram-bot auto-detect recordings, transcribed with OpenAI ASR and reviewed
 `follow_my_reading` repo. Production-derived → **gitignored** (real user
 transcripts + learner ids); only the slim public `quran_ref.json` is committed.
 
-Current snapshot: ~79 reviewed rows (76 ayah-range, 3 non-Quran), being expanded.
-**Freeze one version by hash for all runs** (`runs/inputs.sha256`); do not change
-the dataset mid-study.
+Current snapshot: ~97 reviewed rows (94 ayah-range, 3 non-Quran), still being
+expanded. **The dataset is frozen when review is finished**, then hashed
+(`runs/inputs.sha256`); all trials run on that one version. Do not change the
+dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 
 ### Labeling conventions (must hold for every row)
 
@@ -95,14 +96,15 @@ the dataset mid-study.
 
 ## 5. Conditions (independent variable)
 
-The agent. Tag each run with `AR_AGENT` (logged in every row):
+The agent. **This study compares two conditions**, tagged via `AR_AGENT` (logged
+in every row):
 
 - `claude` — Claude Code
 - `codex` — OpenAI Codex
-- *(optional)* `human` — a human baseline run, same loop and budget
-- *(optional, clearly separate)* `claude+skill` — Claude Code + the
-  uditgoenka/autoresearch skill, to test whether scaffolding helps. **Not** part
-  of the core A/B (it confounds the agent comparison); report separately.
+
+A `human` baseline and a `claude+skill` arm (Claude Code + the
+uditgoenka/autoresearch skill) are **deferred to future work** — out of scope
+here to keep the A/B clean.
 
 Pin and report for each: model id + build date, permission mode (full-auto),
 temperature / reasoning effort, CLI version.
@@ -119,15 +121,17 @@ Per agent, per run *k*:
 4. **Run in ONE uninterrupted session** — see §9 (wall-clock validity).
 5. `make archive AGENT=<agent>` → `runs/<agent>-<tag>-r<k>.tsv`.
 
-**Budget** (held constant across all runs and agents): a max **iteration** cap and
-a max **wall-clock** cap, whichever first (e.g. 100 experiments or 3 h). Report
-results at both a fixed-iteration checkpoint and a fixed-time checkpoint.
+**Budget** (held constant across all runs and agents): **30 experiments or 1 hour,
+whichever comes first** — iteration-primary, with the hour as a wall-clock safety
+stop. Report at both a fixed-iteration checkpoint (e.g. exp 30) and a fixed-time
+checkpoint (e.g. 1 h). This is a deliberately small budget: it makes the full
+5×2 matrix cheap to run first; scale up later if results warrant.
 
 **Stopping rule:** budget reached, or plateau (≈15 consecutive non-improving
 experiments).
 
-**Repeat ≥3 runs per agent (5 preferred).** LLM agents are stochastic; a single
-run is an anecdote. Report every run, not the best.
+**5 runs per agent → 10 runs total (5 Claude + 5 Codex).** LLM agents are
+stochastic; report every run, not the best.
 
 Compare: `make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"` → `comparison.png`
 (best-so-far vs experiment and vs wall-clock, with the oracle-floor line).
