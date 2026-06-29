@@ -1,7 +1,12 @@
 # Resolve the env313 interpreter (matplotlib + 3.13) via pyenv; fall back to python3.
 PYTHON ?= $(shell pyenv which python 2>/dev/null || command -v python3)
 
-.PHONY: eval exp plot compare archive
+.PHONY: eval exp plot compare archive freeze
+
+# Hash the fixed inputs so every run can be verified against one frozen version.
+freeze:
+	@mkdir -p runs && shasum -a 256 data/bot_review.csv data/quran_ref.json eval.py > runs/inputs.sha256 && \
+	  echo "froze inputs -> runs/inputs.sha256" && cat runs/inputs.sha256
 
 # Score solution.py against the fixed dataset.
 eval:
