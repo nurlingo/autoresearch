@@ -175,7 +175,7 @@ class Solution:
     def _strip_prefix_len(self, tokens: list[str]) -> int:
         """Number of leading tokens that are a ta'awwudh formula (so their common
         words like 'من' don't make spurious matches in the previous ayah)."""
-        if tokens and tokens[0] == "اعوذ":
+        if tokens and tokens[0] in ("اعوذ", "تعوذ"):
             for k in range(1, min(len(tokens), 8)):
                 if tokens[k] == self._TAAWWUDH_END:
                     return k + 1
@@ -202,7 +202,15 @@ class Solution:
         if best is None:
             return {"abstain": True}
         _, matches, core_ids = best
-        if matches < max(2, 0.5 * len(core)):
+        # Abstain on non-Quran: real recitations produce a contiguous run of
+        # exact matches, whereas noise/spoken text yields only isolated
+        # coincidental word matches. A run-based test is robust to repetition
+        # (where matches/len is low) and to long ta'awwudh/basmala prefixes.
+        run = best_run = 0
+        for x in core_ids:
+            run = run + 1 if x is not None else 0
+            best_run = max(best_run, run)
+        if matches < 2 or best_run < 2:
             return {"abstain": True}
         # Prefix tokens (ta'awwudh) get no anchor; back-fill folds them into the
         # first real ayah so the output text still reproduces the transcript.
