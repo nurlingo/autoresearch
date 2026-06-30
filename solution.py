@@ -28,8 +28,10 @@ DATA_DIR = Path(__file__).parent / "data"
 REF_PATH = Path(os.getenv("QURAN_REF_PATH", DATA_DIR / "quran_ref.json"))
 
 # Mirror eval.canon so the algorithm's normalization matches the metric's.
-_HARAKAT_RE = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
-_FOLD = {"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ى": "ي", "ؤ": "ء", "ئ": "ء"}
+_HARAKAT_RE = re.compile("[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]")
+_FOLD = {"أ": "ا", "إ": "ا", "آ": "ا",
+         "ٱ": "ا", "ى": "ي", "ؤ": "ء",
+         "ئ": "ء"}
 
 
 def normalize(text: str) -> str:
