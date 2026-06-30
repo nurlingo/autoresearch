@@ -114,9 +114,14 @@ class Solution:
     # ---- alignment -------------------------------------------------------
     def _align(self, tokens: list[str], surah: str):
         """Semi-global alignment: free gaps at the ends of the reference so the
-        transcript can match any substring of the surah. Returns (ids, matches):
-        ids[i] is the ayah id aligned to tokens[i] (None on insertion), matches
-        is the count of exact token matches."""
+        transcript can match any substring of the surah. Returns
+        (anchor_ids, path_ids, matches, score):
+          anchor_ids[i] — ayah id of tokens[i] only on an EXACT match (else None);
+                          defines the detection set.
+          path_ids[i]   — ayah id tokens[i] aligns to on any diagonal step
+                          (match or substitution); used for split boundaries.
+          matches       — count of exact token matches.
+          score         — best alignment score (gap-penalised)."""
         ref = self.surah_tokens[surah]
         ref_ids = self.surah_ids[surah]
         m, k = len(tokens), len(ref)
