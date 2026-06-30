@@ -126,8 +126,12 @@ class Solution:
         while i > 0:
             b = bt[i][j]
             if b == 0:
-                ids[i - 1] = ref_ids[j - 1]
+                # Only EXACT matches anchor an ayah id. Substitutions (e.g. a
+                # leading basmala/ta'awwudh forced against a neighbouring ayah)
+                # are left None so they inherit a real neighbour's id — this
+                # prevents phantom leading/trailing ayahs in the detection set.
                 if tokens[i - 1] == ref[j - 1]:
+                    ids[i - 1] = ref_ids[j - 1]
                     matches += 1
                 i -= 1
                 j -= 1
