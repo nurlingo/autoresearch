@@ -81,7 +81,9 @@ class Solution:
             weight = self.idf.get(w, 0.0)
             for s in surahs:
                 score[s] += weight
-        return sorted(score, key=lambda s: score[s], reverse=True)[:top]
+        # Deterministic order: score desc, then surah id asc (set iteration under
+        # hash randomization would otherwise make ties non-reproducible).
+        return sorted(score, key=lambda s: (-round(score[s], 9), s))[:top]
 
     # ---- alignment -------------------------------------------------------
     def _align(self, tokens: list[str], surah: str):
