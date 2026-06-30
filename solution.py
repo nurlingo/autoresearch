@@ -186,6 +186,16 @@ class Solution:
             segs[-2]["words"] = segs[-2]["words"] + segs[-1]["words"]
             segs.pop()
 
+        # An interior ayah held up by a single coincidental word is usually one the
+        # reciter skipped (non-contiguous recitation); fold it into the previous ayah.
+        i = 1
+        while i < len(segs) - 1:
+            if segs[i]["support"] <= 1:
+                segs[i - 1]["words"] += segs[i]["words"]
+                segs.pop(i)
+            else:
+                i += 1
+
         segments = [{"id": s["id"], "text": " ".join(s["words"])} for s in segs]
         if not segments:
             return {"abstain": True}
