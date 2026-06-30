@@ -168,14 +168,32 @@ class Solution:
                 j -= 1
         return ids, matches, best_score
 
+    # Leading formulae reciters say before the ayahs but reviewers exclude from
+    # the gold split: ta'awwudh (seeking refuge), ended by "الرجيم".
+    _TAAWWUDH_END = "الرجيم"
+
+    def _strip_prefix_len(self, tokens: list[str]) -> int:
+        """Number of leading tokens that are a ta'awwudh formula (so their common
+        words like 'من' don't make spurious matches in the previous ayah)."""
+        if tokens and tokens[0] == "اعوذ":
+            for k in range(1, min(len(tokens), 8)):
+                if tokens[k] == self._TAAWWUDH_END:
+                    return k + 1
+        return 0
+
     def process(self, transcript: str) -> dict:
         tokens = normalize(transcript)
         if not tokens:
             return {"abstain": True}
 
+        prefix = self._strip_prefix_len(tokens)
+        core = tokens[prefix:]
+        if len(core) < 2:
+            return {"abstain": True}
+
         best = None  # (score, matches, ids)
-        for surah in self._candidate_surahs(tokens, top=6):
-            ids, matches, score = self._align(tokens, surah)
+        for surah in self._candidate_surahs(core, top=6):
+            ids, matches, score = self._align(core, surah)
             # Select by alignment score (gap-penalised), so a compact contiguous
             # match beats words scattered across a long surah.
             key = (score, matches)
@@ -183,9 +201,12 @@ class Solution:
                 best = (key, matches, ids)
         if best is None:
             return {"abstain": True}
-        _, matches, ids = best
-        if matches < max(2, 0.5 * len(tokens)):
+        _, matches, core_ids = best
+        if matches < max(2, 0.5 * len(core)):
             return {"abstain": True}
+        # Prefix tokens (ta'awwudh) get no anchor; back-fill folds them into the
+        # first real ayah so the output text still reproduces the transcript.
+        ids = [None] * prefix + core_ids
 
         # Carry ayah id forward over insertion gaps, then back-fill leading None.
         last = None
