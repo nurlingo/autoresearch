@@ -49,6 +49,7 @@ def norm_tokens(text: str) -> list[str]:
 # Abstain when fewer than this fraction of transcript bigrams agree on the anchor.
 MIN_COVERAGE = 0.10
 WINDOW_PAD = 6
+LOOKBACK = 15
 # Bigrams with more postings than this are too ambiguous to vote with.
 MAX_POSTINGS = 300
 _TAAWWUDH_HEADS = {"اعوذ", "تعوذ", "استعيذ"}
@@ -129,6 +130,25 @@ class Solution:
         matched = [i for i, t in enumerate(tok_id) if t is not None]
         if not matched:
             return {"abstain": True}
+
+        # Targeted leading recovery: if the transcript opens with unmatched tokens
+        # (a first ayah whose start fell before the anchor — e.g. a mid-transcript
+        # ayah skip shifted the dominant offset), align just those leading tokens to
+        # the G region right before the window. Accept only with >=2 real matches,
+        # so a genuine skipped first ayah is recovered but a 1-word basmala leak is not.
+        first = matched[0]
+        if first > 0 and lo > 0:
+            lead = toks[:first]
+            blo = max(0, lo - LOOKBACK)
+            seg_tok, seg_ids = self.g_tokens[blo:lo], self.g_ids[blo:lo]
+            sm2 = SequenceMatcher(a=lead, b=seg_tok, autojunk=False)
+            hits = [(i1, i2, j1) for tag, i1, i2, j1, j2 in sm2.get_opcodes() if tag == "equal"]
+            if sum(i2 - i1 for i1, i2, _ in hits) >= 2:
+                for i1, i2, j1 in hits:
+                    for k in range(i2 - i1):
+                        tok_id[i1 + k] = seg_ids[j1 + k]
+                        eq[i1 + k] = True
+                matched = [i for i, t in enumerate(tok_id) if t is not None]
 
         # Clamp unmatched leading/trailing tokens to the first/last *matched* ayah
         # (so prefix/suffix noise never invents a neighbouring ayah), then
