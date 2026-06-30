@@ -181,6 +181,40 @@ class Solution:
                     return k + 1
         return 0
 
+    @staticmethod
+    def _fill_nearest(ids: list):
+        """Assign each None token the id of the nearest anchored token (left on
+        ties). Returns None if there is no anchor at all."""
+        n = len(ids)
+        left = [None] * n   # (id, distance) nearest anchor at or left of i
+        d = None
+        cur = None
+        for i in range(n):
+            if ids[i] is not None:
+                cur, d = ids[i], 0
+            elif d is not None:
+                d += 1
+            left[i] = (cur, d) if cur is not None else None
+        cur, d = None, None
+        out = list(ids)
+        for i in range(n - 1, -1, -1):
+            if ids[i] is not None:
+                cur, d = ids[i], 0
+            elif d is not None:
+                d += 1
+            if ids[i] is None:
+                r = (cur, d) if cur is not None else None
+                l = left[i]
+                if l is None and r is None:
+                    return None
+                if l is None:
+                    out[i] = r[0]
+                elif r is None or l[1] <= r[1]:
+                    out[i] = l[0]
+                else:
+                    out[i] = r[0]
+        return out
+
     def process(self, transcript: str) -> dict:
         tokens = normalize(transcript)
         if not tokens:
@@ -216,20 +250,11 @@ class Solution:
         # first real ayah so the output text still reproduces the transcript.
         ids = [None] * prefix + core_ids
 
-        # Carry ayah id forward over insertion gaps, then back-fill leading None.
-        last = None
-        for i in range(len(ids)):
-            if ids[i] is None:
-                ids[i] = last
-            else:
-                last = ids[i]
-        nxt = None
-        for i in range(len(ids) - 1, -1, -1):
-            if ids[i] is None:
-                ids[i] = nxt
-            else:
-                nxt = ids[i]
-        if any(x is None for x in ids):
+        # Fill unmatched tokens by NEAREST anchor (ties go left). A run of gaps
+        # between two ayahs is split at its midpoint, so a boundary word lands in
+        # the ayah it is closest to rather than always the previous one.
+        ids = self._fill_nearest(ids)
+        if ids is None:
             return {"abstain": True}
 
         words = transcript.split()
