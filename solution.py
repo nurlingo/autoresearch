@@ -51,6 +51,7 @@ MIN_COVERAGE = 0.30
 WINDOW_PAD = 6
 # Bigrams with more postings than this are too ambiguous to vote with.
 MAX_POSTINGS = 300
+_TAAWWUDH_HEADS = {"اعوذ", "تعوذ", "استعيذ"}
 
 
 class Solution:
@@ -92,6 +93,15 @@ class Solution:
     def process(self, transcript: str) -> dict:
         raw_words = (transcript or "").split()
         toks = [normalize(w) for w in raw_words]
+        # Drop a leading taawwudh ("اعوذ بالله من الشيطان الرجيم"): it is never a
+        # Quran ayah, and as a prefix it both drags down the anchor coverage and
+        # bleeds into a neighbouring ayah. (Basmala is kept — it is Al-Fatiha 1.)
+        if toks and toks[0] in _TAAWWUDH_HEADS:
+            for j in range(min(len(toks), 8) - 1, 0, -1):
+                if toks[j] == "الرجيم":
+                    raw_words = raw_words[j + 1:]
+                    toks = toks[j + 1:]
+                    break
         if len(toks) < 2:
             return {"abstain": True}
 
