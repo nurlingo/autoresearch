@@ -61,10 +61,15 @@ class Solution:
         self.g_tokens: list[str] = []
         self.g_ids: list[str] = []
         for surah in sorted(self.quran):
+            # Keep only real Quran surahs (001-114); skip the 999* adhan/dua extras.
+            if not (surah.isdigit() and len(surah) == 3 and 1 <= int(surah) <= 114):
+                continue
             for ayah in self.quran[surah]:
+                # Long ayahs are split into 9-digit sub-ids; the ayah is id[:6].
+                aid = ayah["id"][:6]
                 for tok in norm_tokens(ayah.get("clean", "")):
                     self.g_tokens.append(tok)
-                    self.g_ids.append(ayah["id"])
+                    self.g_ids.append(aid)
         self.bindex: dict[tuple[str, str], list[int]] = {}
         for i in range(len(self.g_tokens) - 1):
             self.bindex.setdefault((self.g_tokens[i], self.g_tokens[i + 1]), []).append(i)
@@ -94,7 +99,10 @@ class Solution:
         if best_offset < 0 or coverage < MIN_COVERAGE:
             return {"abstain": True}
 
-        lo = max(0, best_offset - WINDOW_PAD)
+        # No backward pad: the anchor maps transcript index 0 to G[best_offset], so
+        # any leading liturgical prefix (taawwudh/basmala) would otherwise bleed
+        # into the *previous* surah's last ayah. Pad only forward.
+        lo = best_offset
         hi = min(len(self.g_tokens), best_offset + len(toks) + WINDOW_PAD)
         win_tok = self.g_tokens[lo:hi]
         win_ids = self.g_ids[lo:hi]
@@ -106,22 +114,24 @@ class Solution:
                 for k in range(i2 - i1):
                     tok_id[i1 + k] = win_ids[j1 + k]
 
-        # Forward-fill, then back-fill leading None labels.
+        matched = [i for i, t in enumerate(tok_id) if t is not None]
+        if not matched:
+            return {"abstain": True}
+
+        # Clamp unmatched leading/trailing tokens to the first/last *matched* ayah
+        # (so prefix/suffix noise never invents a neighbouring ayah), then
+        # forward-fill internal gaps.
+        first, last_i = matched[0], matched[-1]
+        for i in range(first):
+            tok_id[i] = tok_id[first]
+        for i in range(last_i + 1, len(tok_id)):
+            tok_id[i] = tok_id[last_i]
         last = None
         for i in range(len(tok_id)):
             if tok_id[i] is None:
                 tok_id[i] = last
             else:
                 last = tok_id[i]
-        nxt = None
-        for i in range(len(tok_id) - 1, -1, -1):
-            if tok_id[i] is None:
-                tok_id[i] = nxt
-            else:
-                nxt = tok_id[i]
-
-        if all(t is None for t in tok_id):
-            return {"abstain": True}
 
         # Group consecutive same-id raw words into ayah segments.
         segments: list[dict[str, str]] = []
