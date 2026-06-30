@@ -58,16 +58,23 @@ class Solution:
         self.surah_ids: dict[str, list[str]] = {}
         df: dict[str, set[str]] = defaultdict(set)  # word -> surahs (for IDF)
         for surah, ayahs in self.quran.items():
+            # Skip app-specific pseudo-surahs (999* duas etc.); keep canonical
+            # surahs 1..114 only — gold never references the rest.
+            if not (surah.isdigit() and 1 <= int(surah) <= 114):
+                continue
             toks: list[str] = []
             ids: list[str] = []
             for ayah in ayahs:
+                # Long ayahs (e.g. Ayat al-Kursi 002255) are stored split with
+                # 9-digit ids; the canonical ayah id is the first 6 digits.
+                canon_id = ayah["id"][:6]
                 for w in normalize(ayah["clean"]):
                     toks.append(w)
-                    ids.append(ayah["id"])
+                    ids.append(canon_id)
                     df[w].add(surah)
             self.surah_tokens[surah] = toks
             self.surah_ids[surah] = ids
-        n = len(self.quran)
+        n = len(self.surah_tokens)
         self.idf: dict[str, float] = {w: log(n / len(s)) for w, s in df.items()}
         self.word_surahs: dict[str, set[str]] = dict(df)
 
