@@ -47,7 +47,7 @@ def norm_tokens(text: str) -> list[str]:
 
 
 # Abstain when fewer than this fraction of transcript bigrams agree on the anchor.
-MIN_COVERAGE = 0.30
+MIN_COVERAGE = 0.10
 WINDOW_PAD = 6
 # Bigrams with more postings than this are too ambiguous to vote with.
 MAX_POSTINGS = 300
