@@ -77,20 +77,39 @@ class Solution:
         n = len(self.surah_tokens)
         self.idf: dict[str, float] = {w: log(n / len(s)) for w, s in df.items()}
         self.word_surahs: dict[str, set[str]] = dict(df)
+        # Bigram -> surahs index: word pairs are far more discriminative than
+        # single words (every big surah contains "الله"; few contain "الله احد").
+        self.surah_bigrams: dict[str, set[tuple[str, str]]] = {}
+        for surah, toks in self.surah_tokens.items():
+            self.surah_bigrams[surah] = {
+                (toks[i], toks[i + 1]) for i in range(len(toks) - 1)
+            }
 
     # ---- anchoring -------------------------------------------------------
     def _candidate_surahs(self, tokens: list[str], top: int = 3) -> list[str]:
-        score: dict[str, float] = defaultdict(float)
+        # Primary signal: how many of the transcript's bigrams a surah contains.
+        bigrams = {(tokens[i], tokens[i + 1]) for i in range(len(tokens) - 1)}
+        bg_score: dict[str, int] = defaultdict(int)
+        for surah, sb in self.surah_bigrams.items():
+            hits = len(bigrams & sb)
+            if hits:
+                bg_score[surah] = hits
+        # Secondary signal: IDF-weighted unigram vote (breaks ties, and covers
+        # single-word transcripts that have no bigram).
+        uni: dict[str, float] = defaultdict(float)
         for w in set(tokens):
             surahs = self.word_surahs.get(w)
             if not surahs:
                 continue
             weight = self.idf.get(w, 0.0)
             for s in surahs:
-                score[s] += weight
-        # Deterministic order: score desc, then surah id asc (set iteration under
-        # hash randomization would otherwise make ties non-reproducible).
-        return sorted(score, key=lambda s: (-round(score[s], 9), s))[:top]
+                uni[s] += weight
+        cands = set(bg_score) | set(uni)
+        # Deterministic order: bigram hits desc, idf vote desc, surah id asc.
+        return sorted(
+            cands,
+            key=lambda s: (-bg_score.get(s, 0), -round(uni.get(s, 0.0), 9), s),
+        )[:top]
 
     # ---- alignment -------------------------------------------------------
     def _align(self, tokens: list[str], surah: str):
@@ -127,6 +146,7 @@ class Solution:
                 brow[j] = b
         # Free reference suffix: pick best column in the last row.
         j = max(range(k + 1), key=lambda x: dp[m][x])
+        best_score = dp[m][j]
         i = m
         ids: list = [None] * m
         matches = 0
@@ -146,21 +166,24 @@ class Solution:
                 i -= 1
             else:
                 j -= 1
-        return ids, matches
+        return ids, matches, best_score
 
     def process(self, transcript: str) -> dict:
         tokens = normalize(transcript)
         if not tokens:
             return {"abstain": True}
 
-        best = None  # (matches, ids)
-        for surah in self._candidate_surahs(tokens):
-            ids, matches = self._align(tokens, surah)
-            if best is None or matches > best[0]:
-                best = (matches, ids)
+        best = None  # (score, matches, ids)
+        for surah in self._candidate_surahs(tokens, top=6):
+            ids, matches, score = self._align(tokens, surah)
+            # Select by alignment score (gap-penalised), so a compact contiguous
+            # match beats words scattered across a long surah.
+            key = (score, matches)
+            if best is None or key > best[0]:
+                best = (key, matches, ids)
         if best is None:
             return {"abstain": True}
-        matches, ids = best
+        _, matches, ids = best
         if matches < max(2, 0.5 * len(tokens)):
             return {"abstain": True}
 
