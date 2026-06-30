@@ -148,15 +148,16 @@ class Solution:
         j = max(range(k + 1), key=lambda x: dp[m][x])
         best_score = dp[m][j]
         i = m
-        ids: list = [None] * m
+        ids: list = [None] * m   # exact-match anchors only (define the ayah set)
+        path: list = [None] * m  # ref ayah at every diagonal step (for boundaries)
         matches = 0
         while i > 0:
             b = bt[i][j]
             if b == 0:
-                # Only EXACT matches anchor an ayah id. Substitutions (e.g. a
-                # leading basmala/ta'awwudh forced against a neighbouring ayah)
-                # are left None so they inherit a real neighbour's id — this
-                # prevents phantom leading/trailing ayahs in the detection set.
+                path[i - 1] = ref_ids[j - 1]
+                # Only EXACT matches anchor the detection set; substitutions (e.g.
+                # a leading basmala forced against a neighbouring ayah) must not
+                # introduce a phantom ayah, so they stay out of `ids`.
                 if tokens[i - 1] == ref[j - 1]:
                     ids[i - 1] = ref_ids[j - 1]
                     matches += 1
@@ -166,7 +167,7 @@ class Solution:
                 i -= 1
             else:
                 j -= 1
-        return ids, matches, best_score
+        return ids, path, matches, best_score
 
     # Leading formulae reciters say before the ayahs but reviewers exclude from
     # the gold split: ta'awwudh (seeking refuge), ended by "الرجيم".
@@ -225,17 +226,17 @@ class Solution:
         if len(core) < 2:
             return {"abstain": True}
 
-        best = None  # (score, matches, ids)
+        best = None  # (key, matches, core_ids, core_path)
         for surah in self._candidate_surahs(core, top=6):
-            ids, matches, score = self._align(core, surah)
+            ids, path, matches, score = self._align(core, surah)
             # Select by alignment score (gap-penalised), so a compact contiguous
             # match beats words scattered across a long surah.
             key = (score, matches)
             if best is None or key > best[0]:
-                best = (key, matches, ids)
+                best = (key, matches, ids, path)
         if best is None:
             return {"abstain": True}
-        _, matches, core_ids = best
+        _, matches, core_ids, core_path = best
         # Abstain on non-Quran: real recitations produce a contiguous run of
         # exact matches, whereas noise/spoken text yields only isolated
         # coincidental word matches. A run-based test is robust to repetition
@@ -246,13 +247,21 @@ class Solution:
             best_run = max(best_run, run)
         if matches < 2 or best_run < 2:
             return {"abstain": True}
-        # Prefix tokens (ta'awwudh) get no anchor; back-fill folds them into the
-        # first real ayah so the output text still reproduces the transcript.
-        ids = [None] * prefix + core_ids
 
-        # Fill unmatched tokens by NEAREST anchor (ties go left). A run of gaps
-        # between two ayahs is split at its midpoint, so a boundary word lands in
-        # the ayah it is closest to rather than always the previous one.
+        # The detection set is exactly the anchored (exact-match) ayahs. For
+        # boundary precision, also accept a token's path id (its aligned ref
+        # ayah, even on substitution) when that ayah is in the set — this places
+        # an ayah's leading word in the right bucket instead of the previous one.
+        anchored = {x for x in core_ids if x is not None}
+        seed = [
+            cid if cid is not None else (p if p in anchored else None)
+            for cid, p in zip(core_ids, core_path)
+        ]
+        # Prefix tokens (ta'awwudh) get no anchor; nearest-fill folds them into
+        # the first real ayah so the output text still reproduces the transcript.
+        ids = [None] * prefix + seed
+
+        # Fill remaining unmatched tokens by NEAREST anchor (ties go left).
         ids = self._fill_nearest(ids)
         if ids is None:
             return {"abstain": True}
