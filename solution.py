@@ -119,10 +119,12 @@ class Solution:
 
         sm = SequenceMatcher(a=toks, b=win_tok, autojunk=False)
         tok_id: list[str | None] = [None] * len(toks)
+        eq: list[bool] = [False] * len(toks)
         for tag, i1, i2, j1, j2 in sm.get_opcodes():
             if tag == "equal":
                 for k in range(i2 - i1):
                     tok_id[i1 + k] = win_ids[j1 + k]
+                    eq[i1 + k] = True
 
         matched = [i for i, t in enumerate(tok_id) if t is not None]
         if not matched:
@@ -143,16 +145,28 @@ class Solution:
             else:
                 last = tok_id[i]
 
-        # Group consecutive same-id raw words into ayah segments.
-        segments: list[dict[str, str]] = []
-        for word, aid in zip(raw_words, tok_id):
+        # Group consecutive same-id raw words into segments, tracking equal-match support.
+        segs: list[dict] = []
+        for word, aid, is_eq in zip(raw_words, tok_id, eq):
             if aid is None:
                 continue
-            if segments and segments[-1]["id"] == aid:
-                segments[-1]["text"] += " " + word
+            if segs and segs[-1]["id"] == aid:
+                segs[-1]["words"].append(word)
+                segs[-1]["support"] += int(is_eq)
             else:
-                segments.append({"id": aid, "text": word})
+                segs.append({"id": aid, "words": [word], "support": int(is_eq)})
 
+        # A boundary ayah in a *different surah* than its neighbour, propped up by a
+        # single coincidental word, is a basmala leak into the adjacent surah's
+        # edge ayah; fold it back in rather than emit a spurious cross-surah id.
+        while len(segs) > 1 and segs[0]["support"] <= 1 and segs[0]["id"][:3] != segs[1]["id"][:3]:
+            segs[1]["words"] = segs[0]["words"] + segs[1]["words"]
+            segs.pop(0)
+        while len(segs) > 1 and segs[-1]["support"] <= 1 and segs[-1]["id"][:3] != segs[-2]["id"][:3]:
+            segs[-2]["words"] = segs[-2]["words"] + segs[-1]["words"]
+            segs.pop()
+
+        segments = [{"id": s["id"], "text": " ".join(s["words"])} for s in segs]
         if not segments:
             return {"abstain": True}
         return {"ayahs": segments}
