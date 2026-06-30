@@ -65,17 +65,16 @@ claude --dangerously-skip-permissions
 ## Data & provenance
 
 - `data/bot_review.csv` — Telegram bot auto-detect recordings, transcribed with
-  OpenAI ASR and reviewed (ayah range + per-ayah split + confidence) using the
+  OpenAI ASR and reviewed (ayah assignment + per-ayah split + confidence) using the
   review tooling in the `follow_my_reading` repo (`make bot-review-*`). It
   contains real user-derived transcripts and learner ids, so it is **gitignored**.
   Regenerate it there with `make bot-review-export-csv` and copy it into `data/`.
 - `data/quran_ref.json` — slim reference (id + uthmani + harakat-free `clean`)
   derived from `follow_my_reading/backend/quran.json`. Public text, committed.
 
-Current dataset: 79 reviewed rows (76 ayah-range, 3 non-Quran). Two rows have
-inconsistent labels (split ids vs assigned range) — flagged for re-review; they
-cap the achievable score at ~0.03.
+Current dataset: 258 reviewed rows (254 Quran, 4 non-Quran). Non-contiguous
+recitations use comma-separated ayah ids in `ayah_assignment`.
 ```
 baseline (empty stub):   research_score 2.00
-oracle (gold fed back):  research_score 0.03
+oracle (gold fed back):  research_score 0.00
 ```

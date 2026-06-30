@@ -11,14 +11,14 @@ edits solution.py only, reruns this, and keeps changes that lower research_score
 
 Dataset: data/bot_review.csv — LLM/human-reviewed bot recordings. Each scored row:
     transcript                 algorithm input (no harakat)
-    ayah_assignment            gold ayah id / range  OR  a non-Quran label
+    ayah_assignment            gold ayah id/range/comma-list OR a non-Quran label
     confidence                 high | medium | low   (low excluded unless --score-low)
     transcript_split_by_ayahs  gold [{id, transcript}] split
     actual_ayahs               human reference only — NOT used for scoring
 
 Score (lower is better):
-    detection_error = 1 - (exact ayah-id-set matches / range rows)
-    split_error     = 1 - mean(word-assignment accuracy / range rows)
+    detection_error = 1 - (exact ayah-id-set matches / Quran rows)
+    split_error     = 1 - mean(word-assignment accuracy / Quran rows)
     abstain_error   = 1 - (correct abstentions / non-Quran rows)
     research_score  = detection_error + split_error + abstain_error
 
@@ -47,7 +47,7 @@ from solution import Solution  # noqa: E402  (the editable algorithm)
 
 DEFAULT_CSV = HERE / "data/bot_review.csv"
 SCORED_CONFIDENCE = {"high", "medium"}
-RANGE_RE = re.compile(r"^\d{6}(-\d{6})?$")
+ASSIGNMENT_RE = re.compile(r"^\d{6}(?:-\d{6})?(?:,\d{6}(?:-\d{6})?)*$")
 _HARAKAT_RE = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
 _FOLD = {"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ى": "ي", "ؤ": "ء", "ئ": "ء"}
 
@@ -65,14 +65,30 @@ def canon(text: str) -> list[str]:
 
 
 def expand_assignment(assignment: str) -> list[str]:
-    """'095001' -> ['095001']; '095001-095003' -> ['095001','095002','095003']."""
+    """Expand Quran assignment syntax into unique ids.
+
+    Examples:
+      '095001' -> ['095001']
+      '095001-095003' -> ['095001', '095002', '095003']
+      '075001,075002,075004' -> ['075001', '075002', '075004']
+    """
     assignment = assignment.strip()
-    if "-" not in assignment:
-        return [assignment]
-    start, end = assignment.split("-", 1)
-    if start[:3] != end[:3]:
-        return [start, end]  # cross-surah: treated as non-exact
-    return [f"{start[:3]}{i:03d}" for i in range(int(start[3:]), int(end[3:]) + 1)]
+    if not ASSIGNMENT_RE.match(assignment):
+        return []
+    ids: list[str] = []
+    for part in assignment.split(","):
+        if "-" not in part:
+            expanded = [part]
+        else:
+            start, end = part.split("-", 1)
+            if start[:3] != end[:3]:
+                expanded = [start, end]  # cross-surah: treated as non-exact
+            else:
+                expanded = [f"{start[:3]}{i:03d}" for i in range(int(start[3:]), int(end[3:]) + 1)]
+        for ayah_id in expanded:
+            if ayah_id not in ids:
+                ids.append(ayah_id)
+    return ids
 
 
 def token_labels(segments: list[tuple[str, str]]) -> list[tuple[str, str]]:
@@ -126,8 +142,8 @@ def evaluate_row(row: dict[str, str], solution: Solution) -> CaseResult:
     confidence = (row.get("confidence") or "").strip().lower()
     assignment = (row.get("ayah_assignment") or "").strip()
     transcript = row.get("transcript") or ""
-    is_range = bool(RANGE_RE.match(assignment))
-    expected = expand_assignment(assignment) if is_range else []
+    expected = expand_assignment(assignment)
+    is_range = bool(expected)
 
     try:
         result = solution.process(transcript) or {}
@@ -147,7 +163,7 @@ def evaluate_row(row: dict[str, str], solution: Solution) -> CaseResult:
 
     pred_segments = [(a["id"], a.get("text", "")) for a in pred_ayahs]
     gold_segments = parse_split(row.get("transcript_split_by_ayahs") or "")
-    # Detection is about *which* ayahs were recited (the range), so compare sets.
+    # Detection is about *which* ayahs were recited, so compare sets.
     # A reciter may repeat ayahs (e.g. Al-Ikhlas ×3); that is a split concern, not
     # a detection error. Split is only scored when a gold split was recorded.
     split_accuracy = (

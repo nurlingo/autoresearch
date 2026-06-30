@@ -54,14 +54,14 @@ score, keep or discard.
 ```
 research_score = detection_error + split_error + abstain_error      # lower is better
 ```
-- **detection** — ayah-id *set* match vs the gold range (repetition is a split
+- **detection** — ayah-id *set* match vs the gold assignment (repetition is a split
   concern, not detection).
 - **split** — word-assignment accuracy: fraction of gold transcript words placed
   in the correct ayah bucket.
 - **abstain** — return `{"abstain": True}` on non-Quran rows.
 
-Reference points: empty baseline `2.0`; feeding the gold split back scores `~0.03`
-(two rows have inconsistent labels). Treat **~0.03 as the practical floor**, not 0.
+Reference points: empty baseline `2.0`; feeding the gold split back should score
+`0.0` once the dataset is internally consistent.
 
 **Simplicity criterion**: all else equal, simpler is better. A tiny gain that adds
 ugly complexity is not worth it; an equal-or-better result from *deleting* code is

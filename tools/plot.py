@@ -21,7 +21,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-FLOOR = 0.03  # oracle floor: feeding the gold split back
+FLOOR = 0.0  # oracle floor: feeding the gold split back
 
 
 def load(path: str) -> dict:
@@ -47,7 +47,7 @@ def plot_single(path: str, out: str) -> None:
     for it, s, st in zip(d["iters"], d["scores"], d["status"]):
         ax[0].scatter(it, s, color=colors.get(st, "#888"), s=26, zorder=3)
     ax[0].step(d["iters"], d["best"], where="post", color="#1f77b4", lw=2, label="best so far")
-    ax[0].axhline(FLOOR, ls="--", color="#888", lw=1, label=f"oracle floor ~{FLOOR}")
+    ax[0].axhline(FLOOR, ls="--", color="#888", lw=1, label=f"oracle floor {FLOOR}")
     ax[0].set(xlabel="experiment", ylabel="research_score (lower is better)", title="Score per experiment")
     ax[0].legend()
     ax[1].step(d["elapsed"], d["best"], where="post", color="#1f77b4", lw=2)

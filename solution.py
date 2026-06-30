@@ -30,10 +30,11 @@ Return ONE of:
         when it IS a recitation. `id` is the 6-digit ayah id
         (3-digit surah + 3-digit ayah). `text` is the slice of the transcript
         assigned to that ayah; concatenating the texts in order should reproduce
-        the recited transcript. The ids must be the consecutive ayahs recited.
+        the recited transcript. The ids should follow transcript order, but some
+        gold rows skip ayahs, so the id set is not always consecutive.
 
 Scored (lower is better) by eval.py:
-    detection_error  — did your ayah-id set exactly match the gold range
+    detection_error  — did your ayah-id set exactly match the gold assignment
     split_error      — fraction of transcript words placed in the wrong ayah
     abstain_error    — did you correctly abstain on non-Quran rows
 """

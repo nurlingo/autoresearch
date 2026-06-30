@@ -24,13 +24,14 @@ engineering ability**, not the ability to tweak pre-existing code.
 ## 2. The task
 
 Stage 1 of a transcript-only Quran memorization checker: given a recitation
-transcript (no harakat), (a) **detect** which consecutive ayahs were recited and
-(b) **split** the transcript by ayah. Mistake detection is **Stage 2** and is out
-of scope for this paper (it needs labels that do not yet exist; see §10).
+transcript (no harakat), (a) **detect** which ayahs were recited, including
+skips/non-contiguous cases, and (b) **split** the transcript by ayah. Mistake
+detection is **Stage 2** and is out of scope for this paper (it needs labels that
+do not yet exist; see §10).
 
 Pipeline: `transcript → [detect + split] → per-ayah chunks`. Detection and
 splitting are one decision — labeling each transcript word with an ayah id yields
-the range (the id set) and the split (contiguous runs) simultaneously.
+the id set and the split (contiguous runs) simultaneously.
 
 ## 3. The harness (fixed surface)
 
@@ -49,13 +50,13 @@ The agent edits **only** `solution.py` (+ helper files it adds). Contract:
 ### Metric
 
 ```
-detection_error = 1 - (exact ayah-id-set matches / range rows)
-split_error     = 1 - mean(word-assignment accuracy / range rows)
+detection_error = 1 - (exact ayah-id-set matches / Quran rows)
+split_error     = 1 - mean(word-assignment accuracy / Quran rows)
 abstain_error   = 1 - (correct abstentions / non-Quran rows)
 research_score  = detection_error + split_error + abstain_error      # lower is better
 ```
 
-- **Detection** compares the *set* of predicted ayah ids to the gold range, so a
+- **Detection** compares the *set* of predicted ayah ids to the gold assignment, so a
   reciter repeating ayahs is not a detection error (it is a split concern).
 - **Split** = word-assignment accuracy: of all gold transcript words, the fraction
   the algorithm placed in the correct ayah bucket. Tokens are compared on a
@@ -64,18 +65,18 @@ research_score  = detection_error + split_error + abstain_error      # lower is 
 - **Abstain**: non-Quran rows must return `{"abstain": True}`.
 
 `research_score ∈ [0, 3]`. **Reference points** (recompute when the dataset
-changes): empty stub `= 2.0`; feeding the gold split straight back `≈ 0.03`
-(the *oracle floor* — the practical best, limited only by residual label noise).
+changes): empty stub `= 2.0`; feeding the gold split straight back should score
+`0.0` once the dataset is internally consistent.
 
 ## 4. Dataset
 
 Telegram-bot auto-detect recordings, transcribed with OpenAI ASR and reviewed
-(ayah range + per-ayah split + confidence) with the `bot_review` tooling in the
+(ayah assignment + per-ayah split + confidence) with the `bot_review` tooling in the
 `follow_my_reading` repo. Production-derived → **gitignored** (real user
 transcripts + learner ids); only the slim public `quran_ref.json` is committed.
 
-Current snapshot: ~97 reviewed rows (94 ayah-range, 3 non-Quran), still being
-expanded. **The dataset is frozen when review is finished**, then hashed
+Current snapshot: 258 reviewed rows (254 Quran, 4 non-Quran). **The dataset is
+frozen when review is finished**, then hashed
 (`runs/inputs.sha256`); all trials run on that one version. Do not change the
 dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 
@@ -88,8 +89,10 @@ dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 2. **Repetition is allowed.** If the reciter repeats ayahs, the split may repeat
    ids in sequence (e.g. `f6c38e66`, Al-Ikhlas ×3). Detection scores the id set,
    so this is not penalized; the repeated segments matter for Stage 2.
-3. **Split id set ⊆ assignment range.** `ayah_assignment` is the unique range;
-   `transcript_split_by_ayahs` is the per-ayah (possibly repeated) sequence.
+3. **Split id set equals assignment id set.** `ayah_assignment` is the unique
+   Quran id set, represented as a single id, contiguous range, or comma-separated
+   non-contiguous ids; `transcript_split_by_ayahs` is the per-ayah (possibly
+   repeated) sequence.
 4. **Confidence** `high`/`medium` are scored; `low` is excluded (kept in file).
 5. `actual_ayahs` is human reference only — **never** read by the algorithm or
    used for scoring.
@@ -172,7 +175,7 @@ time. *Formal runs must be single, uninterrupted sessions* (a reason to use a
 long-lived session / server for overnight or parallel runs).
 
 **Threats to validity:**
-- *Ceiling effect.* Small dataset with a ~0.03 floor; if both agents saturate,
+- *Ceiling effect.* Small dataset with a 0.0 oracle floor; if both agents saturate,
   differences compress. Mitigate by growing/cleaning the dataset and by reporting
   curve shape (sample efficiency), not only the final score.
 - *Transcript-only / ASR-confound.* The metric measures detection+split fidelity,
