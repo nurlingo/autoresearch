@@ -42,18 +42,193 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import unicodedata
+from collections import Counter, defaultdict
+from difflib import SequenceMatcher
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
 REF_PATH = Path(os.getenv("QURAN_REF_PATH", DATA_DIR / "quran_ref.json"))
+
+_HARAKAT_RE = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
+_ARABIC_WORD_RE = re.compile(r"[\u0621-\u064a]+")
+_FOLD = {
+    "أ": "ا",
+    "إ": "ا",
+    "آ": "ا",
+    "ٱ": "ا",
+    "ى": "ي",
+    "ؤ": "ء",
+    "ئ": "ء",
+}
+
+
+def _norm_word(word: str) -> str:
+    word = unicodedata.normalize("NFKC", word or "").replace("ـ", "")
+    for a, b in _FOLD.items():
+        word = word.replace(a, b)
+    word = _HARAKAT_RE.sub("", word)
+    return "".join(_ARABIC_WORD_RE.findall(word))
+
+
+def _tokenize(text: str) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for raw in (text or "").split():
+        norm = _norm_word(raw)
+        if norm:
+            out.append((raw, norm))
+    return out
+
+
+_INTRO_PHRASES = [
+    "اعوذ بالله من الشيطان الرجيم",
+    "تعوذ بالله من الشيطان الرجيم",
+    "بسم الله الرحمن الرحيم",
+]
+_INTRO_TOKENS = [[_norm_word(w) for w in p.split()] for p in _INTRO_PHRASES]
 
 
 class Solution:
     def __init__(self) -> None:
         # {surah_id: [{"id", "ar", "clean"}, ...]}
         self.quran: dict[str, list[dict[str, str]]] = json.loads(REF_PATH.read_text(encoding="utf-8"))
+        self.surahs: dict[str, dict] = {}
+        self.token_surahs: dict[str, set[str]] = defaultdict(set)
+        for surah_id, ayahs in self.quran.items():
+            if not surah_id.isdigit() or len(surah_id) != 3:
+                continue
+            tokens: list[str] = []
+            labels: list[str] = []
+            ayah_order: list[str] = []
+            for ayah in ayahs:
+                ayah_id = ayah["id"]
+                ayah_order.append(ayah_id)
+                for _, tok in _tokenize(ayah.get("clean", "")):
+                    tokens.append(tok)
+                    labels.append(ayah_id)
+                    self.token_surahs[tok].add(surah_id)
+            self.surahs[surah_id] = {"tokens": tokens, "labels": labels, "ayah_order": ayah_order}
+
+    def _trim_variants(self, pairs: list[tuple[str, str]]) -> list[tuple[int, list[tuple[str, str]]]]:
+        variants = [(0, pairs)]
+        norms = [n for _, n in pairs]
+        starts = {0}
+        changed = True
+        while changed:
+            changed = False
+            for start in list(starts):
+                for phrase in _INTRO_TOKENS:
+                    end = start + len(phrase)
+                    if norms[start:end] == phrase and end not in starts:
+                        starts.add(end)
+                        variants.append((end, pairs[end:]))
+                        changed = True
+        # Also tolerate one stray word before a standard intro.
+        for off in range(min(3, len(norms))):
+            for phrase in _INTRO_TOKENS:
+                end = off + len(phrase)
+                if norms[off:end] == phrase and end not in starts:
+                    starts.add(end)
+                    variants.append((end, pairs[end:]))
+        return sorted(variants, key=lambda x: x[0])
+
+    def _candidate_surahs(self, toks: list[str]) -> list[str]:
+        counts: Counter[str] = Counter()
+        for tok in toks:
+            for surah_id in self.token_surahs.get(tok, ()):
+                counts[surah_id] += 1
+        return [s for s, _ in counts.most_common(18)] or list(self.surahs)
+
+    def _score_surah(self, toks: list[str], surah_id: str) -> dict | None:
+        ref = self.surahs[surah_id]
+        matcher = SequenceMatcher(a=toks, b=ref["tokens"], autojunk=False)
+        blocks = [b for b in matcher.get_matching_blocks() if b.size]
+        if not blocks or not toks:
+            return None
+        matched = sum(b.size for b in blocks)
+        first = min(b.b for b in blocks)
+        last = max(b.b + b.size for b in blocks) - 1
+        span = max(last - first + 1, 1)
+        coverage = matched / len(toks)
+        density = matched / span
+        # Prefer compact, high-coverage alignments, but keep tolerance for omissions.
+        score = coverage * (density ** 0.35)
+        return {
+            "score": score,
+            "coverage": coverage,
+            "density": density,
+            "surah_id": surah_id,
+            "blocks": blocks,
+            "first": first,
+            "last": last,
+        }
+
+    def _labels_for_alignment(self, toks: list[str], best: dict) -> tuple[list[str], dict[int, str]]:
+        ref = self.surahs[best["surah_id"]]
+        labels = ref["labels"]
+        first_label = labels[best["first"]]
+        last_label = labels[best["last"]]
+        order = ref["ayah_order"]
+        i1, i2 = order.index(first_label), order.index(last_label)
+        ayah_ids = order[min(i1, i2) : max(i1, i2) + 1]
+
+        assigned: dict[int, str] = {}
+        for block in best["blocks"]:
+            for k in range(block.size):
+                assigned[block.a + k] = labels[block.b + k]
+
+        if not assigned:
+            return ayah_ids, assigned
+
+        known = sorted(assigned)
+        for i in range(len(toks)):
+            if i in assigned:
+                continue
+            prevs = [p for p in known if p < i]
+            nexts = [p for p in known if p > i]
+            if prevs and nexts:
+                p, n = prevs[-1], nexts[0]
+                assigned[i] = assigned[p] if i - p <= n - i else assigned[n]
+            elif prevs:
+                assigned[i] = assigned[prevs[-1]]
+            elif nexts:
+                assigned[i] = assigned[nexts[0]]
+        return ayah_ids, assigned
 
     def process(self, transcript: str) -> dict:
-        # TODO(agent): implement from scratch.
-        # Baseline does nothing useful: it abstains on every input.
-        return {"abstain": True}
+        pairs = _tokenize(transcript)
+        if len(pairs) < 2:
+            return {"abstain": True}
+
+        best: tuple[dict, int, list[tuple[str, str]]] | None = None
+        for start, variant in self._trim_variants(pairs):
+            toks = [n for _, n in variant]
+            if not toks:
+                continue
+            for surah_id in self._candidate_surahs(toks):
+                scored = self._score_surah(toks, surah_id)
+                if scored is None:
+                    continue
+                scored["trim_start"] = start
+                if best is None or scored["score"] > best[0]["score"]:
+                    best = (scored, start, variant)
+
+        if best is None:
+            return {"abstain": True}
+        scored, _, variant = best
+        if scored["coverage"] < 0.42 or scored["score"] < 0.27:
+            return {"abstain": True}
+
+        toks = [n for _, n in variant]
+        ayah_ids, assigned = self._labels_for_alignment(toks, scored)
+        wanted = set(ayah_ids)
+        segments: list[dict[str, str]] = []
+        for ayah_id in ayah_ids:
+            words = [variant[i][0] for i in range(len(variant)) if assigned.get(i) == ayah_id]
+            segments.append({"id": ayah_id, "text": " ".join(words)})
+        # Keep empty detected ayahs for detection, but avoid returning a Quran result
+        # when the alignment only touched labels outside the selected span.
+        if not wanted:
+            return {"abstain": True}
+        return {"ayahs": segments}
