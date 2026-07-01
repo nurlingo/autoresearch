@@ -35,6 +35,12 @@ _FOLD = {"أ": "ا", "إ": "ا", "آ": "ا",
 _NONLETTER_RE = re.compile("[^ء-ي]")
 
 
+def _is_subseq(a: str, b: str) -> bool:
+    """True if a is a subsequence of b (a's chars appear in order within b)."""
+    it = iter(b)
+    return all(ch in it for ch in a)
+
+
 def norm_word(w: str) -> str:
     w = unicodedata.normalize("NFKC", w or "")
     w = w.replace("ـ", "")
@@ -230,9 +236,22 @@ class Solution:
                 return None  # a non-letter-name token -> not a muqatta'at row
             letters += nm
             seen = True
-        entries = self.muq.get(letters) if seen else None
-        if not entries:
+        if not seen:
             return None
+        entries = self.muq.get(letters)
+        if entries is None:
+            # ASR sometimes drops a letter (e.g. "كهيعص" heard as "كهعص"). If the
+            # spoken letters are a subsequence of exactly one single-ayah key,
+            # accept it — the whole thing is one ayah anyway.
+            hits = [
+                e for k, e in self.muq.items()
+                if len(e) == 1 and _is_subseq(letters, k)
+            ]
+            if len(hits) != 1:
+                return None
+            entries = hits[0]
+        if len(entries) == 1:  # whole transcript is one muqatta'at ayah
+            return {"ayahs": [{"id": entries[0][0], "text": " ".join(words)}]}
         # Assign words to ayahs by consuming the expected number of letters.
         ayahs: list[dict[str, str]] = []
         wi, acc, ei = 0, 0, 0
