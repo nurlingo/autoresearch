@@ -56,6 +56,19 @@ AYAH_MIN_COVER = 0.4     # >= this fraction of the ayah's words matched
 CAND_MARGIN = 0.7        # keep surahs scoring >= this * best vote as candidates
 CAND_LIMIT = 5           # max candidate surahs to align against
 
+# The 14 disconnected letters (muqatta'at). When a surah opens with these,
+# reciters spell the letter *names* ("ألف لام ميم صاد"), which never match the
+# joined reference form ("المص"). Map each spoken name back to its letter(s).
+MUQ_LETTERS = set("المصركهيعطسحقن")
+LETTER_NAME = {
+    "الف": "ا", "لام": "ل", "ميم": "م", "صاد": "ص", "راء": "ر", "را": "ر",
+    "كاف": "ك", "هاء": "ه", "ها": "ه", "ياء": "ي", "يا": "ي", "عين": "ع",
+    "طاء": "ط", "طا": "ط", "سين": "س", "حاء": "ح", "حا": "ح", "قاف": "ق",
+    "نون": "ن", "الف لام": "ال",
+    # already-joined two-letter names spoken as one token
+    "طه": "طه", "يس": "يس", "حم": "حم", "طس": "طس",
+}
+
 
 class Solution:
     def __init__(self) -> None:
@@ -88,6 +101,27 @@ class Solution:
             self.surah_bigrams[sid] = {
                 toks[i] + " " + toks[i + 1] for i in range(len(toks) - 1)
             }
+
+        # Index unique muqatta'at openings: a surah's leading run of
+        # single-token, pure-letter ayahs -> [(ayah_id, letters), ...].
+        # Ambiguous keys (e.g. "الم", shared by many surahs) are dropped, since
+        # the letters alone can't say which surah was meant.
+        muq: dict[str, list[tuple[str, str]]] = {}
+        for sid, ayahs in self.quran.items():
+            if not (len(sid) == 3 and sid.isdigit() and 1 <= int(sid) <= 114):
+                continue
+            entries: list[tuple[str, str]] = []
+            for a in ayahs[:2]:
+                ct = [norm_word(w) for w in a.get("clean", "").split()]
+                ct = [t for t in ct if t]
+                if len(ct) == 1 and len(ct[0]) <= 5 and set(ct[0]) <= MUQ_LETTERS:
+                    entries.append((a["id"][:6], ct[0]))
+                else:
+                    break
+            if entries:
+                key = "".join(t for _, t in entries)
+                muq[key] = entries if key not in muq else None  # mark ambiguous
+        self.muq = {k: v for k, v in muq.items() if v is not None}
 
     @staticmethod
     def _strip_devotional(toks: list[str]) -> list[str]:
@@ -183,6 +217,41 @@ class Solution:
                 j -= 1
         return out
 
+    def _try_muqattaat(self, words: list[str], toks: list[str]) -> dict | None:
+        """If the whole transcript is spelled-out disconnected letters, map it
+        to the surah that opens with them and split by ayah."""
+        letters = ""
+        seen = False
+        for t in toks:
+            if not t:
+                continue
+            nm = LETTER_NAME.get(t)
+            if nm is None:
+                return None  # a non-letter-name token -> not a muqatta'at row
+            letters += nm
+            seen = True
+        entries = self.muq.get(letters) if seen else None
+        if not entries:
+            return None
+        # Assign words to ayahs by consuming the expected number of letters.
+        ayahs: list[dict[str, str]] = []
+        wi, acc, ei = 0, 0, 0
+        buf: list[str] = []
+        for w in words:
+            buf.append(w)
+            t = toks[wi] if wi < len(toks) else ""
+            wi += 1
+            if t:
+                acc += len(LETTER_NAME[t])
+                if ei < len(entries) and acc >= len(
+                    "".join(x[1] for x in entries[: ei + 1])
+                ):
+                    ayahs.append({"id": entries[ei][0], "text": " ".join(buf)})
+                    buf, ei = [], ei + 1
+        if buf and ayahs:
+            ayahs[-1]["text"] += " " + " ".join(buf)
+        return {"ayahs": ayahs} if ayahs else None
+
     def process(self, transcript: str) -> dict:
         words = (transcript or "").split()
         toks = [norm_word(w) for w in words]
@@ -190,6 +259,10 @@ class Solution:
         core = [toks[i] for i in keep]
         if not core:
             return {"abstain": True}
+
+        muq = self._try_muqattaat(words, toks)
+        if muq is not None:
+            return muq
 
         cands, coverage = self._candidate_surahs(core)
         if not cands or coverage < ABSTAIN_COVERAGE:
