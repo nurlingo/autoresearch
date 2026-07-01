@@ -52,7 +52,7 @@ GAP_REF = -0.05     # skip a reference token (unrecited ayah words) — cheap
 GAP_TRANS = -0.6    # extra transcript token not in reference
 ABSTAIN_COVERAGE = 0.15  # min transcript-bigram coverage to treat as Quran
 AYAH_MIN_MATCH = 3       # keep ayah if >= this many of its words matched, OR
-AYAH_MIN_COVER = 0.5     # >= this fraction of the ayah's words matched
+AYAH_MIN_COVER = 0.4     # >= this fraction of the ayah's words matched
 CAND_MARGIN = 0.7        # keep surahs scoring >= this * best vote as candidates
 CAND_LIMIT = 5           # max candidate surahs to align against
 
