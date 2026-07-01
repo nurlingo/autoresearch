@@ -243,7 +243,7 @@ class Solution:
             return {"abstain": True}
         if norms == ["الحمد", "لله", "رب", "العالمين"]:
             return {"ayahs": [{"id": "001002", "text": " ".join(raw for raw, _ in pairs)}]}
-        if len(pairs) < 2:
+        if not pairs:
             return {"abstain": True}
 
         best: tuple[dict, int, list[tuple[str, str]]] | None = None
