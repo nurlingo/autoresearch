@@ -343,6 +343,19 @@ class Solution:
             words = [variant[i][0] for i in range(len(variant)) if assigned.get(i) == ayah_id]
             if words:
                 segments.append({"id": ayah_id, "text": " ".join(words)})
+        cleaned: list[dict[str, str]] = []
+        for idx, seg in enumerate(segments):
+            if (
+                cleaned
+                and len(seg["text"].split()) <= 1
+                and len(self.ayah_tokens.get(seg["id"], ())) > 3
+                and idx < len(segments) - 1
+            ):
+                nxt = segments[idx + 1]
+                nxt["text"] = (seg["text"] + " " + nxt["text"]).strip()
+                continue
+            cleaned.append(seg)
+        segments = cleaned
         # Keep empty detected ayahs for detection, but avoid returning a Quran result
         # when the alignment only touched labels outside the selected span.
         if not wanted:
