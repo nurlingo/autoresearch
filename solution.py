@@ -53,6 +53,8 @@ GAP_TRANS = -0.6    # extra transcript token not in reference
 ABSTAIN_COVERAGE = 0.35  # min transcript-bigram coverage to treat as Quran
 AYAH_MIN_MATCH = 3       # keep ayah if >= this many of its words matched, OR
 AYAH_MIN_COVER = 0.5     # >= this fraction of the ayah's words matched
+CAND_MARGIN = 0.7        # keep surahs scoring >= this * best vote as candidates
+CAND_LIMIT = 5           # max candidate surahs to align against
 
 
 class Solution:
@@ -88,21 +90,27 @@ class Solution:
             }
 
     # ------------------------------------------------------------------
-    def _best_surah(self, toks: list[str]) -> tuple[str | None, float]:
+    def _candidate_surahs(self, toks: list[str]) -> tuple[list[str], float]:
+        """Rank surahs by transcript-bigram coverage. Return (top candidates,
+        best coverage). Several near-tied surahs can share the same phrase
+        (e.g. 073020 vs 002110), so the aligner picks the final one."""
         if len(toks) < 2:
-            for sid, stoks in self.surah_tokens.items():
-                if toks and toks[0] in stoks:
-                    return sid, 1.0
-            return None, 0.0
+            cands = [sid for sid, st in self.surah_tokens.items() if toks and toks[0] in st]
+            return cands[:CAND_LIMIT], (1.0 if cands else 0.0)
         query_bigrams = [toks[i] + " " + toks[i + 1] for i in range(len(toks) - 1)]
         total = len(query_bigrams)
-        best, best_hits = None, 0
+        scored = []
         for sid, bg in self.surah_bigrams.items():
             hits = sum(1 for b in query_bigrams if b in bg)
-            if hits > best_hits:
-                best, best_hits = sid, hits
-        coverage = best_hits / total if total else 0.0
-        return best, coverage
+            if hits:
+                scored.append((hits, sid))
+        if not scored:
+            return [], 0.0
+        scored.sort(reverse=True)
+        best_hits = scored[0][0]
+        cutoff = max(1, best_hits * CAND_MARGIN)
+        cands = [sid for h, sid in scored if h >= cutoff][:CAND_LIMIT]
+        return cands, best_hits / total if total else 0.0
 
     def _align(self, toks: list[str], sid: str) -> list[tuple[str | None, bool]]:
         """Return, per transcript token, (aligned ayah id or None, is_match)."""
@@ -163,11 +171,19 @@ class Solution:
         if not core:
             return {"abstain": True}
 
-        sid, coverage = self._best_surah(core)
-        if sid is None or coverage < ABSTAIN_COVERAGE:
+        cands, coverage = self._candidate_surahs(core)
+        if not cands or coverage < ABSTAIN_COVERAGE:
             return {"abstain": True}
 
-        aligned = self._align(core, sid)
+        # Break near-ties by actual alignment quality: the surah whose tokens
+        # match the transcript best (most matched tokens) wins.
+        aligned = None
+        best_matched = -1
+        for sid in cands:
+            al = self._align(core, sid)
+            mc = sum(1 for _, ok in al if ok)
+            if mc > best_matched:
+                best_matched, aligned = mc, al
         # Drop ayahs that only caught a stray token or two: an ayah counts as
         # recited only if enough of ITS reference words were matched. Prevents
         # boundary "extra ayah" false positives.
