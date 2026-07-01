@@ -151,6 +151,17 @@ class Solution:
 
         labels = self._labels_from_alignment(match_words, surah_id, start, opcodes)
         if prefix and labels:
+            first_run = 0
+            while first_run < len(labels) and labels[first_run] == labels[0]:
+                first_run += 1
+            if 0 < first_run <= 3 and first_run < len(labels):
+                try:
+                    cur_num = int(labels[0][3:6])
+                    next_num = int(labels[first_run][3:6])
+                except ValueError:
+                    cur_num = next_num = 0
+                if labels[0][:3] == labels[first_run][:3] and next_num - cur_num > 1:
+                    labels[:first_run] = [labels[first_run]] * first_run
             prefix_label = "001001" if prefix >= len(_ISTIADHA) + len(_BASMALA) and labels[0] == "001002" else labels[0]
             labels = [prefix_label] * min(prefix, len(raw_words)) + labels
         return {"ayahs": self._segments(raw_words, labels)}
