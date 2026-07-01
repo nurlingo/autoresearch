@@ -1,0 +1,13 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-06-30T11:11:31+00:00	0.0	claude	86052e1	2.000000	1.0	1.0	0.0	keep	baseline stub (abstain all)
+2	2026-06-30T11:14:15+00:00	164.2	claude	8bc29fd	2.000000	1.0	1.0	0.0	discard	v1 idf anchor + semi-global align
+3	2026-06-30T11:20:11+00:00	494.4	claude	fd0ca2e	0.683794	0.3425	0.0913	0.25	keep	v2 working align: det 65.8% split 90.9% abstain 2/4
+4	2026-06-30T11:22:13+00:00	616.8	claude	be89761	0.660172	0.3307	0.0795	0.25	keep	v3 deterministic tie-break
+5	2026-06-30T11:24:21+00:00	744.8	claude	dc79cf3	0.458622	0.126	0.0826	0.25	keep	v4 exact-match anchoring: det 87.4%
+6	2026-06-30T11:27:34+00:00	936.9	claude	ec5b5a9	0.172512	0.1063	0.0662	0.0	keep	v5 canonical ids: score 0.173, abstain 4/4
+7	2026-06-30T11:32:14+00:00	1203.3	claude	768424e	0.164638	0.1024	0.0623	0.0	keep	v6 bigram anchor: 0.165
+8	2026-06-30T11:38:03+00:00	1555.0	claude	346dcc9	0.109520	0.063	0.0465	0.0	keep	v7 strip taawwudh: 0.110, det 93.7%
+9	2026-06-30T11:42:50+00:00	1842.6	claude	ebc8923	0.087822	0.0512	0.0366	0.0	keep	v8 run-based abstain: 0.088 det 94.9%
+10	2026-06-30T11:45:25+00:00	1997.6	claude	0f81ed6	0.087124	0.0512	0.0359	0.0	keep	v9 nearest-anchor fill: 0.0871
+11	2026-06-30T11:49:52+00:00	2263.2	claude	1eb717f	0.085172	0.0512	0.034	0.0	keep	v10 path-based split: 0.0852 split 96.6%
+12	2026-06-30T12:00:28+00:00	2900.3	claude	66ae050	0.085172	0.0512	0.034	0.0	discard	v11 docstring cleanup: 0.0852

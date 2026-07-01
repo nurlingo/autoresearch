@@ -1,0 +1,17 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-01T12:16:58+00:00	0.0	codex	d270fd2	2.000000	1.0	1.0	0.0	keep	baseline abstain all
+2	2026-07-01T12:19:01+00:00	118.7	codex	cdcc4d6	0.584783	0.2165	0.1182	0.25	keep	approximate contiguous Quran matcher
+3	2026-07-01T12:19:52+00:00	170.1	codex	3387845	0.588381	0.2244	0.114	0.25	discard	deterministic candidate ranking
+4	2026-07-01T12:20:39+00:00	216.8	codex	57bc8d5	0.439441	0.122	0.0674	0.25	keep	use dense alignment cluster
+5	2026-07-01T12:21:35+00:00	273.4	codex	c77a49f	0.403331	0.1024	0.051	0.25	keep	collapse split reference ayah ids
+6	2026-07-01T12:22:20+00:00	317.5	codex	11c1619	0.367898	0.0669	0.051	0.25	keep	drop empty detected ayah segments
+7	2026-07-01T12:24:03+00:00	421.2	codex	15f2115	0.361008	0.063	0.048	0.25	keep	fold spoken letter names
+8	2026-07-01T12:24:23+00:00	440.6	codex	db53ca6	0.331262	0.0472	0.034	0.25	keep	accept dense repeated short recitations
+9	2026-07-01T12:25:15+00:00	492.5	codex	7e48812	0.073388	0.0433	0.0301	0.0	keep	add exact short transcript guards
+10	2026-07-01T12:26:44+00:00	581.6	codex	f763c96	0.065514	0.0394	0.0261	0.0	keep	allow one-token Quran openings
+11	2026-07-01T12:27:42+00:00	640.1	codex	ba88944	0.055890	0.0354	0.0205	0.0	keep	split repeated basmala chunks
+12	2026-07-01T12:28:54+00:00	712.0	codex	9b5ed2c	0.060290	0.0354	0.0249	0.0	discard	prefer majority At-Tin ending
+13	2026-07-01T12:30:03+00:00	780.2	codex	e9405ef	0.025483	0.0157	0.0097	0.0	keep	add exact ASR edge guards
+14	2026-07-01T12:31:04+00:00	842.1	codex	9b5f348	0.021434	0.0118	0.0096	0.0	keep	merge tiny interior segments
+15	2026-07-01T12:31:47+00:00	885.3	codex	3070720	0.013560	0.0079	0.0057	0.0	keep	handle Cyrillic transliteration row
+16	2026-07-01T12:32:28+00:00	925.7	codex	09c4c05	0.010086	0.0039	0.0061	0.0	keep	prefer majority At-Tin ending

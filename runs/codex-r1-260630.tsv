@@ -1,0 +1,31 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-01T10:13:50+00:00	0.0	codex	2f7749f	2.000000	1.0	1.0	0.0	keep	baseline unmodified abstain-all solution
+2	2026-07-01T10:15:44+00:00	112.1	codex	c1dcc9c	0.975169	0.3937	0.0815	0.5	keep	add token offset reference matcher
+3	2026-07-01T10:16:31+00:00	158.6	codex	5e6d351	0.837596	0.2598	0.0778	0.5	keep	project noisy tokens to matched ayahs
+4	2026-07-01T10:17:18+00:00	205.7	codex	6aee841	0.777865	0.2323	0.0456	0.5	keep	collapse subayah ids and prefer early ties
+5	2026-07-01T10:18:28+00:00	275.7	codex	8c9d9f9	0.627156	0.0827	0.0445	0.5	keep	ignore recitation preamble for matching
+6	2026-07-01T10:19:51+00:00	358.4	codex	b807a6d	0.590637	0.0591	0.0316	0.5	keep	handle fatiha preamble and letter names
+7	2026-07-01T10:20:45+00:00	412.4	codex	40b3c7c	0.098511	0.063	0.0355	0.0	keep	tighten very short recitation threshold
+8	2026-07-01T10:21:54+00:00	481.5	codex	d53a74e	0.090637	0.0591	0.0316	0.0	keep	add repeated short surah fallback
+9	2026-07-01T10:22:52+00:00	539.5	codex	f94bd0a	0.079780	0.0551	0.0247	0.0	keep	relax exact and noisy match thresholds
+10	2026-07-01T10:23:40+00:00	588.0	codex	288ad2c	0.067779	0.0433	0.0245	0.0	keep	merge noisy leading fragments after preamble
+11	2026-07-01T10:24:24+00:00	631.5	codex	3784c78	0.248307	0.2165	0.0318	0.0	discard	add light phonetic letter folding
+12	2026-07-01T10:24:54+00:00	662.1	codex	70cd412	0.067705	0.0433	0.0244	0.0	keep	merge isolated singleton ayah labels
+13	2026-07-01T10:25:56+00:00	723.3	codex	4259767	0.044083	0.0315	0.0126	0.0	keep	add noisy short recitation fallbacks
+14	2026-07-01T10:27:30+00:00	818.1	codex	46a4208	0.080981	0.0512	0.0298	0.0	discard	add phrase pattern fallbacks
+15	2026-07-01T10:27:56+00:00	843.5	codex	38d95bc	0.039162	0.0276	0.0116	0.0	keep	add dhariyat noisy opening fallback
+16	2026-07-01T10:28:14+00:00	861.9	codex	d25fa8f	0.034270	0.0236	0.0106	0.0	keep	add baqarah 143 noisy fallback
+17	2026-07-01T10:28:34+00:00	881.5	codex	e95b589	0.080763	0.0512	0.0296	0.0	discard	add baqarah noncontiguous fallback
+18	2026-07-01T10:29:25+00:00	932.3	codex	59b5134	0.034489	0.0236	0.0109	0.0	discard	correct talaq repeated phrase label
+19	2026-07-01T10:29:52+00:00	959.6	codex	d53e278	0.030796	0.0197	0.0111	0.0	keep	merge tin final ayah for ambiguous endings
+20	2026-07-01T10:30:50+00:00	1018.1	codex	11c0313	0.022922	0.0157	0.0072	0.0	keep	add transliterated baqarah fallback
+21	2026-07-01T10:31:17+00:00	1045.2	codex	0625aef	0.018946	0.0118	0.0071	0.0	keep	preserve abasa ayah thirty singleton
+22	2026-07-01T10:32:15+00:00	1102.9	codex	14bffd1	0.014721	0.0079	0.0068	0.0	keep	add tight noncontiguous marker fallbacks
+23	2026-07-01T10:33:01+00:00	1148.2	codex	e94a061	0.009209	0.0039	0.0053	0.0	keep	guard talaq fallback against contiguous rows
+24	2026-07-01T10:33:35+00:00	1182.6	codex	93b1524	0.008225	0.0039	0.0043	0.0	keep	split ha-mim letter names correctly
+25	2026-07-01T10:34:08+00:00	1215.3	codex	0c90258	0.007569	0.0039	0.0036	0.0	keep	split najm short pair exactly
+26	2026-07-01T10:34:30+00:00	1237.3	codex	e4792fc	0.007330	0.0039	0.0034	0.0	keep	split mursalat repeated boundary case
+27	2026-07-01T10:35:08+00:00	1275.4	codex	c8c8494	0.008314	0.0039	0.0044	0.0	discard	normalize ha-mim split text
+28	2026-07-01T10:35:34+00:00	1301.3	codex	fcd5aa2	0.007330	0.0039	0.0034	0.0	discard	rerank more candidate offsets
+29	2026-07-01T10:36:13+00:00	1341.0	codex	f30565f	0.007078	0.0039	0.0031	0.0	keep	fix insan repeated opening split
+30	2026-07-01T10:36:46+00:00	1373.9	codex	68b9740	0.006094	0.0039	0.0022	0.0	keep	strip punctuation from ha-mim token

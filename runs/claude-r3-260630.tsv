@@ -1,0 +1,14 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-01T09:11:05+00:00	0.0	claude	3dc8fe3	2.000000	1.0	1.0	0.0	keep	baseline (abstain all)
+2	2026-07-01T09:15:05+00:00	232.1	claude	f6788da	0.646433	0.3031	0.0933	0.25	keep	v1 surah-vote + DP align
+3	2026-07-01T09:17:05+00:00	351.3	claude	972e084	0.459652	0.1181	0.0915	0.25	keep	per-ayah coverage filter
+4	2026-07-01T09:18:37+00:00	443.8	claude	7d7ece8	0.173542	0.0984	0.0751	0.0	keep	collapse sub-ayah ids + drop pseudo-surahs
+5	2026-07-01T09:20:43+00:00	569.1	claude	9dd19de	0.118424	0.0709	0.0476	0.0	keep	alignment tie-break across candidate surahs
+6	2026-07-01T09:23:00+00:00	706.2	claude	7d027df	0.102676	0.063	0.0397	0.0	keep	candidate sort ties toward lower surah id
+7	2026-07-01T09:24:55+00:00	821.4	claude	19322f0	0.094802	0.0591	0.0357	0.0	keep	lower abstain thresh + strip devotional prefix for voting
+8	2026-07-01T09:28:02+00:00	1008.6	claude	ce29be6	0.094802	0.0591	0.0357	0.0	discard	tried MIN_MATCH=2 / adjacency rule (both worse, reverted)
+9	2026-07-01T09:32:59+00:00	1305.7	claude	aff7e74	0.093264	0.0591	0.0342	0.0	keep	tune MISMATCH=-0.5
+10	2026-07-01T09:40:38+00:00	1764.6	claude	b1571fb	0.084784	0.0512	0.0336	0.0	keep	AYAH_MIN_COVER=0.4
+11	2026-07-01T09:43:39+00:00	1945.3	claude	05728e7	0.070020	0.0433	0.0267	0.0	keep	muqattaat letter-name handler
+12	2026-07-01T09:48:30+00:00	2236.5	claude	83032b5	0.062146	0.0394	0.0228	0.0	keep	muqattaat subsequence fallback for dropped letters
+13	2026-07-01T09:49:39+00:00	2305.8	claude	05cef84	0.062146	0.0394	0.0228	0.0	discard	simplify norm_word (drop redundant harakat pass)
