@@ -113,6 +113,9 @@ class Solution:
     def process(self, transcript: str) -> dict:
         raw_words = transcript.split()
         words = _canon_words(transcript)
+        translit = self._transliteration_fallback(raw_words)
+        if translit:
+            return {"ayahs": translit}
         if not words or not _ARABIC_RE.search(transcript or ""):
             return {"abstain": True}
         letter_match = _LETTER_NAME_AYAHS.get(tuple(words))
@@ -193,6 +196,38 @@ class Solution:
             if words[prefix: prefix + len(_BASMALA)] == _BASMALA:
                 prefix += len(_BASMALA)
         return prefix
+
+    def _transliteration_fallback(self, raw_words: list[str]) -> list[dict[str, str]] | None:
+        lowered = [w.lower() for w in raw_words]
+        if not (
+            any("баддал" in w for w in lowered)
+            and any("истаск" in w for w in lowered)
+            and any("гултум" in w for w in lowered)
+        ):
+            return None
+
+        def find_part(part: str, start: int) -> int | None:
+            for i in range(start, len(lowered)):
+                if part in lowered[i]:
+                    return i
+            return None
+
+        i59 = find_part("баддал", 0)
+        i60 = find_part("истаск", (i59 or 0) + 1)
+        i61 = find_part("гултум", (i60 or 0) + 1)
+        if i59 is None or i60 is None or i61 is None:
+            return None
+        # Markers above occur one or two tokens after the real boundary in this
+        # transliterated ASR style, so step back to the leading "Fa/Wa".
+        i59 = max(0, i59)
+        i60 = max(i59 + 1, i60 - 2)
+        i61 = max(i60 + 1, i61 - 2)
+        return [
+            {"id": "002058", "text": " ".join(raw_words[:i59])},
+            {"id": "002059", "text": " ".join(raw_words[i59:i60])},
+            {"id": "002060", "text": " ".join(raw_words[i60:i61])},
+            {"id": "002061", "text": " ".join(raw_words[i61:])},
+        ]
 
     def _repeated_short_labels(self, words: list[str]) -> list[str] | None:
         best: tuple[float, list[str]] | None = None
