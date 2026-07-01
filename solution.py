@@ -28,7 +28,6 @@ from pathlib import Path
 DATA_DIR = Path(__file__).parent / "data"
 REF_PATH = Path(os.getenv("QURAN_REF_PATH", DATA_DIR / "quran_ref.json"))
 
-_HARAKAT_RE = re.compile("[ؐ-ًؚ-ٰٟۖ-ۭ]")
 _FOLD = {"أ": "ا", "إ": "ا", "آ": "ا",
          "ٱ": "ا", "ى": "ي", "ؤ": "ء",
          "ئ": "ء"}
@@ -46,7 +45,6 @@ def norm_word(w: str) -> str:
     w = w.replace("ـ", "")
     for a, b in _FOLD.items():
         w = w.replace(a, b)
-    w = _HARAKAT_RE.sub("", w)
     w = _NONLETTER_RE.sub("", w)
     return w
 
