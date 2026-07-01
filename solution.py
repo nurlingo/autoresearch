@@ -87,7 +87,7 @@ class Solution:
             toks: list[str] = []
             labels: list[str] = []
             for ayah in ayahs:
-                ayah_id = ayah["id"]
+                ayah_id = ayah["id"][:6]
                 for tok in _canon_words(ayah.get("clean") or ayah.get("ar") or ""):
                     occ[tok].append((surah_id, len(toks)))
                     toks.append(tok)
@@ -141,7 +141,7 @@ class Solution:
         ranked = []
         for (surah_id, offset), count in counts.items():
             ranked.append((count + weights[(surah_id, offset)], surah_id, offset))
-        ranked.sort(reverse=True)
+        ranked.sort(key=lambda item: (-item[0], int(item[1]), abs(item[2])))
         return ranked
 
     def _score_window(
