@@ -189,6 +189,7 @@ class Solution:
                     best_cluster = rank
         assert best_cluster is not None
         score, coverage, density, neg_span, _, cluster = best_cluster
+        matched = sum(b.size for b in cluster)
         first = cluster[0].b
         last = cluster[-1].b + cluster[-1].size - 1
         span = max(last - first + 1, 1)
@@ -196,6 +197,7 @@ class Solution:
             "score": score,
             "coverage": coverage,
             "density": density,
+            "matched": matched,
             "surah_id": surah_id,
             "blocks": cluster,
             "first": first,
@@ -255,7 +257,8 @@ class Solution:
         if best is None:
             return {"abstain": True}
         scored, _, variant = best
-        if scored["coverage"] < 0.42 or scored["score"] < 0.27:
+        repeated_short = scored["density"] > 0.85 and scored["matched"] >= 8
+        if (scored["coverage"] < 0.42 or scored["score"] < 0.27) and not repeated_short:
             return {"abstain": True}
 
         toks = [n for _, n in variant]
