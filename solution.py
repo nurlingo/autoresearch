@@ -175,32 +175,35 @@ class Solution:
     ) -> list[str]:
         labels_ref = self.surah_labels[surah_id]
         labels: list[str | None] = [None] * len(words)
+        anchors: list[tuple[int, int]] = []
 
         for tag, i1, i2, j1, j2 in opcodes:
             if tag == "equal":
                 for k in range(j2 - j1):
                     labels[j1 + k] = labels_ref[start + i1 + k]
-            elif tag in {"replace", "insert"}:
-                ref_len = max(i2 - i1, 1)
-                out_len = max(j2 - j1, 1)
-                for k in range(j2 - j1):
-                    ref_pos = start + min(i1 + (k * ref_len) // out_len, max(i2 - 1, i1))
-                    ref_pos = min(max(ref_pos, 0), len(labels_ref) - 1)
-                    labels[j1 + k] = labels_ref[ref_pos]
+                    anchors.append((j1 + k, start + i1 + k))
 
-        # Fill any gaps from the nearest assigned neighbor.
-        last = None
-        for i, label in enumerate(labels):
-            if label is None:
-                labels[i] = last
-            else:
-                last = label
-        next_label = None
-        for i in range(len(labels) - 1, -1, -1):
-            if labels[i] is None:
-                labels[i] = next_label
-            else:
-                next_label = labels[i]
+        anchors.sort()
+        if anchors:
+            # Unmatched ASR words should not introduce ayahs whose words were
+            # never heard. Project them to the nearest matched reference token.
+            for i, label in enumerate(labels):
+                if label is not None:
+                    continue
+                before = None
+                after = None
+                for t_i, r_i in anchors:
+                    if t_i < i:
+                        before = (t_i, r_i)
+                    elif t_i > i:
+                        after = (t_i, r_i)
+                        break
+                if before and after:
+                    use = before if i - before[0] <= after[0] - i else after
+                else:
+                    use = before or after
+                if use:
+                    labels[i] = labels_ref[use[1]]
 
         fallback = labels_ref[min(max(start, 0), len(labels_ref) - 1)]
         return [label or fallback for label in labels]
