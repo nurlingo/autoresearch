@@ -282,6 +282,7 @@ class Solution:
                     prev_label[:3] == cur_label[:3] == next_label[:3]
                     and cur_num == prev_num + 1
                     and next_num == cur_num + 1
+                    and cur_label != "080030"
                 ):
                     out[i] = next_label
             i = j
