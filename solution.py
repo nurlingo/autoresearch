@@ -1,59 +1,192 @@
 """
-solution.py — the ONLY file the autoresearch agent edits.
+solution.py — transcript-only Stage 1 algorithm (detection + split).
 
-Start from scratch. The goal is a transcript-only algorithm that, given a Quran
-recitation transcript (no harakat), decides which ayahs were recited and splits
-the transcript by ayah. This is Stage 1 of a memorization checker; mistake
-detection (Stage 2) is a separate harness and is out of scope here.
+Given a Quran recitation transcript (no harakat), decide which ayahs were
+recited and split the transcript by ayah. See PROGRAM.md / eval.py for the
+contract and metric.
 
-You may add helper files next to this one and import them. Do not edit eval.py
-or anything under data/ — those are the fixed dataset and metric.
-
-Reference data
---------------
-data/quran_ref.json maps each surah id to its ayahs:
-
-    { "095": [ {"id": "095001", "ar": "<uthmani>", "clean": "<no-harakat>"}, ... ], ... }
-
-Use `clean` for matching against transcripts (transcripts have no harakat).
-
-Contract (what eval.py expects from process())
------------------------------------------------
-Return ONE of:
-
-    {"abstain": True}
-        when the transcript is NOT a Quran recitation
-        (spoken request, noise, unintelligible, uncertain).
-
-    {"ayahs": [ {"id": "095001", "text": "<transcript words for this ayah>"},
-                {"id": "095002", "text": "..."}, ... ]}
-        when it IS a recitation. `id` is the 6-digit ayah id
-        (3-digit surah + 3-digit ayah). `text` is the slice of the transcript
-        assigned to that ayah; concatenating the texts in order should reproduce
-        the recited transcript. The ids should follow transcript order, but some
-        gold rows skip ayahs, so the id set is not always consecutive.
-
-Scored (lower is better) by eval.py:
-    detection_error  — did your ayah-id set exactly match the gold assignment
-    split_error      — fraction of transcript words placed in the wrong ayah
-    abstain_error    — did you correctly abstain on non-Quran rows
+Approach
+--------
+1. Normalize words (fold alef/hamza/ya variants, drop harakat) — mirrors the
+   metric canonicalizer so alignment operates in the same space.
+2. Detect the surah by voting: which surah's token-bigrams best cover the
+   transcript. Abstain when coverage is too low (non-Quran).
+3. Align the transcript token sequence to the surah's token sequence with a
+   semi-global DP (free start/end gaps, cheap reference skips so unrecited
+   ayahs cost little). Each transcript token inherits the ayah id of the ref
+   token it aligns to.
+4. Group consecutive transcript words by ayah id -> per-ayah split.
 """
 from __future__ import annotations
 
 import json
 import os
+import re
+import unicodedata
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
 REF_PATH = Path(os.getenv("QURAN_REF_PATH", DATA_DIR / "quran_ref.json"))
 
+_HARAKAT_RE = re.compile("[ؐ-ًؚ-ٰٟۖ-ۭ]")
+_FOLD = {"أ": "ا", "إ": "ا", "آ": "ا",
+         "ٱ": "ا", "ى": "ي", "ؤ": "ء",
+         "ئ": "ء"}
+_NONLETTER_RE = re.compile("[^ء-ي]")
+
+
+def norm_word(w: str) -> str:
+    w = unicodedata.normalize("NFKC", w or "")
+    w = w.replace("ـ", "")
+    for a, b in _FOLD.items():
+        w = w.replace(a, b)
+    w = _HARAKAT_RE.sub("", w)
+    w = _NONLETTER_RE.sub("", w)
+    return w
+
+
+# alignment scores
+MATCH = 1.0
+MISMATCH = -1.0
+GAP_REF = -0.05     # skip a reference token (unrecited ayah words) — cheap
+GAP_TRANS = -0.6    # extra transcript token not in reference
+ABSTAIN_COVERAGE = 0.35  # min transcript-bigram coverage to treat as Quran
+
 
 class Solution:
     def __init__(self) -> None:
-        # {surah_id: [{"id", "ar", "clean"}, ...]}
-        self.quran: dict[str, list[dict[str, str]]] = json.loads(REF_PATH.read_text(encoding="utf-8"))
+        self.quran: dict[str, list[dict[str, str]]] = json.loads(
+            REF_PATH.read_text(encoding="utf-8")
+        )
+        # Per surah: flat token list + parallel ayah-id list.
+        self.surah_tokens: dict[str, list[str]] = {}
+        self.surah_ayahids: dict[str, list[str]] = {}
+        self.surah_bigrams: dict[str, set[str]] = {}
+        for sid, ayahs in self.quran.items():
+            toks: list[str] = []
+            ids: list[str] = []
+            for a in ayahs:
+                for w in a.get("clean", "").split():
+                    t = norm_word(w)
+                    if t:
+                        toks.append(t)
+                        ids.append(a["id"])
+            self.surah_tokens[sid] = toks
+            self.surah_ayahids[sid] = ids
+            self.surah_bigrams[sid] = {
+                toks[i] + " " + toks[i + 1] for i in range(len(toks) - 1)
+            }
+
+    # ------------------------------------------------------------------
+    def _best_surah(self, toks: list[str]) -> tuple[str | None, float]:
+        if len(toks) < 2:
+            for sid, stoks in self.surah_tokens.items():
+                if toks and toks[0] in stoks:
+                    return sid, 1.0
+            return None, 0.0
+        query_bigrams = [toks[i] + " " + toks[i + 1] for i in range(len(toks) - 1)]
+        total = len(query_bigrams)
+        best, best_hits = None, 0
+        for sid, bg in self.surah_bigrams.items():
+            hits = sum(1 for b in query_bigrams if b in bg)
+            if hits > best_hits:
+                best, best_hits = sid, hits
+        coverage = best_hits / total if total else 0.0
+        return best, coverage
+
+    def _align(self, toks: list[str], sid: str) -> list[str | None]:
+        """Return, for each transcript token, the aligned ayah id (or None)."""
+        ref = self.surah_tokens[sid]
+        ids = self.surah_ayahids[sid]
+        n, m = len(toks), len(ref)
+        NEG = float("-inf")
+        dp = [[NEG] * (m + 1) for _ in range(n + 1)]
+        bt = [[0] * (m + 1) for _ in range(n + 1)]  # 0 diag,1 up(trans gap),2 left(ref gap)
+        dp[0][0] = 0.0
+        for j in range(1, m + 1):
+            dp[0][j] = 0.0  # free leading ref skip
+            bt[0][j] = 2
+        for i in range(1, n + 1):
+            dp[i][0] = dp[i - 1][0] + GAP_TRANS
+            bt[i][0] = 1
+        for i in range(1, n + 1):
+            ti = toks[i - 1]
+            dpi = dp[i]
+            dpi1 = dp[i - 1]
+            bti = bt[i]
+            for j in range(1, m + 1):
+                s = MATCH if ti == ref[j - 1] else MISMATCH
+                diag = dpi1[j - 1] + s
+                up = dpi1[j] + GAP_TRANS
+                left = dpi[j - 1] + GAP_REF
+                best = diag
+                b = 0
+                if up > best:
+                    best, b = up, 1
+                if left > best:
+                    best, b = left, 2
+                dpi[j] = best
+                bti[j] = b
+        best_j, best_val = m, dp[n][m]
+        for j in range(m + 1):
+            if dp[n][j] > best_val:
+                best_val, best_j = dp[n][j], j
+        i, j = n, best_j
+        out: list[str | None] = [None] * n
+        while i > 0:
+            b = bt[i][j]
+            if b == 0:
+                out[i - 1] = ids[j - 1]
+                i, j = i - 1, j - 1
+            elif b == 1:
+                out[i - 1] = None
+                i -= 1
+            else:
+                j -= 1
+        return out
 
     def process(self, transcript: str) -> dict:
-        # TODO(agent): implement from scratch.
-        # Baseline does nothing useful: it abstains on every input.
-        return {"abstain": True}
+        words = (transcript or "").split()
+        toks = [norm_word(w) for w in words]
+        keep = [i for i, t in enumerate(toks) if t]
+        core = [toks[i] for i in keep]
+        if not core:
+            return {"abstain": True}
+
+        sid, coverage = self._best_surah(core)
+        if sid is None or coverage < ABSTAIN_COVERAGE:
+            return {"abstain": True}
+
+        core_ids = self._align(core, sid)
+        word_ids: list[str | None] = [None] * len(words)
+        for k, orig_idx in enumerate(keep):
+            word_ids[orig_idx] = core_ids[k]
+        # fill unaligned words with nearest previous, then next
+        last = None
+        for i in range(len(words)):
+            if word_ids[i] is None:
+                word_ids[i] = last
+            else:
+                last = word_ids[i]
+        nxt = None
+        for i in range(len(words) - 1, -1, -1):
+            if word_ids[i] is None:
+                word_ids[i] = nxt
+            else:
+                nxt = word_ids[i]
+
+        if all(w is None for w in word_ids):
+            return {"abstain": True}
+
+        ayahs: list[dict[str, str]] = []
+        cur_id = word_ids[0]
+        buf = [words[0]]
+        for i in range(1, len(words)):
+            if word_ids[i] == cur_id:
+                buf.append(words[i])
+            else:
+                ayahs.append({"id": cur_id, "text": " ".join(buf)})
+                cur_id = word_ids[i]
+                buf = [words[i]]
+        ayahs.append({"id": cur_id, "text": " ".join(buf)})
+        return {"ayahs": ayahs}
