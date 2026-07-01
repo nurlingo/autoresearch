@@ -102,8 +102,9 @@ class Solution:
             labels: list[str] = []
             ayah_order: list[str] = []
             for ayah in ayahs:
-                ayah_id = ayah["id"]
-                ayah_order.append(ayah_id)
+                ayah_id = ayah["id"][:6]
+                if not ayah_order or ayah_order[-1] != ayah_id:
+                    ayah_order.append(ayah_id)
                 for _, tok in _tokenize(ayah.get("clean", "")):
                     tokens.append(tok)
                     labels.append(ayah_id)
