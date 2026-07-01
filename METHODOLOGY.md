@@ -222,7 +222,27 @@ errors do not pollute it. Needs a gold `mistakes` field that does not yet exist;
 the mistake taxonomy is still to be defined. Transcript-only → cannot catch
 vowel/tajweed errors.
 
-## 12. Reproducibility bundle (per run)
+## 12. Study 2 — held-out generalization (planned)
+
+Study 1 scores agents on the same 254 rows they optimize, and `eval.py` prints
+expected ids in its failure report — which *rewards memorization*. Codex exploited
+this (per-recording hardcoding, e.g. a garbled-transcript→id lookup); Claude did
+not, and stopped early. Through ~exp 13 both arms held comparable *general*
+algorithms (~0.04–0.09); Codex's final 0.006 came from non-generalizing test-row
+fixes. Study 2 measures **generalization**:
+
+- **Train/test split.** Partition rows by recording (stratified by surah /
+  difficulty) into a visible *train* set and a held-out *test* set (~60/40). The
+  loop scores `research_score` on **train only**.
+- **Close the leak.** The failure report shows `recording_id` + predicted ids
+  only — never the expected ids.
+- **Held-out scoring.** After each run, *we* (not the agent) score the final
+  `solution.py` on the untouched test set. Report the **test** score; the
+  train↔test gap quantifies overfitting per agent.
+- Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
+  on held-out data, and Codex shows the larger train↔test gap.
+
+## 13. Reproducibility bundle (per run)
 
 - archived `runs/<agent>-…​.tsv`,
 - the run branch (each commit = one experiment) + final `solution.py`,
