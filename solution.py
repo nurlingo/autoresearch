@@ -164,6 +164,7 @@ class Solution:
                     labels[:first_run] = [labels[first_run]] * first_run
             prefix_label = "001001" if prefix >= len(_ISTIADHA) + len(_BASMALA) and labels[0] == "001002" else labels[0]
             labels = [prefix_label] * min(prefix, len(raw_words)) + labels
+        labels = self._merge_isolated_singletons(labels)
         return {"ayahs": self._segments(raw_words, labels)}
 
     def _preamble_len(self, words: list[str]) -> int:
@@ -205,6 +206,32 @@ class Solution:
         if best and best[0] >= 0.8:
             return best[1]
         return None
+
+    def _merge_isolated_singletons(self, labels: list[str]) -> list[str]:
+        if len(labels) < 3:
+            return labels
+        out = labels[:]
+        i = 0
+        while i < len(out):
+            j = i + 1
+            while j < len(out) and out[j] == out[i]:
+                j += 1
+            if i > 0 and j < len(out) and j - i == 1:
+                prev_label, cur_label, next_label = out[i - 1], out[i], out[j]
+                try:
+                    prev_num = int(prev_label[3:6])
+                    cur_num = int(cur_label[3:6])
+                    next_num = int(next_label[3:6])
+                except ValueError:
+                    prev_num = cur_num = next_num = -999
+                if (
+                    prev_label[:3] == cur_label[:3] == next_label[:3]
+                    and cur_num == prev_num + 1
+                    and next_num == cur_num + 1
+                ):
+                    out[i] = next_label
+            i = j
+        return out
 
     def _candidate_offsets(self, words: list[str]) -> list[tuple[float, str, int]]:
         counts: Counter[tuple[str, int]] = Counter()
