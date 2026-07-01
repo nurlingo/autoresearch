@@ -47,7 +47,7 @@ def norm_word(w: str) -> str:
 
 # alignment scores
 MATCH = 1.0
-MISMATCH = -1.0
+MISMATCH = -0.5
 GAP_REF = -0.05     # skip a reference token (unrecited ayah words) — cheap
 GAP_TRANS = -0.6    # extra transcript token not in reference
 ABSTAIN_COVERAGE = 0.15  # min transcript-bigram coverage to treat as Quran
