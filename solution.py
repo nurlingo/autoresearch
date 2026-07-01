@@ -239,7 +239,8 @@ class Solution:
         segments: list[dict[str, str]] = []
         for ayah_id in ayah_ids:
             words = [variant[i][0] for i in range(len(variant)) if assigned.get(i) == ayah_id]
-            segments.append({"id": ayah_id, "text": " ".join(words)})
+            if words:
+                segments.append({"id": ayah_id, "text": " ".join(words)})
         # Keep empty detected ayahs for detection, but avoid returning a Quran result
         # when the alignment only touched labels outside the selected span.
         if not wanted:
