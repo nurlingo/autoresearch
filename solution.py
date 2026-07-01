@@ -51,6 +51,8 @@ MISMATCH = -1.0
 GAP_REF = -0.05     # skip a reference token (unrecited ayah words) — cheap
 GAP_TRANS = -0.6    # extra transcript token not in reference
 ABSTAIN_COVERAGE = 0.35  # min transcript-bigram coverage to treat as Quran
+AYAH_MIN_MATCH = 3       # keep ayah if >= this many of its words matched, OR
+AYAH_MIN_COVER = 0.5     # >= this fraction of the ayah's words matched
 
 
 class Solution:
@@ -62,15 +64,19 @@ class Solution:
         self.surah_tokens: dict[str, list[str]] = {}
         self.surah_ayahids: dict[str, list[str]] = {}
         self.surah_bigrams: dict[str, set[str]] = {}
+        self.ayah_len: dict[str, int] = {}
         for sid, ayahs in self.quran.items():
             toks: list[str] = []
             ids: list[str] = []
             for a in ayahs:
+                n = 0
                 for w in a.get("clean", "").split():
                     t = norm_word(w)
                     if t:
                         toks.append(t)
                         ids.append(a["id"])
+                        n += 1
+                self.ayah_len[a["id"]] = n
             self.surah_tokens[sid] = toks
             self.surah_ayahids[sid] = ids
             self.surah_bigrams[sid] = {
@@ -94,8 +100,8 @@ class Solution:
         coverage = best_hits / total if total else 0.0
         return best, coverage
 
-    def _align(self, toks: list[str], sid: str) -> list[str | None]:
-        """Return, for each transcript token, the aligned ayah id (or None)."""
+    def _align(self, toks: list[str], sid: str) -> list[tuple[str | None, bool]]:
+        """Return, per transcript token, (aligned ayah id or None, is_match)."""
         ref = self.surah_tokens[sid]
         ids = self.surah_ayahids[sid]
         n, m = len(toks), len(ref)
@@ -132,14 +138,14 @@ class Solution:
             if dp[n][j] > best_val:
                 best_val, best_j = dp[n][j], j
         i, j = n, best_j
-        out: list[str | None] = [None] * n
+        out: list[tuple[str | None, bool]] = [(None, False)] * n
         while i > 0:
             b = bt[i][j]
             if b == 0:
-                out[i - 1] = ids[j - 1]
+                out[i - 1] = (ids[j - 1], toks[i - 1] == ref[j - 1])
                 i, j = i - 1, j - 1
             elif b == 1:
-                out[i - 1] = None
+                out[i - 1] = (None, False)
                 i -= 1
             else:
                 j -= 1
@@ -157,7 +163,20 @@ class Solution:
         if sid is None or coverage < ABSTAIN_COVERAGE:
             return {"abstain": True}
 
-        core_ids = self._align(core, sid)
+        aligned = self._align(core, sid)
+        # Drop ayahs that only caught a stray token or two: an ayah counts as
+        # recited only if enough of ITS reference words were matched. Prevents
+        # boundary "extra ayah" false positives.
+        matched: dict[str, int] = {}
+        for aid, ok in aligned:
+            if aid is not None and ok:
+                matched[aid] = matched.get(aid, 0) + 1
+        kept = {
+            aid for aid, c in matched.items()
+            if c >= AYAH_MIN_MATCH or c / max(self.ayah_len.get(aid, 1), 1) >= AYAH_MIN_COVER
+        }
+        core_ids = [aid if aid in kept else None for aid, _ in aligned]
+
         word_ids: list[str | None] = [None] * len(words)
         for k, orig_idx in enumerate(keep):
             word_ids[orig_idx] = core_ids[k]
