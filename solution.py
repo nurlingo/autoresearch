@@ -106,7 +106,10 @@ class Solution:
                 scored.append((hits, sid))
         if not scored:
             return [], 0.0
-        scored.sort(reverse=True)
+        # Highest vote first; break vote ties toward the lower surah id so a
+        # phrase shared across surahs (e.g. "الحمد لله رب العالمين") keeps the
+        # canonical/earliest surah in the shortlist.
+        scored.sort(key=lambda hs: (-hs[0], hs[1]))
         best_hits = scored[0][0]
         cutoff = max(1, best_hits * CAND_MARGIN)
         cands = [sid for h, sid in scored if h >= cutoff][:CAND_LIMIT]
