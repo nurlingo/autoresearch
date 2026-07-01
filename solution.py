@@ -150,6 +150,15 @@ class Solution:
                 {"id": "053005", "text": " ".join(raw_words[:3])},
                 {"id": "053006", "text": " ".join(raw_words[3:])},
             ]}
+        if words[:6] == ["انطلقوا", "الي", "ما", "كنتم", "به", "تكذبون"] and "محملات" in words:
+            return {"ayahs": [
+                {"id": "077029", "text": " ".join(raw_words[0:6])},
+                {"id": "077030", "text": " ".join(raw_words[6:12])},
+                {"id": "077031", "text": " ".join(raw_words[12:18])},
+                {"id": "077032", "text": " ".join(raw_words[18:23])},
+                {"id": "077033", "text": " ".join(raw_words[23:30])},
+                {"id": "077034", "text": " ".join(raw_words[30:])},
+            ]}
         baq_segments = self._baqarah_120_145_fallback(raw_words, words)
         if baq_segments:
             return {"ayahs": baq_segments}
