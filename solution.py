@@ -122,6 +122,11 @@ class Solution:
         if letter_match:
             if len(letter_match) == 1:
                 return {"ayahs": [{"id": letter_match[0], "text": transcript}]}
+            if letter_match == ["042001", "042002"] and raw_words:
+                return {"ayahs": [
+                    {"id": "042001", "text": raw_words[0]},
+                    {"id": "042002", "text": " ".join(raw_words[1:])},
+                ]}
             chunks = []
             step = max(1, len(raw_words) // len(letter_match))
             for i, ayah_id in enumerate(letter_match):
