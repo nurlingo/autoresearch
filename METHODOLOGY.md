@@ -110,7 +110,9 @@ uditgoenka/autoresearch skill) are **deferred to future work** — out of scope
 here to keep the A/B clean.
 
 Pin and report for each: model id + build date, permission mode (full-auto),
-temperature / reasoning effort, CLI version.
+reasoning effort, CLI version. **Reasoning effort is matched across arms:** Claude
+`high` and Codex `high`. The scales differ (Claude: low/medium/high/xhigh/max;
+Codex: low/medium/high/xhigh) but `high` is the same named tier on both.
 
 ## 6. Protocol
 
@@ -128,12 +130,12 @@ Per agent, per run *k*:
 whichever comes first** — iteration-primary, with the hour as a wall-clock safety
 stop. Report at both a fixed-iteration checkpoint (e.g. exp 30) and a fixed-time
 checkpoint (e.g. 1 h). This is a deliberately small budget: it makes the full
-5×2 matrix cheap to run first; scale up later if results warrant.
+3×2 matrix cheap to run first; scale up later if results warrant.
 
 **Stopping rule:** budget reached, or plateau (≈15 consecutive non-improving
 experiments).
 
-**5 runs per agent → 10 runs total (5 Claude + 5 Codex).** LLM agents are
+**3 runs per agent → 6 runs total (3 Claude + 3 Codex).** LLM agents are
 stochastic; report every run, not the best.
 
 Compare: `make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"` → `comparison.png`
@@ -156,9 +158,11 @@ handling, abstention heuristics, …).
 
 ## 8. Statistics
 
-Small N → report **mean ± std across runs** and plot every run. For "is A better
-than B," use a nonparametric test (Mann–Whitney U) on per-run best scores rather
-than assuming normality. Do not over-claim from 3 runs.
+Small N (3 per arm) → report **mean ± std across runs** and plot every run. For
+"is A better than B," use a nonparametric test (Mann–Whitney U) on per-run best
+scores. With 3 vs 3 the best achievable p is 0.05 (complete separation), so treat
+significance cautiously and lean on effect size + the per-run curves. Do not
+over-claim from N=3.
 
 ## 9. Controls, confounds, validity
 
