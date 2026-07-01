@@ -119,6 +119,7 @@ class Solution:
         # {surah_id: [{"id", "ar", "clean"}, ...]}
         self.quran: dict[str, list[dict[str, str]]] = json.loads(REF_PATH.read_text(encoding="utf-8"))
         self.surahs: dict[str, dict] = {}
+        self.ayah_tokens: dict[str, list[str]] = defaultdict(list)
         self.token_surahs: dict[str, set[str]] = defaultdict(set)
         for surah_id, ayahs in self.quran.items():
             if not surah_id.isdigit() or len(surah_id) != 3:
@@ -133,6 +134,7 @@ class Solution:
                 for _, tok in _tokenize(ayah.get("clean", "")):
                     tokens.append(tok)
                     labels.append(ayah_id)
+                    self.ayah_tokens[ayah_id].append(tok)
                     self.token_surahs[tok].add(surah_id)
             self.surahs[surah_id] = {"tokens": tokens, "labels": labels, "ayah_order": ayah_order}
 
@@ -236,6 +238,45 @@ class Solution:
                 assigned[i] = assigned[nexts[0]]
         return ayah_ids, assigned
 
+    def _split_repeated_basmala(
+        self, variant: list[tuple[str, str]], ayah_ids: list[str]
+    ) -> list[dict[str, str]] | None:
+        if len(ayah_ids) > 8:
+            return None
+        basmala = ("بسم", "الله", "الرحمن", "الرحيم")
+        chunks: list[list[tuple[str, str]]] = []
+        cur: list[tuple[str, str]] = []
+        i = 0
+        while i < len(variant):
+            if tuple(n for _, n in variant[i : i + 4]) == basmala:
+                if cur:
+                    chunks.append(cur)
+                    cur = []
+                i += 4
+            else:
+                cur.append(variant[i])
+                i += 1
+        if cur:
+            chunks.append(cur)
+        if len(chunks) < 2:
+            return None
+
+        lengths = [len(self.ayah_tokens.get(ayah_id, ())) for ayah_id in ayah_ids]
+        expected = sum(lengths)
+        if not expected or any(len(chunk) < expected * 0.65 for chunk in chunks):
+            return None
+
+        segments: list[dict[str, str]] = []
+        for chunk in chunks:
+            pos = 0
+            for idx, ayah_id in enumerate(ayah_ids):
+                take = lengths[idx] if idx < len(ayah_ids) - 1 else len(chunk) - pos
+                words = [raw for raw, _ in chunk[pos : pos + take]]
+                if words:
+                    segments.append({"id": ayah_id, "text": " ".join(words)})
+                pos += take
+        return segments or None
+
     def process(self, transcript: str) -> dict:
         pairs = _tokenize(transcript)
         norms = [n for _, n in pairs]
@@ -268,6 +309,9 @@ class Solution:
 
         toks = [n for _, n in variant]
         ayah_ids, assigned = self._labels_for_alignment(toks, scored)
+        repeated = self._split_repeated_basmala(variant, ayah_ids)
+        if repeated:
+            return {"ayahs": repeated}
         wanted = set(ayah_ids)
         segments: list[dict[str, str]] = []
         for ayah_id in ayah_ids:
