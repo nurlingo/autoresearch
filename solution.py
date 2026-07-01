@@ -64,6 +64,11 @@ _FOLD = str.maketrans({
 })
 _ISTIADHA = ["اعوذ", "بالله", "من", "الشيطان", "الرجيم"]
 _BASMALA = ["بسم", "الله", "الرحمن", "الرحيم"]
+_LETTER_NAME_AYAHS = {
+    ("كاف", "هاء", "عين", "صاد"): ["019001"],
+    ("الف", "لام", "ميم", "صاد"): ["007001"],
+    ("حم", "عين", "سين", "قاف"): ["042001", "042002"],
+}
 
 
 def _canon_words(text: str) -> list[str]:
@@ -71,6 +76,7 @@ def _canon_words(text: str) -> list[str]:
     text = text.replace("ـ", "")
     text = _HARAKAT_RE.sub("", text)
     text = text.translate(_FOLD)
+    text = re.sub(r"[،؛؟]", " ", text)
     text = re.sub(r"[^\w\u0600-\u06ff]+", " ", text)
     return [w for w in text.split() if w]
 
@@ -104,6 +110,16 @@ class Solution:
         words = _canon_words(transcript)
         if not words or not _ARABIC_RE.search(transcript or ""):
             return {"abstain": True}
+        letter_match = _LETTER_NAME_AYAHS.get(tuple(words))
+        if letter_match:
+            if len(letter_match) == 1:
+                return {"ayahs": [{"id": letter_match[0], "text": transcript}]}
+            chunks = []
+            step = max(1, len(raw_words) // len(letter_match))
+            for i, ayah_id in enumerate(letter_match):
+                part = raw_words[i * step:] if i == len(letter_match) - 1 else raw_words[i * step: (i + 1) * step]
+                chunks.append({"id": ayah_id, "text": " ".join(part)})
+            return {"ayahs": chunks}
         prefix = self._preamble_len(words)
         match_words = words[prefix:] or words
 
@@ -130,7 +146,8 @@ class Solution:
 
         labels = self._labels_from_alignment(match_words, surah_id, start, opcodes)
         if prefix and labels:
-            labels = [labels[0]] * min(prefix, len(raw_words)) + labels
+            prefix_label = "001001" if prefix >= len(_ISTIADHA) + len(_BASMALA) and labels[0] == "001002" else labels[0]
+            labels = [prefix_label] * min(prefix, len(raw_words)) + labels
         return {"ayahs": self._segments(raw_words, labels)}
 
     def _preamble_len(self, words: list[str]) -> int:
