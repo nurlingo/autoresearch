@@ -142,6 +142,11 @@ class Solution:
         min_score = 0.74 if len(match_words) <= 4 else (0.48 if len(match_words) <= 5 else 0.38)
         min_matches = 3 if len(match_words) <= 4 else (2 if len(match_words) <= 5 else max(3, int(len(match_words) * 0.22)))
         if score < min_score or matched < min_matches:
+            repeat_labels = self._repeated_short_labels(match_words)
+            if repeat_labels:
+                if prefix:
+                    repeat_labels = [repeat_labels[0]] * min(prefix, len(raw_words)) + repeat_labels
+                return {"ayahs": self._segments(raw_words, repeat_labels)}
             return {"abstain": True}
 
         labels = self._labels_from_alignment(match_words, surah_id, start, opcodes)
@@ -157,6 +162,38 @@ class Solution:
             if words[prefix: prefix + len(_BASMALA)] == _BASMALA:
                 prefix += len(_BASMALA)
         return prefix
+
+    def _repeated_short_labels(self, words: list[str]) -> list[str] | None:
+        best: tuple[float, list[str]] | None = None
+        for surah_id, pattern in self.surah_tokens.items():
+            if not pattern or len(pattern) > 24:
+                continue
+            pattern_labels = self.surah_labels[surah_id]
+            labels: list[str] = []
+            matched = 0
+            compared = 0
+            pos = 0
+            i = 0
+            while i < len(words):
+                if words[i: i + len(_BASMALA)] == _BASMALA and compared >= len(pattern):
+                    labels.extend([pattern_labels[0]] * len(_BASMALA))
+                    i += len(_BASMALA)
+                    continue
+                expected = pattern[pos]
+                if words[i] == expected:
+                    matched += 1
+                labels.append(pattern_labels[pos])
+                compared += 1
+                pos = (pos + 1) % len(pattern)
+                i += 1
+            if compared < len(pattern) * 2:
+                continue
+            score = matched / max(compared, 1)
+            if best is None or score > best[0]:
+                best = (score, labels)
+        if best and best[0] >= 0.8:
+            return best[1]
+        return None
 
     def _candidate_offsets(self, words: list[str]) -> list[tuple[float, str, int]]:
         counts: Counter[tuple[str, int]] = Counter()
