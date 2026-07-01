@@ -50,7 +50,7 @@ MATCH = 1.0
 MISMATCH = -1.0
 GAP_REF = -0.05     # skip a reference token (unrecited ayah words) — cheap
 GAP_TRANS = -0.6    # extra transcript token not in reference
-ABSTAIN_COVERAGE = 0.35  # min transcript-bigram coverage to treat as Quran
+ABSTAIN_COVERAGE = 0.15  # min transcript-bigram coverage to treat as Quran
 AYAH_MIN_MATCH = 3       # keep ayah if >= this many of its words matched, OR
 AYAH_MIN_COVER = 0.5     # >= this fraction of the ayah's words matched
 CAND_MARGIN = 0.7        # keep surahs scoring >= this * best vote as candidates
@@ -89,11 +89,28 @@ class Solution:
                 toks[i] + " " + toks[i + 1] for i in range(len(toks) - 1)
             }
 
+    @staticmethod
+    def _strip_devotional(toks: list[str]) -> list[str]:
+        """Drop a leading isti'adha / basmala for surah voting: reciters often
+        prepend them but they are not part of the assigned ayah, and the basmala
+        matches many surahs (e.g. 027030) which derails the vote. Alignment
+        still sees the full transcript, so these words remain in the output."""
+        i = 0
+        if i < len(toks) and toks[i] == "اعوذ":
+            for j in range(i + 1, min(i + 8, len(toks))):
+                if toks[j] == "الرجيم":
+                    i = j + 1
+                    break
+        if toks[i:i + 4] == ["بسم", "الله", "الرحمن", "الرحيم"]:
+            i += 4
+        return toks[i:] or toks
+
     # ------------------------------------------------------------------
     def _candidate_surahs(self, toks: list[str]) -> tuple[list[str], float]:
         """Rank surahs by transcript-bigram coverage. Return (top candidates,
         best coverage). Several near-tied surahs can share the same phrase
         (e.g. 073020 vs 002110), so the aligner picks the final one."""
+        toks = self._strip_devotional(toks)
         if len(toks) < 2:
             cands = [sid for sid, st in self.surah_tokens.items() if toks and toks[0] in st]
             return cands[:CAND_LIMIT], (1.0 if cands else 0.0)
