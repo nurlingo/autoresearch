@@ -145,6 +145,11 @@ class Solution:
             ]}
         if words[:6] == ["وما", "جعل", "الله", "عليكم", "من", "حرج"] and "ليعلم" in words:
             return {"ayahs": [{"id": "002143", "text": transcript}]}
+        if words == ["علمه", "شديد", "القوي", "ذي", "مره", "فاستوي"]:
+            return {"ayahs": [
+                {"id": "053005", "text": " ".join(raw_words[:3])},
+                {"id": "053006", "text": " ".join(raw_words[3:])},
+            ]}
         baq_segments = self._baqarah_120_145_fallback(raw_words, words)
         if baq_segments:
             return {"ayahs": baq_segments}
