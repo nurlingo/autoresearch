@@ -146,20 +146,32 @@ class Solution:
         blocks = [b for b in matcher.get_matching_blocks() if b.size]
         if not blocks or not toks:
             return None
-        matched = sum(b.size for b in blocks)
-        first = min(b.b for b in blocks)
-        last = max(b.b + b.size for b in blocks) - 1
+        best_cluster: tuple[float, float, float, int, int, list] | None = None
+        for i in range(len(blocks)):
+            matched = 0
+            for j in range(i, len(blocks)):
+                matched += blocks[j].size
+                first = blocks[i].b
+                last = blocks[j].b + blocks[j].size - 1
+                span = max(last - first + 1, 1)
+                coverage = matched / len(toks)
+                density = matched / span
+                score = coverage * (density ** 0.35)
+                cluster = blocks[i : j + 1]
+                rank = (score, coverage, density, -span, len(cluster), cluster)
+                if best_cluster is None or rank[:5] > best_cluster[:5]:
+                    best_cluster = rank
+        assert best_cluster is not None
+        score, coverage, density, neg_span, _, cluster = best_cluster
+        first = cluster[0].b
+        last = cluster[-1].b + cluster[-1].size - 1
         span = max(last - first + 1, 1)
-        coverage = matched / len(toks)
-        density = matched / span
-        # Prefer compact, high-coverage alignments, but keep tolerance for omissions.
-        score = coverage * (density ** 0.35)
         return {
             "score": score,
             "coverage": coverage,
             "density": density,
             "surah_id": surah_id,
-            "blocks": blocks,
+            "blocks": cluster,
             "first": first,
             "last": last,
         }
