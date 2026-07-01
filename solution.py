@@ -78,7 +78,24 @@ def _tokenize(text: str) -> list[tuple[str, str]]:
         norm = _norm_word(raw)
         if norm:
             out.append((raw, norm))
-    return out
+    folded: list[tuple[str, str]] = []
+    i = 0
+    while i < len(out):
+        match = None
+        for n in range(4, 1, -1):
+            seq = tuple(tok for _, tok in out[i : i + n])
+            if seq in _LETTER_NAME_SEQUENCES:
+                raw = " ".join(raw for raw, _ in out[i : i + n])
+                match = (raw, _LETTER_NAME_SEQUENCES[seq], n)
+                break
+        if match:
+            raw, norm, n = match
+            folded.append((raw, norm))
+            i += n
+        else:
+            folded.append(out[i])
+            i += 1
+    return folded
 
 
 _INTRO_PHRASES = [
@@ -87,6 +104,14 @@ _INTRO_PHRASES = [
     "بسم الله الرحمن الرحيم",
 ]
 _INTRO_TOKENS = [[_norm_word(w) for w in p.split()] for p in _INTRO_PHRASES]
+_LETTER_NAME_SEQUENCES = {
+    ("الف", "لام", "ميم"): "الم",
+    ("الف", "لام", "ميم", "صاد"): "المص",
+    ("الف", "لام", "راء"): "الر",
+    ("الف", "لام", "ميم", "راء"): "المر",
+    ("كاف", "هاء", "عين", "صاد"): "كهيعص",
+    ("عين", "سين", "قاف"): "عسق",
+}
 
 
 class Solution:
