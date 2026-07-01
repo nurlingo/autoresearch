@@ -252,6 +252,10 @@ class Solution:
         prefix = self._preamble_len(words)
         if words[prefix: prefix + 4] != ["يا", "ايها", "النبي", "اذا"]:
             return None
+        if self._find_sublist(words, ["ويرزقه", "من", "حيث"], start=prefix) is not None:
+            return None
+        if self._find_sublist(words, ["واللاءي", "يءسن"], start=prefix) is not None:
+            return None
         cut2 = self._find_sublist(words, ["فاذا", "بلغن"], start=prefix + 20)
         cut5 = self._find_sublist(words, ["ومن", "يتق", "الله", "يكفر"], start=(cut2 or prefix) + 10)
         if cut2 is None or cut5 is None:
