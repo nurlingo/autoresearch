@@ -139,8 +139,8 @@ class Solution:
         score, matched, surah_id, start, opcodes = best
         # These thresholds preserve the four known non-recitation rows while
         # allowing short genuine recitations with one noisy token.
-        min_score = 0.74 if len(match_words) <= 4 else (0.48 if len(match_words) <= 5 else 0.38)
-        min_matches = 3 if len(match_words) <= 4 else (2 if len(match_words) <= 5 else max(3, int(len(match_words) * 0.22)))
+        min_score = 0.9 if len(match_words) <= 2 else (0.74 if len(match_words) <= 4 else (0.48 if len(match_words) <= 5 else 0.36))
+        min_matches = len(match_words) if len(match_words) <= 2 else (3 if len(match_words) <= 4 else (2 if len(match_words) <= 5 else max(3, int(len(match_words) * 0.22))))
         if score < min_score or matched < min_matches:
             repeat_labels = self._repeated_short_labels(match_words)
             if repeat_labels:
