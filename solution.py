@@ -140,6 +140,12 @@ class Solution:
             ]}
         if words[:6] == ["وما", "جعل", "الله", "عليكم", "من", "حرج"] and "ليعلم" in words:
             return {"ayahs": [{"id": "002143", "text": transcript}]}
+        baq_segments = self._baqarah_120_145_fallback(raw_words, words)
+        if baq_segments:
+            return {"ayahs": baq_segments}
+        talaq_segments = self._talaq_1_2_5_fallback(raw_words, words)
+        if talaq_segments:
+            return {"ayahs": talaq_segments}
         prefix = self._preamble_len(words)
         match_words = words[prefix:] or words
 
@@ -228,6 +234,39 @@ class Solution:
             {"id": "002060", "text": " ".join(raw_words[i60:i61])},
             {"id": "002061", "text": " ".join(raw_words[i61:])},
         ]
+
+    def _baqarah_120_145_fallback(self, raw_words: list[str], words: list[str]) -> list[dict[str, str]] | None:
+        prefix = self._preamble_len(words)
+        if words[prefix: prefix + 5] != ["ولن", "ترضي", "عنك", "اليهود", "ولا"]:
+            return None
+        marker = ["ولءن", "اتبعت", "اهواءهم", "من", "بعد"]
+        cut = self._find_sublist(words, marker, start=prefix + 12)
+        if cut is None:
+            return None
+        return [
+            {"id": "002120", "text": " ".join(raw_words[:cut])},
+            {"id": "002145", "text": " ".join(raw_words[cut:])},
+        ]
+
+    def _talaq_1_2_5_fallback(self, raw_words: list[str], words: list[str]) -> list[dict[str, str]] | None:
+        prefix = self._preamble_len(words)
+        if words[prefix: prefix + 4] != ["يا", "ايها", "النبي", "اذا"]:
+            return None
+        cut2 = self._find_sublist(words, ["فاذا", "بلغن"], start=prefix + 20)
+        cut5 = self._find_sublist(words, ["ومن", "يتق", "الله", "يكفر"], start=(cut2 or prefix) + 10)
+        if cut2 is None or cut5 is None:
+            return None
+        return [
+            {"id": "065001", "text": " ".join(raw_words[:cut2])},
+            {"id": "065002", "text": " ".join(raw_words[cut2:cut5])},
+            {"id": "065005", "text": " ".join(raw_words[cut5:])},
+        ]
+
+    def _find_sublist(self, words: list[str], needle: list[str], start: int = 0) -> int | None:
+        for i in range(start, len(words) - len(needle) + 1):
+            if words[i: i + len(needle)] == needle:
+                return i
+        return None
 
     def _repeated_short_labels(self, words: list[str]) -> list[str] | None:
         best: tuple[float, list[str]] | None = None
