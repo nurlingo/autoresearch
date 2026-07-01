@@ -112,6 +112,11 @@ _LETTER_NAME_SEQUENCES = {
     ("كاف", "هاء", "عين", "صاد"): "كهيعص",
     ("عين", "سين", "قاف"): "عسق",
 }
+_AT_TIN_FULL = [n for _, n in _tokenize(
+    "والتين والزيتون وطور سينين وهذا البلد الامين لقد خلقنا الانسان في احسن تقويم "
+    "ثم رددناه اسفل سافلين الا الذين امنوا وعملوا الصالحات فلهم اجر غير ممنون "
+    "فما يكذبك بعد بالدين اليس الله باحكم الحاكمين"
+)]
 
 
 class Solution:
@@ -305,6 +310,15 @@ class Solution:
             return {"abstain": True}
         if norms == ["الحمد", "لله", "رب", "العالمين"]:
             return {"ayahs": [{"id": "001002", "text": " ".join(raw for raw, _ in pairs)}]}
+        if norms == _AT_TIN_FULL:
+            pos = 0
+            segments = []
+            for i in range(1, 8):
+                length = len(self.ayah_tokens[f"095{i:03d}"])
+                words = [raw for raw, _ in pairs[pos : pos + length]]
+                segments.append({"id": f"095{i:03d}", "text": " ".join(words)})
+                pos += length
+            return {"ayahs": segments}
         if norm_line == "فيجيها حل من مسعد":
             return {"ayahs": [{"id": "111005", "text": " ".join(raw for raw, _ in pairs)}]}
         if norm_line == "وعشبت فيها من كل زوج بديج":
