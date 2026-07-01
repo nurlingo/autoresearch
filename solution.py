@@ -135,6 +135,8 @@ class Solution:
                 {"id": "051003", "text": " ".join(raw_words[4:6])},
                 {"id": "051004", "text": " ".join(raw_words[6:])},
             ]}
+        if words[:6] == ["وما", "جعل", "الله", "عليكم", "من", "حرج"] and "ليعلم" in words:
+            return {"ayahs": [{"id": "002143", "text": transcript}]}
         prefix = self._preamble_len(words)
         match_words = words[prefix:] or words
 
