@@ -66,17 +66,21 @@ class Solution:
         self.surah_bigrams: dict[str, set[str]] = {}
         self.ayah_len: dict[str, int] = {}
         for sid, ayahs in self.quran.items():
+            # Skip pseudo-surah blocks (e.g. '999xxx'): keep only 001..114.
+            if not (len(sid) == 3 and sid.isdigit() and 1 <= int(sid) <= 114):
+                continue
             toks: list[str] = []
             ids: list[str] = []
             for a in ayahs:
-                n = 0
+                # Long ayahs are stored as 9/12-digit sub-segments; the gold uses
+                # the 6-digit base ayah id, so collapse to it.
+                base = a["id"][:6]
                 for w in a.get("clean", "").split():
                     t = norm_word(w)
                     if t:
                         toks.append(t)
-                        ids.append(a["id"])
-                        n += 1
-                self.ayah_len[a["id"]] = n
+                        ids.append(base)
+                        self.ayah_len[base] = self.ayah_len.get(base, 0) + 1
             self.surah_tokens[sid] = toks
             self.surah_ayahids[sid] = ids
             self.surah_bigrams[sid] = {
