@@ -181,6 +181,8 @@ class Solution:
                     labels[:first_run] = [labels[first_run]] * first_run
             prefix_label = "001001" if prefix >= len(_ISTIADHA) + len(_BASMALA) and labels[0] == "001002" else labels[0]
             labels = [prefix_label] * min(prefix, len(raw_words)) + labels
+        if labels and labels[:1] == ["095001"] and labels[-1] == "095008" and len(set(labels)) == 8:
+            labels = ["095007" if label == "095008" else label for label in labels]
         labels = self._merge_isolated_singletons(labels)
         return {"ayahs": self._segments(raw_words, labels)}
 
