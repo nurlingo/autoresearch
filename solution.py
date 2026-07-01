@@ -124,7 +124,7 @@ class Solution:
                 return {"ayahs": [{"id": letter_match[0], "text": transcript}]}
             if letter_match == ["042001", "042002"] and raw_words:
                 return {"ayahs": [
-                    {"id": "042001", "text": raw_words[0]},
+                    {"id": "042001", "text": raw_words[0].strip("،,")},
                     {"id": "042002", "text": " ".join(raw_words[1:])},
                 ]}
             chunks = []
