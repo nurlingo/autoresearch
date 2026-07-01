@@ -62,6 +62,8 @@ _FOLD = str.maketrans({
     "ئ": "ء",
     "ة": "ه",
 })
+_ISTIADHA = ["اعوذ", "بالله", "من", "الشيطان", "الرجيم"]
+_BASMALA = ["بسم", "الله", "الرحمن", "الرحيم"]
 
 
 def _canon_words(text: str) -> list[str]:
@@ -98,17 +100,20 @@ class Solution:
         self.occ = dict(occ)
 
     def process(self, transcript: str) -> dict:
+        raw_words = transcript.split()
         words = _canon_words(transcript)
         if not words or not _ARABIC_RE.search(transcript or ""):
             return {"abstain": True}
+        prefix = self._preamble_len(words)
+        match_words = words[prefix:] or words
 
-        candidates = self._candidate_offsets(words)
+        candidates = self._candidate_offsets(match_words)
         if not candidates:
             return {"abstain": True}
 
         best = None
         for _, surah_id, offset in candidates[:30]:
-            scored = self._score_window(words, surah_id, offset)
+            scored = self._score_window(match_words, surah_id, offset)
             if best is None or scored[0] > best[0]:
                 best = scored
 
@@ -118,13 +123,23 @@ class Solution:
         score, matched, surah_id, start, opcodes = best
         # These thresholds preserve the four known non-recitation rows while
         # allowing short genuine recitations with one noisy token.
-        min_score = 0.48 if len(words) <= 5 else 0.38
-        min_matches = 2 if len(words) <= 5 else max(3, int(len(words) * 0.22))
+        min_score = 0.48 if len(match_words) <= 5 else 0.38
+        min_matches = 2 if len(match_words) <= 5 else max(3, int(len(match_words) * 0.22))
         if score < min_score or matched < min_matches:
             return {"abstain": True}
 
-        labels = self._labels_from_alignment(words, surah_id, start, opcodes)
-        return {"ayahs": self._segments(transcript.split(), labels)}
+        labels = self._labels_from_alignment(match_words, surah_id, start, opcodes)
+        if prefix and labels:
+            labels = [labels[0]] * min(prefix, len(raw_words)) + labels
+        return {"ayahs": self._segments(raw_words, labels)}
+
+    def _preamble_len(self, words: list[str]) -> int:
+        prefix = 0
+        if words[: len(_ISTIADHA)] == _ISTIADHA:
+            prefix += len(_ISTIADHA)
+            if words[prefix: prefix + len(_BASMALA)] == _BASMALA:
+                prefix += len(_BASMALA)
+        return prefix
 
     def _candidate_offsets(self, words: list[str]) -> list[tuple[float, str, int]]:
         counts: Counter[tuple[str, int]] = Counter()
