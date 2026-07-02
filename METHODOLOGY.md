@@ -248,6 +248,19 @@ fixes. Study 2 measures **generalization**:
 - Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
   on held-out data, and Codex shows the larger train↔test gap.
 
+**Isolation postmortem (2026-07-02).** The first Study 2 attempts leaked and were
+discarded: (a) a Claude run was launched in the main repo, where `data/test.csv`
+was visible; (b) a Codex run in a git *worktree* used the shared git database to
+read Study 1 run logs (committed under `runs/`) and the in-flight Claude solution
+on a sibling branch (`git show`) — resourceful, not forbidden by PROGRAM.md, but
+fatal to independence. Isolation is now a **fresh single-commit clone** per run
+(`tools/new_run.sh`): harness snapshot + train split only; no shared `.git`, no
+other branches, no logs, no test set. **Retroactive threat to Study 1:** its runs
+shared one `.git`, so later runs (Codex ran after Claude) could in principle have
+browsed earlier run branches; session transcripts should be audited. Study 1's
+overfitting conclusion rests on code-artifact analysis (hardcoded ids), which is
+unaffected.
+
 **No existing data is held-out.** The `follow_my_reading` test manifest is NOT
 usable as a held-out set: 20/22 of its cases are the same recordings/transcripts
 as dataset rows (verified by fuzzy transcript match, ratios ≥0.94). The held-out

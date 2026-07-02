@@ -11,29 +11,24 @@ a human. The only thing that varies between runs is the agent — that is the po
 
 ## Setup
 
-Work with the user once, then go:
+This directory is a dedicated, single-purpose experiment repository prepared for
+you. You are already on the correct branch (`run`).
 
-1. **Run tag**: propose a tag from today's date (e.g. `jun26`). The branch
-   `autoresearch/<tag>` must not already exist — this is a fresh run.
-2. **Branch**: `git checkout -b autoresearch/<tag>` from `main`.
-3. **Read the in-scope files** (the repo is small — read them fully):
-   - `README.md` — context.
+1. **Do not create branches** — commit directly to the current branch. Do not
+   push anywhere.
+2. **Read the in-scope files** (the repo is small — read them fully):
    - `eval.py` — the FIXED scorecard and metric. Do not modify.
    - `data/quran_ref.json` — the FIXED Quran reference. Do not modify.
    - `solution.py` — the ONLY file you edit.
-4. **Verify data**: `data/train.csv` must exist (it is gitignored; a fresh
-   clone needs it copied in — see README). If missing, stop and tell the user.
-   **Held-out evaluation**: a test set of recordings you will NEVER see exists
-   outside this working tree. Your final solution is scored on it after the run.
-   Changes that memorize specific train rows will not transfer — only general
-   improvements count in the end.
-5. **Init `results.tsv`** with just the header row (it is gitignored, so it
-   survives `git reset` during discards):
-   ```
-   commit	research_score	status	description
-   ```
-6. **Baseline first**: run the loop once on the unmodified `solution.py` to record
-   the baseline before changing anything.
+3. **Verify data**: `data/train.csv` must exist. If missing, stop and tell the
+   user. **Held-out evaluation**: a test set of recordings you will NEVER see
+   exists outside this repository. Your final solution is scored on it after the
+   run. Changes that memorize specific train rows will not transfer — only
+   general improvements count in the end.
+4. **`results.tsv`** is created automatically by `make exp` (it is gitignored,
+   so it survives `git reset` during discards).
+5. **Baseline first**: run `make exp` once on the unmodified `solution.py` to
+   record the baseline before changing anything.
 
 ## Experimentation
 
