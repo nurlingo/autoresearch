@@ -29,6 +29,13 @@ _HARAKAT_RE = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
 _FOLD = {"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ى": "ي", "ؤ": "ء", "ئ": "ء", "ة": "ه"}
 _NONARAB_RE = re.compile(r"[^ء-ي ]")
 
+# Leading invocations that precede a recitation. Istiadha is never a counted
+# ayah; basmala is ayah 001001 only in Al-Fatiha. Both shift the anchor offset
+# into the previous ayah if left in, so they are stripped before alignment and
+# reattached afterwards. Stored as normalized token tuples.
+_ISTIADHA = tuple("اعوذ بالله من الشيطان الرجيم".split())
+_BASMALA = tuple("بسم الله الرحمن الرحيم".split())
+
 
 def normalize(text: str) -> str:
     text = unicodedata.normalize("NFKC", text or "")
@@ -73,6 +80,21 @@ class Solution:
         # (original_word, normalized_token) keeping only tokens with content.
         pairs = [(w, normalize(w).replace(" ", "")) for w in words]
         pairs = [(w, n) for w, n in pairs if n]
+        if len(pairs) < 2:
+            return {"abstain": True}
+
+        # Strip leading istiadha, then basmala (each optional). Keep the words to
+        # reattach after alignment so the split still reproduces the transcript.
+        def strip_prefix(pairs, phrase):
+            toks = [n for _, n in pairs]
+            if toks[: len(phrase)] == list(phrase):
+                return pairs[: len(phrase)], pairs[len(phrase) :]
+            return [], pairs
+        inv_istiadha, pairs = strip_prefix(pairs, _ISTIADHA)
+        inv_basmala, rest = strip_prefix(pairs, _BASMALA)
+        had_basmala = bool(inv_basmala)
+        lead_words = [w for w, _ in inv_istiadha] + [w for w, _ in inv_basmala]
+        pairs = rest
         if len(pairs) < 2:
             return {"abstain": True}
         tnorm = [n for _, n in pairs]
@@ -127,4 +149,13 @@ class Solution:
                 segments[-1]["text"] += " " + orig
             else:
                 segments.append({"id": aid, "text": orig})
+
+        # Reattach stripped invocations. In Al-Fatiha, basmala is ayah 001001, so
+        # emit it as its own leading segment; otherwise fold the invocation words
+        # into the first real ayah (they carry no separate ayah id).
+        if lead_words:
+            if had_basmala and segments and segments[0]["id"] == "001002":
+                segments.insert(0, {"id": "001001", "text": " ".join(lead_words)})
+            else:
+                segments[0]["text"] = " ".join(lead_words + [segments[0]["text"]])
         return {"ayahs": segments}
