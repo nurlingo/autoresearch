@@ -231,9 +231,11 @@ not, and stopped early. Through ~exp 13 both arms held comparable *general*
 algorithms (~0.04–0.09); Codex's final 0.006 came from non-generalizing test-row
 fixes. Study 2 measures **generalization**:
 
-- **Train/test split.** Partition rows by recording (stratified by surah /
-  difficulty) into a visible *train* set and a held-out *test* set (~60/40). The
-  loop scores `research_score` on **train only**.
+- **Train/test split.** Implemented in `tools/split_dataset.py` (seed 42,
+  deterministic): 151 train / 107 test, stratified by (surah, length bucket);
+  repetition and non-contiguous rows allocated 60/40 within their own groups;
+  non-Quran split 2/2; cross-surah label quirks pinned to train so test is
+  clean. The loop scores `research_score` on **train only**.
 - **Close the leak.** The failure report shows `recording_id` + predicted ids
   only — never the expected ids.
 - **Held-out scoring.** After each run, *we* (not the agent) score the final

@@ -13,3 +13,5 @@ results.tsv
 *.tsv.bak
 /progress.png
 /comparison.png
+data/train.csv
+data/test.csv
