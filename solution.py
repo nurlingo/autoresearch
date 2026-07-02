@@ -108,17 +108,24 @@ class Solution:
         if not votes:
             return {"abstain": True}
         votes_best = max(votes.values())
-        # Weak anchor -> not a recognizable recitation.
-        if votes_best < max(2, 0.15 * (len(tnorm) - 1)):
-            return {"abstain": True}
-
+        n = len(tnorm)
         # --- pick the offset that actually aligns best. The top-voted offset is
         # usually right, but a near-tie can mis-lock (e.g. an insertion splits the
         # vote); realigning the strongest few and keeping the max-matched one is
         # more robust. ---
-        n = len(tnorm)
-        candidates = sorted(votes, key=lambda o: votes[o], reverse=True)
-        candidates = [o for o in candidates if votes[o] >= 0.5 * votes_best][:4]
+        if votes_best < max(2, 0.15 * (len(tnorm) - 1)):
+            # Weak anchor. A very short transcript that nonetheless appears
+            # verbatim in the corpus is still a valid recitation (one bigram is
+            # not enough votes but an exact contiguous hit is decisive). Otherwise
+            # this is not a recognizable recitation -> abstain.
+            exact = [pos for pos in self.bigram.get((tnorm[0], tnorm[1]), ())
+                     if self.corpus_tok[pos:pos + n] == tnorm]
+            if not exact:
+                return {"abstain": True}
+            candidates = exact[:4]
+        else:
+            candidates = sorted(votes, key=lambda o: votes[o], reverse=True)
+            candidates = [o for o in candidates if votes[o] >= 0.5 * votes_best][:4]
 
         def align(best_off):
             lo = max(0, best_off)
