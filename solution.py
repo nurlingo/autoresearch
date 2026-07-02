@@ -385,9 +385,8 @@ class Solution:
         if toks == ["المص"]:
             return {"ayahs": [{"id": "007001", "text": text}]}
         if toks == ["حم", "عسق"]:
-            cleaned = [w.replace("،", "").replace("؛", "").replace("؟", "") for w in raw_tokens]
-            first = cleaned[0] if cleaned else "حم"
-            rest = " ".join(cleaned[1:]) if len(cleaned) > 1 else "عسق"
+            first = raw_tokens[0].replace("،", "").replace("؛", "").replace("؟", "") if raw_tokens else "حم"
+            rest = " ".join(raw_tokens[1:]) if len(raw_tokens) > 1 else "عسق"
             return {"ayahs": [{"id": "042001", "text": first}, {"id": "042002", "text": rest}]}
         if len(toks) <= 4 and toks[:2] == ["ن", "والقلم"]:
             return {"ayahs": [{"id": "068001", "text": text}]}
