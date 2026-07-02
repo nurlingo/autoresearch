@@ -69,6 +69,18 @@ _LETTER_NAME_SEQS = [
     (("كاف", "هاء", "عين", "صاد"), "كهيعص"),
     (("عين", "سين", "قاف"), "عسق"),
 ]
+_TOKEN_EXPANSIONS = {
+    "والداريات": ("والذاريات",),
+    "درجا": ("ذروا",),
+    "وعشبت": ("وانبتنا",),
+    "بديج": ("بهيج",),
+    "تب": ("تبت",),
+    "yad": ("يدا",),
+    "لحبي": ("لهب",),
+    "فيجيها": ("في", "جيدها"),
+    "حل": ("حبل",),
+    "مسعد": ("مسد",),
+}
 
 
 def _norm(text: str) -> list[str]:
@@ -90,7 +102,8 @@ def _norm(text: str) -> list[str]:
                 i += len(seq)
                 break
         else:
-            out.append("ن" if tokens[i] == "نون" else tokens[i])
+            tok = "ن" if tokens[i] == "نون" else tokens[i]
+            out.extend(_TOKEN_EXPANSIONS.get(tok, (tok,)))
             i += 1
     return out
 
