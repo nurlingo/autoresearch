@@ -53,6 +53,8 @@ class Solution:
         self.corpus_tok: list[str] = []
         self.corpus_id: list[str] = []
         for surah_id in sorted(self.quran):
+            if not re.fullmatch(r"\d{3}", surah_id):
+                continue  # skip the 999xxx non-Quran reference block (adhan/duas)
             for ayah in self.quran[surah_id]:
                 for tok in norm_tokens(ayah["clean"]):
                     self.corpus_tok.append(tok)
