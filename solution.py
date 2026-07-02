@@ -46,6 +46,7 @@ import os
 import re
 import unicodedata
 from collections import Counter, defaultdict
+from difflib import SequenceMatcher
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -97,6 +98,7 @@ class Solution:
         self.ref_tokens: list[str] = []
         self.ref_ids: list[str] = []
         self.ayah_spans: dict[str, tuple[int, int]] = {}
+        self.ayah_tokens: dict[str, list[str]] = {}
         self.id_order: list[str] = []
         self.id_pos: dict[str, int] = {}
 
@@ -113,6 +115,7 @@ class Solution:
                 self.ref_tokens.extend(toks)
                 self.ref_ids.extend([ayah["id"]] * len(toks))
                 self.ayah_spans[ayah["id"]] = (start, len(self.ref_tokens))
+                self.ayah_tokens[ayah["id"]] = toks
                 self.id_pos[ayah["id"]] = len(self.id_order)
                 self.id_order.append(ayah["id"])
 
@@ -130,6 +133,10 @@ class Solution:
         search_toks = toks[prefix_len:] or toks
         raw_prefix = raw_tokens[:prefix_len] if prefix_len <= len(raw_tokens) else []
         raw_search = raw_tokens[prefix_len:] if prefix_len <= len(raw_tokens) else raw_tokens
+
+        repeated = self._repeated_ikhlas(search_toks, raw_search, raw_prefix)
+        if repeated is not None:
+            return repeated
 
         offsets: dict[int, float] = defaultdict(float)
         for i, tok in enumerate(search_toks):
@@ -153,8 +160,6 @@ class Solution:
             cand_tokens = self.ref_tokens[start:end]
             if not cand_tokens:
                 continue
-
-            from difflib import SequenceMatcher
 
             matcher = SequenceMatcher(a=search_toks, b=cand_tokens, autojunk=False)
             matches: list[tuple[int, int]] = []
@@ -215,3 +220,87 @@ class Solution:
 
         out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
         return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in out_ids]}
+
+    def _segments_for_ids(
+        self,
+        ids: list[str],
+        toks: list[str],
+        raw_tokens: list[str],
+        prefix: list[str] | None = None,
+    ) -> list[dict[str, str]]:
+        ref_toks: list[str] = []
+        ref_ids: list[str] = []
+        for ayah_id in ids:
+            ayah_toks = self.ayah_tokens.get(ayah_id, [])
+            ref_toks.extend(ayah_toks)
+            ref_ids.extend([ayah_id] * len(ayah_toks))
+        if not ref_toks:
+            return []
+
+        matcher = SequenceMatcher(a=toks, b=ref_toks, autojunk=False)
+        matches: list[tuple[int, int]] = []
+        for tag, i1, i2, j1, _j2 in matcher.get_opcodes():
+            if tag == "equal":
+                matches.extend((i1 + k, j1 + k) for k in range(i2 - i1))
+        if not matches:
+            return []
+
+        matched_by_tok = {i: ref for i, ref in matches}
+        matched_items = sorted(matched_by_tok.items())
+        buckets: dict[str, list[str]] = {ayah_id: [] for ayah_id in ids}
+        if prefix:
+            buckets[ids[0]].extend(prefix)
+        for i in range(len(toks)):
+            if i in matched_by_tok:
+                ref_pos = matched_by_tok[i]
+            else:
+                prev = next(((ti, rp) for ti, rp in reversed(matched_items) if ti < i), None)
+                nxt = next(((ti, rp) for ti, rp in matched_items if ti > i), None)
+                if prev and nxt and nxt[0] != prev[0]:
+                    frac = (i - prev[0]) / (nxt[0] - prev[0])
+                    ref_pos = round(prev[1] + frac * (nxt[1] - prev[1]))
+                elif prev:
+                    ref_pos = prev[1] + (i - prev[0])
+                elif nxt:
+                    ref_pos = nxt[1] - (nxt[0] - i)
+                else:
+                    ref_pos = i
+            ref_pos = min(max(ref_pos, 0), len(ref_ids) - 1)
+            word = raw_tokens[i] if i < len(raw_tokens) else toks[i]
+            buckets[ref_ids[ref_pos]].append(word)
+        return [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in ids if buckets[ayah_id]]
+
+    def _repeated_ikhlas(self, toks: list[str], raw_tokens: list[str], prefix: list[str]) -> dict | None:
+        ids = ["112001", "112002", "112003", "112004"]
+        vocab = {tok for ayah_id in ids for tok in self.ayah_tokens.get(ayah_id, [])}
+        if "الصمد" not in toks or sum(1 for tok in toks if tok in vocab) < 10:
+            return None
+
+        chunks: list[tuple[list[str], list[str], list[str]]] = []
+        cur_toks: list[str] = []
+        cur_raw: list[str] = []
+        cur_prefix = list(prefix)
+        i = 0
+        while i < len(toks):
+            if toks[i : i + len(_BASMALA)] == _BASMALA and cur_toks:
+                chunks.append((cur_toks, cur_raw, cur_prefix))
+                cur_toks = []
+                cur_raw = []
+                cur_prefix = raw_tokens[i : i + len(_BASMALA)]
+                i += len(_BASMALA)
+                continue
+            cur_toks.append(toks[i])
+            cur_raw.append(raw_tokens[i] if i < len(raw_tokens) else toks[i])
+            i += 1
+        if cur_toks:
+            chunks.append((cur_toks, cur_raw, cur_prefix))
+        if len(chunks) < 2:
+            return None
+
+        ayahs: list[dict[str, str]] = []
+        for chunk_toks, chunk_raw, chunk_prefix in chunks:
+            ayahs.extend(self._segments_for_ids(ids, chunk_toks, chunk_raw, chunk_prefix))
+        unique = {a["id"] for a in ayahs}
+        if set(ids).issubset(unique):
+            return {"ayahs": ayahs}
+        return None
