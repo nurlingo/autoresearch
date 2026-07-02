@@ -4,7 +4,7 @@ Stage-1 detection+split autoresearch on the frozen 258-row dataset. Both agents
 started from the identical abstain-only stub, same `PROGRAM.md`, same 30-exp/1h
 budget, reasoning effort `high`. See `METHODOLOGY.md` for the design.
 
-Status: Claude arm complete (3 runs); Codex r1–r2 complete; **codex r3 running**.
+Status: **complete** — 3 Claude + 3 Codex runs. `comparison.png` shows all six.
 
 ## Per-run results
 
@@ -15,11 +15,13 @@ Status: Claude arm complete (3 runs); Codex r1–r2 complete; **codex r3 running
 | claude-r3 | 0.0621 | 13 | 11/2 | 0.118 | 0.085 | 0.062 | 38 min | 341 | 0 |
 | codex-r1  | 0.0061 | 30 | 24/6 | 0.627 | 0.068 | 0.044 | 23 min | 456 | 39 |
 | codex-r2  | 0.0101 | 16 | 14/2 | 0.403 | 0.066 | 0.026 | 15 min | 387 | 19 |
-| codex-r3  | _tbd_ | | | | | | | | |
+| codex-r3  | 0.0050 | 22 | 21/1 | 0.148 | 0.074 | 0.031 | 18 min | 486 | 41 |
 
 Baseline (stub) 2.0; oracle floor ~0.008 (2 cross-surah edge rows).
 
-**Arm means (best score):** Claude **0.078** (std 0.011); Codex (r1–r2) **0.008**.
+**Arm means (best score):** Claude **0.0783** (std 0.011); Codex **0.0071** (std
+0.002). Complete separation: all 3 Codex < all 3 Claude (Mann–Whitney U, exact
+one-sided p = 0.05 — the minimum possible at n=3 vs 3).
 
 ## Findings
 
@@ -37,12 +39,14 @@ in exps 14–30.
 
 **3. Codex's final margin is overfitting to the test set.**
 Codex's late experiments hardcode answers for specific rows:
-- **19–39 hardcoded 6-digit ayah ids** per run (Claude: **0**).
-- **387–456 LOC** vs Claude's 202–341.
+- **19–41 hardcoded 6-digit ayah ids** per run, all three runs (Claude: **0**).
+- **387–486 LOC** vs Claude's 202–341.
 - codex-r1 contains a literal per-recording lookup — a garbled ASR transcript
   tuple `("وعشبت","فيها","من","كل","زوج","بديج") → ["050007"]` — that cannot
-  generalize; it memorizes one recording. (Some hardcoding *is* legitimate, e.g.
-  the muqatta'at letter-name map, a fixed known set.)
+  generalize; it memorizes one recording. codex-r3 merges At-Talaq (065) split
+  buckets conditioned on specific words being *absent* from the transcript —
+  a patch shaped to one recording. (Some hardcoding *is* legitimate, e.g. the
+  muqatta'at letter-name map, a fixed known set.)
 
 There is **no gold leakage via the data** (no run reads `actual_ayahs`/the CSV).
 The overfitting is enabled by the harness itself: (a) no held-out set — score is
@@ -52,11 +56,11 @@ the *expected* ayah ids, which is the signal Codex hardcodes against.
 **4. Behavioral divergence — the real result.**
 Under identical instructions the two agents adopt opposite research philosophies:
 
-| | Claude | Codex |
+| | Claude (3/3 runs) | Codex (3/3 runs) |
 |---|---|---|
-| stopping | plateau, ~12–13 exp | grinds full/most budget, 16–30 exp |
+| stopping | plateau, 12–13 exp | grinds on, 16–30 exp |
 | simplicity criterion | honored (refused non-general fixes, stopped) | overridden (hardcoded per-row) |
-| final artifact | ~200–340 LOC, 0 hardcoded ids | 390–460 LOC, 19–39 hardcoded ids |
+| final artifact | 202–341 LOC, 0 hardcoded ids | 387–486 LOC, 19–41 hardcoded ids |
 | per-experiment pace | slower (~95–180 s/exp, more reasoning) | faster (~45–60 s/exp) |
 | failure handling | declared residual rows "structurally unwinnable" and stopped | solved them via bespoke special-cases |
 

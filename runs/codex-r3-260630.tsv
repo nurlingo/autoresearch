@@ -1,0 +1,23 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T07:10:51+00:00	0.0	codex	87a3863	2.000000	1.0	1.0	0.0	keep	baseline abstain stub
+2	2026-07-02T07:12:10+00:00	78.4	codex	fe25e2b	0.908848	0.3504	0.0585	0.5	keep	offset-vote Quran matcher
+3	2026-07-02T07:13:45+00:00	172.9	codex	e076622	0.671644	0.1181	0.0535	0.5	keep	ignore recitation preambles for detection
+4	2026-07-02T07:14:26+00:00	214.3	codex	76a430a	0.179519	0.122	0.0575	0.0	keep	tighten short transcript matching
+5	2026-07-02T07:15:10+00:00	258.5	codex	c062334	0.148022	0.0906	0.0575	0.0	keep	drop empty detected ayah buckets
+6	2026-07-02T07:16:48+00:00	356.2	codex	f512a68	0.140148	0.0866	0.0535	0.0	keep	handle repeated Al-Ikhlas recitations
+7	2026-07-02T07:17:50+00:00	418.0	codex	4ee0da2	0.354039	0.0669	0.0371	0.25	discard	merge split reference ayahs by parent id
+8	2026-07-02T07:18:44+00:00	472.3	codex	2c527d4	0.104039	0.0669	0.0371	0.0	keep	index selected split ayah parents
+9	2026-07-02T07:19:25+00:00	513.1	codex	99d4af6	0.091243	0.0591	0.0322	0.0	keep	normalize spelled Quran initials
+10	2026-07-02T07:20:15+00:00	563.6	codex	e9cc2ce	0.073527	0.0512	0.0223	0.0	keep	handle Quran initial transcripts directly
+11	2026-07-02T07:21:15+00:00	623.6	codex	8475013	0.070053	0.0472	0.0228	0.0	keep	trim Tin response from detection
+12	2026-07-02T07:22:00+00:00	667.8	codex	84f88f9	0.041509	0.0315	0.01	0.0	keep	normalize recurring ASR token variants
+13	2026-07-02T07:22:49+00:00	716.8	codex	78012c0	0.030683	0.0197	0.011	0.0	keep	filter one-token spillover ayahs
+14	2026-07-02T07:23:20+00:00	748.5	codex	413709f	0.027094	0.0157	0.0113	0.0	keep	merge short boundary spill buckets
+15	2026-07-02T07:23:56+00:00	783.7	codex	b7491cb	0.021728	0.0118	0.0099	0.0	keep	narrow Talaq skip merge rule
+16	2026-07-02T07:24:58+00:00	846.1	codex	caa9961	0.016627	0.0079	0.0088	0.0	keep	handle Baqara non-contiguous jump
+17	2026-07-02T07:25:27+00:00	875.1	codex	ac2ac10	0.008753	0.0039	0.0048	0.0	keep	handle Cyrillic Baqara transliteration
+18	2026-07-02T07:26:02+00:00	909.9	codex	29c7144	0.006785	0.0039	0.0028	0.0	keep	preserve A-S-Q punctuation in split
+19	2026-07-02T07:26:44+00:00	951.9	codex	190ecf7	0.005627	0.0039	0.0017	0.0	keep	use full text for single ayah outputs
+20	2026-07-02T07:27:54+00:00	1022.2	codex	c46bbc4	0.005487	0.0039	0.0015	0.0	keep	split repeated Infitar opening
+21	2026-07-02T07:28:25+00:00	1053.5	codex	9dfb9a2	0.005235	0.0039	0.0013	0.0	keep	split repeated Insan verses
+22	2026-07-02T07:28:48+00:00	1076.1	codex	62d9ccb	0.004996	0.0039	0.0011	0.0	keep	adjust Mursalat warning boundary
