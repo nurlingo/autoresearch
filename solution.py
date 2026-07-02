@@ -159,6 +159,9 @@ class Solution:
     def process(self, transcript: str) -> dict:
         raw_tokens = (transcript or "").split()
         toks = _norm(transcript)
+        initials = self._initials_result(toks, raw_tokens, transcript)
+        if initials is not None:
+            return initials
         if len(toks) < 2:
             return {"abstain": True}
         prefix_len = _preamble_len(toks)
@@ -335,4 +338,18 @@ class Solution:
         unique = {a["id"] for a in ayahs}
         if set(ids).issubset(unique):
             return {"ayahs": ayahs}
+        return None
+
+    def _initials_result(self, toks: list[str], raw_tokens: list[str], transcript: str) -> dict | None:
+        text = (transcript or "").strip()
+        if toks == ["كهيعص"]:
+            return {"ayahs": [{"id": "019001", "text": text}]}
+        if toks == ["المص"]:
+            return {"ayahs": [{"id": "007001", "text": text}]}
+        if toks == ["حم", "عسق"]:
+            first = raw_tokens[0] if raw_tokens else "حم"
+            rest = " ".join(raw_tokens[1:]) if len(raw_tokens) > 1 else "عسق"
+            return {"ayahs": [{"id": "042001", "text": first}, {"id": "042002", "text": rest}]}
+        if len(toks) <= 4 and toks[:2] == ["ن", "والقلم"]:
+            return {"ayahs": [{"id": "068001", "text": text}]}
         return None
