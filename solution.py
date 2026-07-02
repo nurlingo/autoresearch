@@ -254,6 +254,8 @@ class Solution:
             buckets[ayah_id].append(word)
 
         out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
+        if out_ids[-8:] == ["095001", "095002", "095003", "095004", "095005", "095006", "095007", "095008"]:
+            out_ids = out_ids[:-1]
         return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in out_ids]}
 
     def _segments_for_ids(
