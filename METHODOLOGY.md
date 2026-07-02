@@ -110,7 +110,10 @@ uditgoenka/autoresearch skill) are **deferred to future work** — out of scope
 here to keep the A/B clean.
 
 Pin and report for each: model id + build date, permission mode (full-auto),
-reasoning effort, CLI version. **Reasoning effort is matched across arms:** Claude
+reasoning effort, CLI version. **Recorded (Study 2 runs, 2026-07-05):** Claude
+Code v2.1.198 (Opus 4.8, effort `high`, `--dangerously-skip-permissions`);
+Codex CLI v0.139.0 (GPT-5.5, effort `high`, `-s workspace-write -a never`).
+Machine: the same MacBook Pro for both arms. **Reasoning effort is matched across arms:** Claude
 `high` and Codex `high`. The scales differ (Claude: low/medium/high/xhigh/max;
 Codex: low/medium/high/xhigh) but `high` is the same named tier on both.
 
