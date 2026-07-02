@@ -1,42 +1,56 @@
 #!/usr/bin/env bash
-# Spin up an ISOLATED worktree for one autoresearch run.
+# Spin up a FULLY ISOLATED, single-commit clone for one Study 1 run.
 #
-#   TAG=260629 tools/new_run.sh claude 1
+#   TAG=260702 tools/new_run.sh claude 1
 #
-# Creates ../ar-runs/<tag>-<agent>-r<k> on a fresh branch from main, starting from
-# the pristine stub, with the frozen dataset copied in and hash-verified. Each run
-# is fully isolated: its own working tree, branch, results.tsv and data copy.
+# The run directory is a fresh `git init` repo containing ONLY the harness
+# snapshot + the dataset. No shared git database, no other branches, no
+# prior run logs — there is nothing to leak. (Worktrees
+# were abandoned after an agent read sibling branches through the shared .git.)
 set -euo pipefail
 
-AGENT="${1:?usage: new_run.sh <agent: claude|codex> <k>}"
+AGENT="${1:?usage: new_run.sh <agent> <k>}"
 K="${2:?usage: new_run.sh <agent> <k>}"
 TAG="${TAG:-$(date +%y%m%d)}"
+SRC_REF="${SRC_REF:-main}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NAME="${TAG}-${AGENT}-r${K}"
 DIR="${ROOT}/../ar-runs/${NAME}"
-BRANCH="ar/${NAME}"
 
-cd "$ROOT"
-git worktree add -b "$BRANCH" "$DIR" main >/dev/null
-mkdir -p "$DIR/data"
-cp data/bot_review.csv "$DIR/data/bot_review.csv"   # gitignored → not in the worktree
+[ -e "$DIR" ] && { echo "!! $DIR already exists"; exit 1; }
+mkdir -p "$DIR"
 
-# Verify the run's inputs match the frozen study hash, if one exists.
-if [ -f runs/inputs.sha256 ]; then
-  ( cd "$DIR" && shasum -a 256 -c "${ROOT}/runs/inputs.sha256" ) \
+# Snapshot the committed harness (never the possibly-dirty working tree).
+git -C "$ROOT" archive "$SRC_REF" -- \
+    PROGRAM.md CLAUDE.md AGENTS.md Makefile eval.py solution.py \
+    requirements.txt .python-version .gitignore \
+    tools/log_experiment.py tools/plot.py data/quran_ref.json \
+  | tar -x -C "$DIR"
+cp "$ROOT/data/bot_review.csv" "$DIR/data/bot_review.csv"   # gitignored inside the clone
+
+# Verify the run's visible inputs match the frozen study hash.
+if [ -f "$ROOT/runs/inputs.sha256" ]; then
+  ( cd "$DIR" && shasum -a 256 -c "$ROOT/runs/inputs.sha256" ) \
     || { echo "!! HASH MISMATCH in $DIR — aborting"; exit 1; }
 fi
 
+# Fresh, history-free repo: one branch, one commit.
+git -C "$DIR" init -q -b run
+git -C "$DIR" add -A
+git -C "$DIR" -c user.name=autoresearch -c user.email=autoresearch@local \
+  commit -q -m "autoresearch experiment snapshot"
+
 cat <<EOF
 
-worktree: $DIR
-branch:   $BRANCH
+run dir: $DIR   (fresh clone, branch 'run', single commit)
 
 Launch (full-auto, isolated to this dir):
   cd "$DIR"
-  AR_AGENT=$AGENT <agent-launch-cmd> \\
-    "Read PROGRAM.md and run the loop. Budget: 30 experiments or 1 hour, whichever first. Do not push."
+  claude:  AR_AGENT=claude claude --dangerously-skip-permissions "<prompt>"
+  codex:   AR_AGENT=codex  codex -s workspace-write -a never \\
+             -c model_reasoning_effort="high" "<prompt>"
+           (no --add-dir needed: the clone owns its .git)
 
-  claude:  claude --dangerously-skip-permissions
-  codex:   codex --full-auto        # sandboxed workspace-write
+  prompt:  Read PROGRAM.md and run the loop. Budget: 30 experiments or 1 hour,
+           whichever first. Do not push.
 EOF
