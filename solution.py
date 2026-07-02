@@ -74,6 +74,22 @@ def _norm(text: str) -> list[str]:
     return [t for t in text.split() if t]
 
 
+_ISTIADHA = _norm("اعوذ بالله من الشيطان الرجيم")
+_BASMALA = _norm("بسم الله الرحمن الرحيم")
+_FATIHA_START = _norm("الحمد لله رب العالمين")
+
+
+def _preamble_len(toks: list[str]) -> int:
+    pos = 0
+    if toks[: len(_ISTIADHA)] == _ISTIADHA:
+        pos += len(_ISTIADHA)
+    if toks[pos : pos + len(_BASMALA)] == _BASMALA:
+        after = toks[pos + len(_BASMALA) : pos + len(_BASMALA) + len(_FATIHA_START)]
+        if after != _FATIHA_START:
+            pos += len(_BASMALA)
+    return pos
+
+
 class Solution:
     def __init__(self) -> None:
         # {surah_id: [{"id", "ar", "clean"}, ...]}
@@ -110,9 +126,13 @@ class Solution:
         toks = _norm(transcript)
         if len(toks) < 2:
             return {"abstain": True}
+        prefix_len = _preamble_len(toks)
+        search_toks = toks[prefix_len:] or toks
+        raw_prefix = raw_tokens[:prefix_len] if prefix_len <= len(raw_tokens) else []
+        raw_search = raw_tokens[prefix_len:] if prefix_len <= len(raw_tokens) else raw_tokens
 
         offsets: dict[int, float] = defaultdict(float)
-        for i, tok in enumerate(toks):
+        for i, tok in enumerate(search_toks):
             positions = self.index.get(tok)
             if not positions:
                 continue
@@ -129,19 +149,19 @@ class Solution:
         best = None
         for offset, vote in sorted(offsets.items(), key=lambda kv: kv[1], reverse=True)[:24]:
             start = max(0, offset - 12)
-            end = min(len(self.ref_tokens), offset + int(len(toks) * 1.35) + 28)
+            end = min(len(self.ref_tokens), offset + int(len(search_toks) * 1.35) + 28)
             cand_tokens = self.ref_tokens[start:end]
             if not cand_tokens:
                 continue
 
             from difflib import SequenceMatcher
 
-            matcher = SequenceMatcher(a=toks, b=cand_tokens, autojunk=False)
+            matcher = SequenceMatcher(a=search_toks, b=cand_tokens, autojunk=False)
             matches: list[tuple[int, int]] = []
             for tag, i1, i2, j1, _j2 in matcher.get_opcodes():
                 if tag == "equal":
                     matches.extend((i1 + k, start + j1 + k) for k in range(i2 - i1))
-            score = len(matches) / max(len(toks), 1)
+            score = len(matches) / max(len(search_toks), 1)
             # Prefer good token coverage; use the offset vote as a weak tie-breaker.
             rank = (score, vote, len(matches))
             if best is None or rank > best[0]:
@@ -157,7 +177,7 @@ class Solution:
         matched_by_tok = {i: ref for i, ref in matches}
         matched_items = sorted(matched_by_tok.items())
         assigned_ref: list[int] = []
-        for i in range(len(toks)):
+        for i in range(len(search_toks)):
             if i in matched_by_tok:
                 assigned_ref.append(matched_by_tok[i])
                 continue
@@ -183,11 +203,13 @@ class Solution:
         ids = self.id_order[lo : hi + 1]
 
         buckets: dict[str, list[str]] = {ayah_id: [] for ayah_id in ids}
+        if ids and raw_prefix:
+            buckets[ids[0]].extend(raw_prefix)
         for i, ref_pos in enumerate(assigned_ref):
             ayah_id = self.ref_ids[ref_pos]
             if ayah_id not in buckets:
                 buckets[ayah_id] = []
-            word = raw_tokens[i] if i < len(raw_tokens) else toks[i]
+            word = raw_search[i] if i < len(raw_search) else search_toks[i]
             buckets[ayah_id].append(word)
 
         return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets.get(ayah_id, []))} for ayah_id in ids]}
