@@ -102,8 +102,8 @@ dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 The agent. **This study compares two conditions**, tagged via `AR_AGENT` (logged
 in every row):
 
-- `claude` — Claude Code
-- `codex` — OpenAI Codex
+- `claude` — Claude Code (Study 1 & 2: Claude Opus 4.8, reasoning effort `high`)
+- `codex` — OpenAI Codex (Study 1 & 2: GPT-5.5, reasoning effort `high`)
 
 A `human` baseline and a `claude+skill` arm (Claude Code + the
 uditgoenka/autoresearch skill) are **deferred to future work** — out of scope
@@ -241,6 +241,10 @@ fixes. Study 2 measures **generalization**:
 - **Held-out scoring.** After each run, *we* (not the agent) score the final
   `solution.py` on the untouched test set. Report the **test** score; the
   train↔test gap quantifies overfitting per agent.
+- **Both agents are told** (identically, in PROGRAM.md) that a held-out test set
+  exists and that memorizing train rows will not transfer — so Study 2 also tests
+  whether disclosure changes optimization behavior.
+- Train floor ~0.007 (quirk rows pinned to train); test oracle floor exactly 0.0.
 - Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
   on held-out data, and Codex shows the larger train↔test gap.
 
