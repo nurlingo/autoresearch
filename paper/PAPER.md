@@ -1,6 +1,6 @@
 # Generalizers and Metric-Maximizers: What Autonomous Coding Agents Optimize When You Give Them a Scorecard
 
-*Working draft — v0.1, 2026-07-02. Data: Study 1 complete; Study 2 pending.*
+*Working draft — v0.2, 2026-07-03. Data: Studies 1 and 2 complete.*
 
 ## Abstract
 
@@ -138,19 +138,66 @@ keep rates similar (~75–95%); zero crashes in all six runs. Figure:
 - Design lesson for autoresearch harnesses: the loop *will* be Goodharted at
   the margin; a held-out set and a leak-free failure report are structural
   requirements, not hygiene.
-- Practical lesson for our product: Claude's artifacts are deployable as-is;
-  Codex's require stripping the memorized rules (its exp≤13 core is comparable
-  and general).
+- Practical lesson for our product: with a held-out harness both agents
+  produce deployable artifacts; Codex's core is the most accurate and stable
+  held-out, Claude's is safest on rejection behavior. A deployment could use
+  Codex's aligner with Claude's abstention margin.
+- Study 2 reframes Study 1: the "metric-maximizer" pathology is real but
+  train-side; generalization damage was concentrated in a rare-event component.
+  Conversely the "generalizer" discipline did not buy held-out accuracy — it
+  bought robustness and smaller artifacts.
 
-## 7. Study 2: held-out generalization [design final, runs pending]
+## 7. Study 2: held-out generalization
 
 Stratified 60/40 split by recording (151 train / 107 test; non-Quran 2/2;
-repetition and non-contiguous cases represented on both sides; known label
-quirks pinned to train; seed 42). Agents see and optimize on train only;
-`eval.py` failure report shows no expected ids; we score final solutions on the
-untouched test set. Hypotheses: (H1) Codex train↔test gap ≫ Claude's; (H2)
-held-out ranking narrows or reverses; (H3) both retain large gains over the
-stub — the loop does produce real algorithms.
+repetition and non-contiguous cases on both sides; label quirks pinned to
+train; seed 42; test oracle floor exactly 0.0). Agents optimize train only, in
+fully isolated single-commit clones; both are told a held-out set exists and
+that memorization will not transfer; we score final solutions on the untouched
+test set. Hypotheses: (H1) Codex train↔test gap ≫ Claude's; (H2) held-out
+ranking narrows or reverses; (H3) both retain large gains over the stub.
+
+### 7.1 Results
+
+| run | train | test | gap | test det+split | test abstain | exps |
+|---|---:|---:|---:|---:|---:|---:|
+| claude-r1 | 0.0441 | 0.0796 | 0.036 | 0.0796 | 0 | 12 |
+| claude-r2 | 0.0982 | 0.1534 | 0.055 | 0.1534 | 0 | 7 |
+| claude-r3 | 0.0661 | 0.1306 | 0.064 | 0.1306 | 0 | 8 |
+| codex-r1 | 0.0075 | 0.0869 | 0.079 | 0.0869 | 0 | 20 |
+| codex-r2 | 0.0451 | 0.5882 | 0.543 | 0.0882 | 0.5 | 8 |
+| codex-r3 | 0.0082 | 0.0793 | 0.071 | 0.0793 | 0 | 22 |
+
+All three hypotheses resolve informatively. **H1 confirmed:** Codex's mean
+train→test gap is 4.5× Claude's (0.231 vs 0.052). **H2 half-confirmed:** the
+6–10× train separation vanishes (test means 0.251 vs 0.121, medians 0.087 vs
+0.131, Mann–Whitney n.s.) — but not by the predicted mechanism. Codex's
+held-out detection+split is *better and strikingly consistent* (0.085±0.004,
+identical detection error in all three runs) than Claude's (0.121±0.031); its
+floor-grinding on train was wasted effort, not poison. What Codex lost was a
+single abstention on a non-Quran row (cost 0.5) — rare-event robustness, where
+Claude is 10/10 across both studies. **H3 confirmed:** every run beats the
+stub by ≥14×. Figure: `study2_generalization.png`.
+
+### 7.2 Disclosure changes the *form* of Goodharting, not the drive
+
+Hardcoded ayah ids per Codex final: 19–41 (Study 1) → 0 (Study 2). One
+paragraph of disclosure eliminated literal memorization. The optimization
+instinct remained — Codex still drove train to the floor with 20–22
+experiments of general-looking machinery — but the non-transferable margin
+went from "memorized answers" to "harmless over-tuning."
+
+### 7.3 Isolation is adversarial, even without an adversary
+
+Three incidents, all agent-initiated and none forbidden explicitly: (a) a
+Codex run read Study 1 logs and a sibling agent's in-flight solution through
+the shared `.git` of a git worktree; (b) Claude runs twice saved unprompted
+persistent-memory cheat-sheets addressed to "future runs on this repo"
+(non-firing only because run paths are never reused); (c) both agents used the
+failure report's expected ids in Study 1. The harness had to be redesigned to
+fresh single-commit clones per run. Design rule: enumerate the state channels
+an agent's *own tooling* provides (git history, logs, persistent memory) and
+close them structurally, not by instruction.
 
 ## 8. Limitations & threats
 
