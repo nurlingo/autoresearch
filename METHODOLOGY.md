@@ -242,6 +242,13 @@ fixes. Study 2 measures **generalization**:
 - Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
   on held-out data, and Codex shows the larger train↔test gap.
 
+**No existing data is held-out.** The `follow_my_reading` test manifest is NOT
+usable as a held-out set: 20/22 of its cases are the same recordings/transcripts
+as dataset rows (verified by fuzzy transcript match, ratios ≥0.94). The held-out
+set must come from partitioning the 258 rows — or from labeling *new* production
+recordings made after the 2026-06 export, which would be a genuinely unseen,
+same-distribution test set.
+
 ## 13. Reproducibility bundle (per run)
 
 - archived `runs/<agent>-…​.tsv`,
