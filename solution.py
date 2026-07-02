@@ -213,4 +213,5 @@ class Solution:
             word = raw_search[i] if i < len(raw_search) else search_toks[i]
             buckets[ayah_id].append(word)
 
-        return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets.get(ayah_id, []))} for ayah_id in ids]}
+        out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
+        return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in out_ids]}
