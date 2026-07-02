@@ -56,9 +56,12 @@ class Solution:
             if not re.fullmatch(r"\d{3}", surah_id):
                 continue  # skip the 999xxx non-Quran reference block (adhan/duas)
             for ayah in self.quran[surah_id]:
+                # Some long ayahs (e.g. Ayat al-Kursi) are stored pre-split with
+                # 9-digit sub-ids; the gold uses the 6-digit ayah id, so collapse.
+                aid = ayah["id"][:6]
                 for tok in norm_tokens(ayah["clean"]):
                     self.corpus_tok.append(tok)
-                    self.corpus_id.append(ayah["id"])
+                    self.corpus_id.append(aid)
         # Bigram anchor index: bigram -> list of corpus start positions.
         self.bigram: dict[tuple[str, str], list[int]] = {}
         for i in range(len(self.corpus_tok) - 1):
