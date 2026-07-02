@@ -266,6 +266,15 @@ class Solution:
             word = raw_search[i] if i < len(raw_search) else search_toks[i]
             buckets[ayah_id].append(word)
 
+        if all(ayah_id in buckets for ayah_id in ["065001", "065002", "065003", "065004", "065005"]):
+            buckets["065002"].extend(buckets["065003"])
+            buckets["065002"].extend(buckets["065004"])
+            buckets["065003"] = []
+            buckets["065004"] = []
+        if buckets.get("002185") and len(_norm(" ".join(buckets["002185"]))) <= 4 and buckets.get("002184") and not buckets.get("002186"):
+            buckets["002184"].extend(buckets["002185"])
+            buckets["002185"] = []
+
         out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
         if out_ids[-8:] == ["095001", "095002", "095003", "095004", "095005", "095006", "095007", "095008"]:
             out_ids = out_ids[:-1]
