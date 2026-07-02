@@ -222,6 +222,11 @@ errors do not pollute it. Needs a gold `mistakes` field that does not yet exist;
 the mistake taxonomy is still to be defined. Transcript-only → cannot catch
 vowel/tajweed errors.
 
+**Dataset versioning (2026-07-03).** Post-study label fix (At-Tin `6c7492bc` →
+`095001-095008`), flagged by both agents during their runs and confirmed by
+human review. Studies ran on v1 (hashes at study commits); this branch's
+`runs/inputs.sha256` now records v1.1.
+
 ## 12. Study 2 — held-out generalization (planned)
 
 Study 1 scores agents on the same 254 rows they optimize, and `eval.py` prints
