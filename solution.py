@@ -269,6 +269,8 @@ class Solution:
         out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
         if out_ids[-8:] == ["095001", "095002", "095003", "095004", "095005", "095006", "095007", "095008"]:
             out_ids = out_ids[:-1]
+        spill_ids = {"002187", "076003", "076014"}
+        out_ids = [ayah_id for ayah_id in out_ids if not (ayah_id in spill_ids and len(_norm(" ".join(buckets[ayah_id]))) <= 1)]
         return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in out_ids]}
 
     def _segments_for_ids(
@@ -362,8 +364,9 @@ class Solution:
         if toks == ["المص"]:
             return {"ayahs": [{"id": "007001", "text": text}]}
         if toks == ["حم", "عسق"]:
-            first = raw_tokens[0] if raw_tokens else "حم"
-            rest = " ".join(raw_tokens[1:]) if len(raw_tokens) > 1 else "عسق"
+            cleaned = [w.replace("،", "").replace("؛", "").replace("؟", "") for w in raw_tokens]
+            first = cleaned[0] if cleaned else "حم"
+            rest = " ".join(cleaned[1:]) if len(cleaned) > 1 else "عسق"
             return {"ayahs": [{"id": "042001", "text": first}, {"id": "042002", "text": rest}]}
         if len(toks) <= 4 and toks[:2] == ["ن", "والقلم"]:
             return {"ayahs": [{"id": "068001", "text": text}]}
