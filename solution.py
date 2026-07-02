@@ -142,19 +142,17 @@ class Solution:
             return assigned, m
 
         assigned, _ = max((align(o) for o in candidates), key=lambda r: r[1])
-        # carry-forward / back-fill unmatched tokens
-        last = None
-        for i in range(n):
-            if assigned[i] is None:
-                assigned[i] = last
-            else:
-                last = assigned[i]
-        first = next((a for a in assigned if a is not None), None)
-        for i in range(n):
-            if assigned[i] is None:
-                assigned[i] = first
-        if first is None:
+        anchors = [i for i in range(n) if assigned[i] is not None]
+        if not anchors:
             return {"abstain": True}
+        # Back-fill each unmatched token with the id of the nearest anchor. This
+        # only ever picks an already-present neighbour id (no phantom ids), and
+        # places boundary mistakes on the closer side rather than always trailing
+        # the previous ayah.
+        for i in range(n):
+            if assigned[i] is None:
+                a = min(anchors, key=lambda k: (abs(k - i), k - i))
+                assigned[i] = assigned[a]
 
         # --- group original words by assigned ayah id ---
         segments: list[dict[str, str]] = []
