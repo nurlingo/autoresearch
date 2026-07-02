@@ -107,27 +107,34 @@ class Solution:
                 votes[off] = votes.get(off, 0) + 1
         if not votes:
             return {"abstain": True}
-        best_off = max(votes, key=lambda o: votes[o])
-        votes_best = votes[best_off]
+        votes_best = max(votes.values())
         # Weak anchor -> not a recognizable recitation.
         if votes_best < max(2, 0.15 * (len(tnorm) - 1)):
             return {"abstain": True}
 
-        # --- align transcript tokens to corpus window around best_off ---
+        # --- pick the offset that actually aligns best. The top-voted offset is
+        # usually right, but a near-tie can mis-lock (e.g. an insertion splits the
+        # vote); realigning the strongest few and keeping the max-matched one is
+        # more robust. ---
         n = len(tnorm)
-        # No leading slack: token 0 should align at best_off, so anything before
-        # it belongs to the previous ayah and only leaks spurious ids in.
-        lo = max(0, best_off)
-        hi = min(len(self.corpus_tok), best_off + n + 5)
-        win_tok = self.corpus_tok[lo:hi]
-        win_id = self.corpus_id[lo:hi]
+        candidates = sorted(votes, key=lambda o: votes[o], reverse=True)
+        candidates = [o for o in candidates if votes[o] >= 0.5 * votes_best][:4]
 
-        matcher = SequenceMatcher(a=tnorm, b=win_tok, autojunk=False)
-        assigned: list[str | None] = [None] * n
-        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-            if tag == "equal":
-                for k in range(i2 - i1):
-                    assigned[i1 + k] = win_id[j1 + k]
+        def align(best_off):
+            lo = max(0, best_off)
+            hi = min(len(self.corpus_tok), best_off + n + 5)
+            win_id = self.corpus_id[lo:hi]
+            matcher = SequenceMatcher(a=tnorm, b=self.corpus_tok[lo:hi], autojunk=False)
+            assigned: list[str | None] = [None] * n
+            m = 0
+            for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+                if tag == "equal":
+                    m += i2 - i1
+                    for k in range(i2 - i1):
+                        assigned[i1 + k] = win_id[j1 + k]
+            return assigned, m
+
+        assigned, _ = max((align(o) for o in candidates), key=lambda r: r[1])
         # carry-forward / back-fill unmatched tokens
         last = None
         for i in range(n):
