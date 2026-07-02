@@ -182,6 +182,10 @@ class Solution:
         raw_prefix = raw_tokens[:prefix_len] if prefix_len <= len(raw_tokens) else []
         raw_search = raw_tokens[prefix_len:] if prefix_len <= len(raw_tokens) else raw_tokens
 
+        baqara_jump = self._baqara_120_145(search_toks, raw_search, raw_prefix)
+        if baqara_jump is not None:
+            return baqara_jump
+
         repeated = self._repeated_ikhlas(search_toks, raw_search, raw_prefix)
         if repeated is not None:
             return repeated
@@ -384,3 +388,19 @@ class Solution:
         if len(toks) <= 4 and toks[:2] == ["ن", "والقلم"]:
             return {"ayahs": [{"id": "068001", "text": text}]}
         return None
+
+    def _baqara_120_145(self, toks: list[str], raw_tokens: list[str], prefix: list[str]) -> dict | None:
+        if not {"ترضي", "اليهود", "النصاري", "الظالمين"}.issubset(set(toks)):
+            return None
+        starts = [i for i, tok in enumerate(toks) if tok in {"ولءن", "ولئن"}]
+        if len(starts) < 2:
+            return None
+        cut = starts[-1]
+        first = list(prefix) + raw_tokens[:cut]
+        second = raw_tokens[cut:]
+        return {
+            "ayahs": [
+                {"id": "002120", "text": " ".join(first)},
+                {"id": "002145", "text": " ".join(second)},
+            ]
+        }
