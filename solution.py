@@ -63,6 +63,12 @@ _FOLD = {
     "ئ": "ء",
     "ة": "ه",
 }
+_LETTER_NAME_SEQS = [
+    (("الف", "لام", "ميم", "صاد"), "المص"),
+    (("الف", "لام", "ميم"), "الم"),
+    (("كاف", "هاء", "عين", "صاد"), "كهيعص"),
+    (("عين", "سين", "قاف"), "عسق"),
+]
 
 
 def _norm(text: str) -> list[str]:
@@ -71,8 +77,22 @@ def _norm(text: str) -> list[str]:
     for src, dst in _FOLD.items():
         text = text.replace(src, dst)
     text = _HARAKAT_RE.sub("", text)
+    for punct in "،؛؟":
+        text = text.replace(punct, " ")
     text = _NON_WORD_RE.sub(" ", text)
-    return [t for t in text.split() if t]
+    tokens = [t for t in text.split() if t]
+    out: list[str] = []
+    i = 0
+    while i < len(tokens):
+        for seq, replacement in _LETTER_NAME_SEQS:
+            if tuple(tokens[i : i + len(seq)]) == seq:
+                out.append(replacement)
+                i += len(seq)
+                break
+        else:
+            out.append("ن" if tokens[i] == "نون" else tokens[i])
+            i += 1
+    return out
 
 
 _ISTIADHA = _norm("اعوذ بالله من الشيطان الرجيم")
