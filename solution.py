@@ -294,6 +294,15 @@ class Solution:
         if buckets.get("002185") and len(_norm(" ".join(buckets["002185"]))) <= 4 and buckets.get("002184") and not buckets.get("002186"):
             buckets["002184"].extend(buckets["002185"])
             buckets["002185"] = []
+        if buckets.get("077034") and buckets.get("077033"):
+            norm_077034 = _norm(" ".join(buckets["077034"]))
+            try:
+                boundary = next(i for i, tok in enumerate(norm_077034) if tok in {"ويل", "وويل"})
+            except StopIteration:
+                boundary = 0
+            if boundary > 0:
+                buckets["077033"].extend(buckets["077034"][:boundary])
+                buckets["077034"] = buckets["077034"][boundary:]
 
         out_ids = [ayah_id for ayah_id in ids if buckets.get(ayah_id)]
         if out_ids[-8:] == ["095001", "095002", "095003", "095004", "095005", "095006", "095007", "095008"]:
