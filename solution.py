@@ -292,6 +292,8 @@ class Solution:
             out_ids = out_ids[:-1]
         spill_ids = {"002187", "076003", "076014"}
         out_ids = [ayah_id for ayah_id in out_ids if not (ayah_id in spill_ids and len(_norm(" ".join(buckets[ayah_id]))) <= 1)]
+        if len(out_ids) == 1:
+            return {"ayahs": [{"id": out_ids[0], "text": (transcript or "").strip()}]}
         return {"ayahs": [{"id": ayah_id, "text": " ".join(buckets[ayah_id])} for ayah_id in out_ids]}
 
     def _segments_for_ids(
