@@ -17,8 +17,9 @@ nothing in the repo — you only launch a different agent inside a run folder.
    shasum -a 256 -c runs/inputs.sha256
    shasum -a 256 -c runs/worktree.sha256
    ```
-4. **Cursor** with Agent mode and **auto-run / YOLO** enabled (no per-action
-   approval) — counterpart to Claude `--dangerously-skip-permissions` and Codex
+4. **Cursor** in **Auto mode** (model routing left to Cursor — not a manually
+   pinned model) with **auto-run / YOLO** enabled (no per-action approval) —
+   counterpart to Claude `--dangerously-skip-permissions` and Codex
    `--full-auto`.
 
 ## The one non-negotiable: full autonomy, isolated folder
@@ -82,8 +83,13 @@ tools/new_run.sh cursor 1
 
 - `runs/cursor-r<k>-<tag>.tsv` + `-holdout.json` + `.bundle` (from
   `collect_run.sh`)
-- Cursor version, model name, agent mode settings, machine OS/CPU for the
-  confounds table
+- Cursor version, **Auto mode** (record that routing was Auto, not a fixed model),
+  auto-run/YOLO settings, machine OS/CPU for the confounds table
+
+**Recorded (Study 2 runs, TAG=260702):** Cursor Agent, **Auto mode**, auto-run
+enabled; same Linux machine as the other arms. Auto mode means the underlying
+model may vary by step — report Cursor app version and date; do not assume a
+single pinned model id like Claude/Codex/Antigravity.
 
 ## Rules (same as every arm)
 
