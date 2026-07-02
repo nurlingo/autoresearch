@@ -1,0 +1,10 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T16:58:26+00:00	0.0	claude	f2c5caf	2.000000	1.0	1.0	0.0	keep	baseline: abstain always
+2	2026-07-02T16:59:29+00:00	63.8	claude	dfe7350	1.560528	0.4027	0.1578	1.0	keep	core: inverted-index detection + difflib split
+3	2026-07-02T17:31:41+00:00	1995.0	claude	b1f185a	0.899454	0.3221	0.0773	0.5	keep	bigram detection + collapse ids to 6-digit
+4	2026-07-02T17:32:33+00:00	2047.6	claude	44fbf9c	0.829827	0.255	0.0748	0.5	keep	windowed anchored alignment for speed
+5	2026-07-02T17:35:26+00:00	2220.5	claude	79071b9	0.129474	0.0805	0.0489	0.0	keep	strip prefix + canonical surahs + deterministic
+6	2026-07-02T17:36:36+00:00	2290.0	claude	332fc07	0.100778	0.0604	0.0404	0.0	keep	Fatiha basmala + earlier-surah tiebreak
+7	2026-07-02T17:38:43+00:00	2417.5	claude	7a5ccd1	0.100364	0.0604	0.04	0.0	keep	split interior gaps half/half
+8	2026-07-02T17:41:40+00:00	2594.5	claude	4889969	0.111601	0.0671	0.0445	0.0	discard	adaptive window to recited span
+9	2026-07-02T17:44:14+00:00	2748.3	claude	1dcb13d	0.100364	0.0604	0.04	0.0	discard	cleanup: remove unused flat2word
