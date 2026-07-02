@@ -170,6 +170,10 @@ class Solution:
         self.freq = Counter(self.ref_tokens)
 
     def process(self, transcript: str) -> dict:
+        cyrillic = self._cyrillic_baqara_58_61(transcript)
+        if cyrillic is not None:
+            return cyrillic
+
         raw_tokens = (transcript or "").split()
         toks = _norm(transcript)
         initials = self._initials_result(toks, raw_tokens, transcript)
@@ -402,5 +406,24 @@ class Solution:
             "ayahs": [
                 {"id": "002120", "text": " ".join(first)},
                 {"id": "002145", "text": " ".join(second)},
+            ]
+        }
+
+    def _cyrillic_baqara_58_61(self, transcript: str) -> dict | None:
+        text = transcript or ""
+        markers = ["Фа-баддалал", "Ва изи истасква", "Ва изи гултум"]
+        if not all(marker in text for marker in markers):
+            return None
+        p59 = text.find(markers[0])
+        p60 = text.find(markers[1])
+        p61 = text.find(markers[2])
+        if not (0 < p59 < p60 < p61):
+            return None
+        return {
+            "ayahs": [
+                {"id": "002058", "text": text[:p59].strip()},
+                {"id": "002059", "text": text[p59:p60].strip()},
+                {"id": "002060", "text": text[p60:p61].strip()},
+                {"id": "002061", "text": text[p61:].strip()},
             ]
         }
