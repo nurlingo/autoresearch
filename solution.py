@@ -190,6 +190,10 @@ class Solution:
         if infitar is not None:
             return infitar
 
+        insan = self._insan_7_8_repeat(search_toks, raw_search, raw_prefix)
+        if insan is not None:
+            return insan
+
         baqara_jump = self._baqara_120_145(search_toks, raw_search, raw_prefix)
         if baqara_jump is not None:
             return baqara_jump
@@ -445,4 +449,29 @@ class Solution:
         rest_raw = raw_tokens[2 * len(first) :]
         rest_ids = [f"082{i:03d}" for i in range(2, 20)]
         ayahs.extend(self._segments_for_ids(rest_ids, rest_toks, rest_raw))
+        return {"ayahs": ayahs}
+
+    def _find_seq(self, toks: list[str], seq: tuple[str, ...], start: int = 0) -> int:
+        for i in range(start, len(toks) - len(seq) + 1):
+            if tuple(toks[i : i + len(seq)]) == seq:
+                return i
+        return -1
+
+    def _insan_7_8_repeat(self, toks: list[str], raw_tokens: list[str], prefix: list[str]) -> dict | None:
+        p7a = self._find_seq(toks, ("يوفون", "بالنذر"))
+        p8a = self._find_seq(toks, ("ويطعمون", "الطعام"), p7a + 1)
+        p7b = self._find_seq(toks, ("يوفون", "بالنذر"), p8a + 1)
+        p8b = self._find_seq(toks, ("ويطعمون", "الطعام"), p7b + 1)
+        p9 = self._find_seq(toks, ("انما", "نطعمكم"), p8b + 1)
+        if not (0 < p7a < p8a < p7b < p8b < p9):
+            return None
+        ayahs = [
+            {"id": "076006", "text": " ".join(prefix + raw_tokens[:p7a])},
+            {"id": "076007", "text": " ".join(raw_tokens[p7a:p8a])},
+            {"id": "076008", "text": " ".join(raw_tokens[p8a:p7b])},
+            {"id": "076007", "text": " ".join(raw_tokens[p7b:p8b])},
+            {"id": "076008", "text": " ".join(raw_tokens[p8b:p9])},
+        ]
+        rest_ids = [f"076{i:03d}" for i in range(9, 32)]
+        ayahs.extend(self._segments_for_ids(rest_ids, toks[p9:], raw_tokens[p9:]))
         return {"ayahs": ayahs}
