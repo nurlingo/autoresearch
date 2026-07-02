@@ -23,6 +23,6 @@ echo "best research_score: $best"
 
 # Preserve the full per-experiment history (the dataset is gitignored in the
 # clone, so the bundle contains no user data), then remove the clone.
-git -C "$DIR" bundle create "$BUNDLE" --all -q
+git -C "$DIR" bundle create -q "$BUNDLE" --all
 rm -rf "$DIR"
 echo "collected -> $(basename "$OUT") + $(basename "$BUNDLE")  (clone removed)"
