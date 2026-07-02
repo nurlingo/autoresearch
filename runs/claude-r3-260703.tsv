@@ -1,0 +1,9 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T17:56:42+00:00	0.0	claude	7e90475	2.000000	1.0	1.0	0.0	keep	baseline abstain-all
+2	2026-07-02T17:57:31+00:00	47.8	claude	be6f7d5	1.040276	0.3893	0.151	0.5	keep	trigram+SM alignment
+3	2026-07-02T17:58:30+00:00	107.3	claude	88bc964	0.506719	0.3758	0.1309	0.0	keep	exclude 999 dua surahs
+4	2026-07-02T18:02:02+00:00	318.9	claude	998e15a	0.217997	0.1409	0.0771	0.0	keep	preamble strip + contiguous range + harakat fix
+5	2026-07-02T18:02:41+00:00	357.9	claude	8717cc2	0.204574	0.1342	0.0703	0.0	keep	deterministic candidate order
+6	2026-07-02T18:04:54+00:00	491.2	claude	3e89e9a	0.092598	0.0537	0.0389	0.0	keep	id collapse + boundary extend + bigram fallback
+7	2026-07-02T18:09:21+00:00	757.8	claude	3677147	0.067430	0.0403	0.0272	0.0	keep	muqattaat handler
+8	2026-07-02T18:10:45+00:00	841.7	claude	1fdd0fe	0.066148	0.0403	0.0259	0.0	keep	nearest-anchor split
