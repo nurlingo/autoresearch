@@ -93,7 +93,9 @@ class Solution:
 
         # --- align transcript tokens to corpus window around best_off ---
         n = len(tnorm)
-        lo = max(0, best_off - 5)
+        # No leading slack: token 0 should align at best_off, so anything before
+        # it belongs to the previous ayah and only leaks spurious ids in.
+        lo = max(0, best_off)
         hi = min(len(self.corpus_tok), best_off + n + 5)
         win_tok = self.corpus_tok[lo:hi]
         win_id = self.corpus_id[lo:hi]
