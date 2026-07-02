@@ -171,7 +171,8 @@ class Solution:
             return {"abstain": True}
 
         (score, _vote, _nmatch), matches, offset = best
-        if score < 0.42 or len(matches) < 2:
+        min_score = 0.78 if len(search_toks) <= 4 else 0.42
+        if score < min_score or len(matches) < 2:
             return {"abstain": True}
 
         matched_by_tok = {i: ref for i, ref in matches}
