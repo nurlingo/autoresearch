@@ -1,0 +1,21 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T11:55:59+00:00	0.0	codex	0e7a933	2.000000	1.0	1.0	0.0	keep	baseline abstain all
+2	2026-07-02T11:58:22+00:00	141.7	codex	0e7a933	0.659765	0.1007	0.0591	0.5	keep	contiguous quran alignment matcher
+3	2026-07-02T11:59:06+00:00	185.3	codex	0e7a933	0.619497	0.0805	0.039	0.5	keep	exclude non-quran refs and collapse segmented ayah ids
+4	2026-07-02T11:59:40+00:00	219.5	codex	0e7a933	0.119497	0.0805	0.039	0.0	keep	tighten threshold for very short transcripts
+5	2026-07-02T12:00:19+00:00	259.1	codex	0e7a933	0.105387	0.0671	0.0383	0.0	keep	clamp unmatched boundary words to nearest aligned ayah
+6	2026-07-02T12:01:15+00:00	314.4	codex	0e7a933	0.091747	0.0537	0.0381	0.0	keep	ignore isolated one-token anchors across large gaps
+7	2026-07-02T12:03:46+00:00	418.2	codex	0e7a933	0.038056	0.0268	0.0112	0.0	keep	add fuzzy short ayah and letter-opening matcher
+8	2026-07-02T12:05:39+00:00	533.6	codex	0e7a933	0.026311	0.0201	0.0062	0.0	keep	strip Arabic punctuation before tokenization
+9	2026-07-02T12:06:29+00:00	596.2	codex	0e7a933	0.026311	0.0201	0.0062	0.0	discard	skip fuzzy scan after perfect exact alignment
+10	2026-07-02T12:08:40+00:00	714.2	codex	0e7a933	0.028948	0.0201	0.0088	0.0	discard	emit normalized tokens in predicted segments
+11	2026-07-02T12:09:52+00:00	786.3	codex	0e7a933	0.028948	0.0201	0.0088	0.0	discard	strip edge punctuation from predicted words
+12	2026-07-02T12:11:15+00:00	869.6	codex	0e7a933	0.025640	0.0201	0.0055	0.0	keep	widen alignment window for skipped ayah jumps
+13	2026-07-02T12:13:07+00:00	981.5	codex	0e7a933	0.018257	0.0134	0.0048	0.0	keep	drop interpolated ayah labels without exact anchors
+14	2026-07-02T12:15:25+00:00	1117.1	codex	0e7a933	0.010172	0.0067	0.0035	0.0	keep	relabel strong same-surah suffix jumps
+15	2026-07-02T12:17:21+00:00	1231.8	codex	0e7a933	0.011850	0.0067	0.0051	0.0	discard	emit normalized tokens for letter openings
+16	2026-07-02T12:18:32+00:00	1303.3	codex	0e7a933	0.011850	0.0067	0.0051	0.0	discard	strip punctuation only in letter openings
+17	2026-07-02T12:20:08+00:00	1399.9	codex	0e7a933	0.009562	0.0067	0.0029	0.0	keep	prefer cleaner suffix jump boundaries
+18	2026-07-02T12:22:33+00:00	1543.7	codex	0e7a933	0.009134	0.0067	0.0024	0.0	keep	split embedded repeated neighbor ayahs
+19	2026-07-02T12:24:48+00:00	1679.3	codex	0e7a933	0.009134	0.0067	0.0024	0.0	discard	move fuzzy previous-ayah prefixes at run edges
+20	2026-07-02T12:26:08+00:00	1759.0	codex	0e7a933	0.007456	0.0067	0.0007	0.0	keep	strip punctuation at letter-opening segment boundaries

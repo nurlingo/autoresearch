@@ -1,0 +1,19 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T08:57:42+00:00	5.9	claude	76a4004	2.000000	1.0	1.0	0.0	keep	baseline: abstain-everything stub
+2	2026-07-02T08:58:19+00:00	42.6	claude	958fa34	0.791618	0.2148	0.0769	0.5	keep	corpus-alignment: bigram offset voting + difflib split
+3	2026-07-02T08:59:05+00:00	88.5	claude	38fcc0b	0.278195	0.2081	0.0701	0.0	keep	exclude 999xxx non-Quran block from corpus
+4	2026-07-02T09:00:22+00:00	165.2	claude	64213ad	0.237927	0.1879	0.05	0.0	keep	collapse 9-digit sub-ayah ids to 6-digit
+5	2026-07-02T09:00:31+00:00	174.5	claude	c591080	0.177741	0.1275	0.0502	0.0	keep	no leading window slack
+6	2026-07-02T09:02:58+00:00	321.5	claude	e54577f	0.294453	0.2215	0.073	0.0	discard	boundary leak merge via matched-fraction
+7	2026-07-02T09:04:18+00:00	401.4	claude	afb8539	0.137472	0.0872	0.0502	0.0	keep	strip+reattach leading istiadha/basmala
+8	2026-07-02T09:05:41+00:00	484.0	claude	caa29cd	0.150076	0.1007	0.0494	0.0	discard	positional interpolation back-fill
+9	2026-07-02T09:06:07+00:00	510.8	claude	4709c5c	0.151583	0.1007	0.0509	0.0	discard	leading-only positional back-fill
+10	2026-07-02T09:06:41+00:00	544.3	claude	8037a41	0.152020	0.1007	0.0513	0.0	discard	reduce trailing window slack 5->2
+11	2026-07-02T09:07:31+00:00	594.8	claude	a4fb2f9	0.150895	0.094	0.0569	0.0	discard	trigram offset voting with bigram fallback
+12	2026-07-02T09:08:07+00:00	630.7	claude	db02e0a	0.130417	0.0805	0.0499	0.0	keep	multi-candidate offset selection by match count
+13	2026-07-02T09:08:50+00:00	673.2	claude	8d6e48c	0.116994	0.0738	0.0432	0.0	keep	exact-substring fallback for short transcripts
+14	2026-07-02T09:09:34+00:00	717.6	claude	d905f67	0.116580	0.0738	0.0428	0.0	keep	nearest-anchor back-fill
+15	2026-07-02T09:10:43+00:00	785.9	claude	e8f59df	0.099919	0.0604	0.0395	0.0	keep	span window across nearby offset clusters
+16	2026-07-02T09:11:51+00:00	854.3	claude	b74f427	0.128153	0.0872	0.0409	0.0	discard	second-pass re-anchor skipped passages
+17	2026-07-02T09:12:39+00:00	902.3	claude	07946ea	0.099919	0.0604	0.0395	0.0	discard	trailing slack 5->3 retest
+18	2026-07-02T09:13:15+00:00	937.8	claude	ae1df8b	0.100163	0.0604	0.0398	0.0	discard	lower offset-cluster vote fraction 0.2->0.15
