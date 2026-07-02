@@ -251,6 +251,16 @@ fixes. Study 2 measures **generalization**:
 - Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
   on held-out data, and Codex shows the larger train↔test gap.
 
+**Persistent-memory vector (2026-07-05).** Claude Code keeps per-directory
+persistent memory (`~/.claude/projects/<path>/memory/`). Study 2 claude-r2
+autonomously saved a distilled solution cheat-sheet "for future runs on this
+repo" (preserved as `runs/artifact-claude-r2-memory.md`). It never fired — run
+paths are unique — but it is a harness-external state channel the agent created
+unprompted. Protocol rules: (1) never reuse a run directory path; (2) after each
+Claude run, audit `~/.claude/projects/` for new memory and the global
+`~/.claude/CLAUDE.md` for modification (both verified clean for all runs so
+far). Codex has no equivalent enabled channel in our setup.
+
 **Isolation postmortem (2026-07-02).** The first Study 2 attempts leaked and were
 discarded: (a) a Claude run was launched in the main repo, where `data/test.csv`
 was visible; (b) a Codex run in a git *worktree* used the shared git database to
