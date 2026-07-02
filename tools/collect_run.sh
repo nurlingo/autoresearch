@@ -29,6 +29,6 @@ echo "train best: $train_best   heldout test: $test_score"
 
 # Preserve the full per-experiment history (train.csv is gitignored in the
 # clone, so the bundle contains no user data), then remove the clone.
-git -C "$DIR" bundle create "$BUNDLE" --all -q
+git -C "$DIR" bundle create -q "$BUNDLE" --all
 rm -rf "$DIR"
 echo "collected -> $(basename "$OUT") + $(basename "$HOLDOUT") + $(basename "$BUNDLE")  (clone removed)"
