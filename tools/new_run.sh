@@ -35,7 +35,9 @@ if [ -f "$ROOT/runs/worktree.sha256" ]; then
 fi
 
 # Fresh, history-free repo: one branch, one commit.
-git -C "$DIR" init -q -b run
+# (git init -b needs 2.28+; checkout -b works on older git)
+git -C "$DIR" init -q
+git -C "$DIR" checkout -b run
 git -C "$DIR" add -A
 git -C "$DIR" -c user.name=autoresearch -c user.email=autoresearch@local \
   commit -q -m "autoresearch experiment snapshot"
