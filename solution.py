@@ -266,7 +266,11 @@ class Solution:
             word = raw_search[i] if i < len(raw_search) else search_toks[i]
             buckets[ayah_id].append(word)
 
-        if all(ayah_id in buckets for ayah_id in ["065001", "065002", "065003", "065004", "065005"]):
+        if (
+            all(ayah_id in buckets for ayah_id in ["065001", "065002", "065003", "065004", "065005"])
+            and "ويرزقه" not in search_toks
+            and "واللاءي" not in search_toks
+        ):
             buckets["065002"].extend(buckets["065003"])
             buckets["065002"].extend(buckets["065004"])
             buckets["065003"] = []
