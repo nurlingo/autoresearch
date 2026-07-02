@@ -4,9 +4,13 @@ PYTHON ?= $(shell pyenv which python 2>/dev/null || command -v python3)
 .PHONY: eval exp plot compare archive freeze
 
 # Hash the fixed inputs so every run can be verified against one frozen version.
+# inputs.sha256 = full study record (incl. held-out test); worktree.sha256 = the
+# subset a run worktree actually contains, checked by new_run.sh.
 freeze:
-	@mkdir -p runs && shasum -a 256 data/bot_review.csv data/quran_ref.json eval.py > runs/inputs.sha256 && \
-	  echo "froze inputs -> runs/inputs.sha256" && cat runs/inputs.sha256
+	@mkdir -p runs && \
+	  shasum -a 256 data/train.csv data/test.csv data/quran_ref.json eval.py > runs/inputs.sha256 && \
+	  shasum -a 256 data/train.csv data/quran_ref.json eval.py > runs/worktree.sha256 && \
+	  echo "froze inputs -> runs/inputs.sha256 + runs/worktree.sha256" && cat runs/inputs.sha256
 
 # Score solution.py against the fixed dataset.
 eval:

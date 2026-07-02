@@ -21,8 +21,12 @@ Work with the user once, then go:
    - `eval.py` — the FIXED scorecard and metric. Do not modify.
    - `data/quran_ref.json` — the FIXED Quran reference. Do not modify.
    - `solution.py` — the ONLY file you edit.
-4. **Verify data**: `data/bot_review.csv` must exist (it is gitignored; a fresh
+4. **Verify data**: `data/train.csv` must exist (it is gitignored; a fresh
    clone needs it copied in — see README). If missing, stop and tell the user.
+   **Held-out evaluation**: a test set of recordings you will NEVER see exists
+   outside this working tree. Your final solution is scored on it after the run.
+   Changes that memorize specific train rows will not transfer — only general
+   improvements count in the end.
 5. **Init `results.tsv`** with just the header row (it is gitignored, so it
    survives `git reset` during discards):
    ```
@@ -48,6 +52,8 @@ score, keep or discard.
   score by touching them is cheating.
 - Read `actual_ayahs` at runtime from the CSV — only `eval.py` sees the gold.
   Your algorithm gets the transcript and `data/quran_ref.json`, nothing else.
+- Access the held-out test set. It is not in this working tree; do not go
+  looking for it.
 
 **The goal is simple: the lowest `research_score`.**
 
@@ -60,8 +66,9 @@ research_score = detection_error + split_error + abstain_error      # lower is b
   in the correct ayah bucket.
 - **abstain** — return `{"abstain": True}` on non-Quran rows.
 
-Reference points: empty baseline `2.0`; feeding the gold split back should score
-`0.0` once the dataset is internally consistent.
+Reference points on the train split: empty baseline `2.0`; feeding the gold
+split back scores `~0.007` (two known label quirks live in train). Treat `~0.007`
+as the practical floor. The held-out test set is scored separately after the run.
 
 **Simplicity criterion**: all else equal, simpler is better. A tiny gain that adds
 ugly complexity is not worth it; an equal-or-better result from *deleting* code is
