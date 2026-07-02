@@ -77,7 +77,8 @@ is future work.)
 transcript lengths 3–400+ words), human/LLM-reviewed into gold `(assignment,
 per-ayah split, confidence)`. Labeling conventions (isti'adha/basmala exclusion,
 repetition handling, non-contiguous ids) in Appendix. Dataset frozen by SHA-256
-before any run.
+before any run (v1 for both studies; one label corrected post-study after the
+agents flagged it — see Discussion — giving v1.1 with oracle floor exactly 0.0).
 
 ### 3.3 Metric
 `research_score = detection_error + split_error + abstain_error` (lower better;
@@ -159,6 +160,24 @@ keep rates similar (~75–95%); zero crashes in all six runs. Figure:
   train-side; generalization damage was concentrated in a rare-event component.
   Conversely the "generalizer" discipline did not buy held-out accuracy — it
   bought robustness and smaller artifacts.
+- **Neither disposition wins; they pay in different currencies.** The
+  metric-maximizer buys accuracy and run-to-run consistency on the measured
+  distribution; the generalizer buys rare-event robustness, restraint, and
+  smaller artifacts. Which currency matters is a property of the deployment,
+  not of the agent — a harness designer should decide which they are buying
+  *before* reading the scoreboard.
+- **Agents double as annotation auditors.** Both arms independently flagged the
+  same training row as a gold-label error (At-Tin: "the reciter truly recites
+  8 ayahs; gold says 1–7") and declined to fit it. Post-study human re-review
+  confirmed and fixed the label, bringing the dataset's oracle floor to exactly
+  0.0. The agents' "unwinnable" lists were, in part, a free data-quality report
+  — an unplanned dividend of running the loop with agents that explain their
+  stopping decisions.
+- A methodological aside we did not anticipate: Study 2's outcome contradicted
+  our own Study 1 prediction (we expected Codex's core not to transfer; it
+  transferred best). Registering hypotheses in the methodology before the runs
+  (H1–H3) is what makes that reversal legible as evidence rather than
+  post-hoc narrative.
 
 ## 7. Study 2: held-out generalization
 

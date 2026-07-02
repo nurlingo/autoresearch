@@ -156,3 +156,16 @@ Per-run: `runs/<agent>-r<k>-<tag>.tsv` (uniform log), `-holdout.json`
 interrupted runs kept as `runs/discarded-*`. Inputs frozen in
 `runs/inputs.sha256` (train+test+eval hashes); split regenerable via
 `tools/split_dataset.py` (seed 42).
+
+
+---
+
+# Post-study note: the agents' data audit was correct (2026-07-03)
+
+Both arms repeatedly flagged one train row as a gold-label error (At-Tin,
+`6c7492bc`: "the reciter truly recites 8 ayahs, gold says 1–7") and refused to
+chase it. Human re-review confirmed and fixed it (`095001-095008`, new segment
+for 095008). With the fix the dataset is fully internally consistent — oracle
+floor exactly 0.0 on both splits (dataset v1.1; studies ran on v1). An
+unplanned dividend of the loop: **autonomous agents double as annotation
+auditors** — their "unwinnable" lists pointed straight at real label noise.

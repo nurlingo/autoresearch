@@ -85,7 +85,7 @@ dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 1. **Exclude leading isti'adha and basmala** from gold segment text — they are not
    recited ayah text. (Exception: Al-Fatiha, where the basmala *is* ayah 001001.)
    The concatenated split should reproduce the recited transcript *minus* that
-   prefix. *Known fix needed:* row `fcdb0888` currently includes the basmala.
+   prefix. (Historical: row `fcdb0888` once violated this; fixed during review.)
 2. **Repetition is allowed.** If the reciter repeats ayahs, the split may repeat
    ids in sequence (e.g. `f6c38e66`, Al-Ikhlas ×3). Detection scores the id set,
    so this is not penalized; the repeated segments matter for Stage 2.
@@ -260,6 +260,16 @@ unprompted. Protocol rules: (1) never reuse a run directory path; (2) after each
 Claude run, audit `~/.claude/projects/` for new memory and the global
 `~/.claude/CLAUDE.md` for modification (both verified clean for all runs so
 far). Codex has no equivalent enabled channel in our setup.
+
+**Dataset versioning (2026-07-03).** After both studies completed, row
+`6c7492bc` was corrected from `095001-095007` to `095001-095008` — the At-Tin
+label quirk that **both agents independently flagged as a gold error** during
+their runs ("the transcript truly recites 8 ayahs"). The human review confirmed
+them. Studies 1–2 ran on dataset v1 (hashes in git history at the study
+commits); current files are v1.1, re-frozen in `runs/inputs.sha256`. With the
+fix, the oracle floor is exactly 0.0 on both splits. The correction lives in
+train, so no held-out score changes; Study 2 numbers are reported against v1
+as run.
 
 **Isolation postmortem (2026-07-02).** The first Study 2 attempts leaked and were
 discarded: (a) a Claude run was launched in the main repo, where `data/test.csv`

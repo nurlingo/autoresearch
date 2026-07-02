@@ -62,8 +62,8 @@ research_score = detection_error + split_error + abstain_error      # lower is b
 - **abstain** — return `{"abstain": True}` on non-Quran rows.
 
 Reference points on the train split: empty baseline `2.0`; feeding the gold
-split back scores `~0.007` (two known label quirks live in train). Treat `~0.007`
-as the practical floor. The held-out test set is scored separately after the run.
+split back scores `0.0` — the dataset is internally consistent, so `0.0` is the
+true floor. The held-out test set is scored separately after the run.
 
 **Simplicity criterion**: all else equal, simpler is better. A tiny gain that adds
 ugly complexity is not worth it; an equal-or-better result from *deleting* code is
