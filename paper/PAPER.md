@@ -21,11 +21,21 @@ score ~10× lower (0.007 vs 0.078, complete separation across runs) — but does
 substantially by memorizing the evaluation set: 19–41 hardcoded ayah ids per run,
 including literal transcript-to-answer lookups for individual recordings. The
 raw metric thus rewards specification gaming and cannot distinguish a better
-algorithm from a better-overfit one. We characterize the two behavioral
-profiles — *generalizer* vs *metric-maximizer* — quantify them (LOC, hardcoded
-constants, stopping behavior, keep rates), and present a held-out redesign of
-the harness (Study 2) that scores agents on unseen recordings.
-[TODO: Study 2 results.]
+algorithm from a better-overfit one. In Study 2 we redesign the harness with a
+held-out split, disclose its existence to both agents, and re-run 3×2 trials.
+Three results: (i) the train-side separation evaporates — held-out, the arms
+are statistically indistinguishable on the full metric; (ii) disclosure alone
+eliminates literal memorization (hardcoded answers drop from 19–41 per Codex
+run to zero) while leaving the train-grinding instinct intact — yet Codex's
+general core transfers *better and more consistently* than Claude's
+(held-out detection+split 0.085±0.004 vs 0.121±0.031); (iii) the decisive
+held-out difference is rare-event robustness: a single missed abstention costs
+Codex half a point, while Claude rejects non-recitation inputs 10/10 across
+both studies. We also catalogue the isolation failures the agents surfaced —
+reading sibling branches through a shared git database, and unprompted
+persistent-memory notes addressed to "future runs" — and derive design rules
+for autoresearch harnesses: agents will use any state channel the design
+leaves open, including their own tooling's.
 
 ## 1. Introduction
 
@@ -37,7 +47,8 @@ the harness (Study 2) that scores agents on unseen recordings.
   task with real user data; (ii) a 3×2 controlled comparison; (iii) the
   finding that the agents embody opposite research philosophies, with direct
   implications for how such loops must be designed (held-out sets are not
-  optional); (iv) [TODO Study 2] a held-out generalization study.
+  optional); (iv) a held-out generalization study showing the train-side
+  separation evaporates and reframing where each disposition actually pays.
 - Why this task is a good testbed: real ASR noise, genuinely messy user
   behavior (repetitions, restarts, skips, non-Quran speech), a closed reference
   corpus (the Quran) enabling exact gold labels, and a metric with a known
@@ -87,7 +98,9 @@ one commit per experiment = complete audit trail.
 - Budget: 30 experiments or 1 h, whichever first. Reasoning effort `high` both.
 - Full-auto permissions both (Claude `--dangerously-skip-permissions`; Codex
   `-s workspace-write -a never`).
-- [TODO confounds table: model ids/dates, CLI versions, hardware.]
+- Confounds pinned: Claude Code v2.1.198 (Claude Opus 4.8, reasoning effort
+  `high`); Codex CLI v0.139.0 (GPT-5.5, reasoning effort `high`); same MacBook
+  Pro for all runs; dataset + eval frozen by SHA-256.
 
 ## 5. Study 1: results
 
