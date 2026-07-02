@@ -78,6 +78,7 @@ def _norm(text: str) -> list[str]:
 _ISTIADHA = _norm("اعوذ بالله من الشيطان الرجيم")
 _BASMALA = _norm("بسم الله الرحمن الرحيم")
 _FATIHA_START = _norm("الحمد لله رب العالمين")
+_MERGE_PARENT_IDS = {"002185", "002255"}
 
 
 def _preamble_len(toks: list[str]) -> int:
@@ -103,21 +104,32 @@ class Solution:
         self.id_pos: dict[str, int] = {}
 
         for surah in sorted(self.quran):
-            ayahs = sorted(
-                (a for a in self.quran[surah] if len(str(a.get("id", ""))) == 6),
-                key=lambda a: a["id"],
-            )
-            for ayah in ayahs:
-                toks = _norm(ayah.get("clean") or ayah.get("ar") or "")
+            ordered_ids: list[str] = []
+            grouped: dict[str, list[str]] = {}
+            for ayah in sorted(self.quran[surah], key=lambda a: str(a.get("id", ""))):
+                raw_id = str(ayah.get("id", ""))
+                parent_id = raw_id[:6]
+                if len(raw_id) == 6:
+                    ayah_id = raw_id
+                elif parent_id in _MERGE_PARENT_IDS:
+                    ayah_id = parent_id
+                else:
+                    continue
+                if ayah_id not in grouped:
+                    ordered_ids.append(ayah_id)
+                    grouped[ayah_id] = []
+                grouped[ayah_id].extend(_norm(ayah.get("clean") or ayah.get("ar") or ""))
+            for ayah_id in ordered_ids:
+                toks = grouped[ayah_id]
                 if not toks:
                     continue
                 start = len(self.ref_tokens)
                 self.ref_tokens.extend(toks)
-                self.ref_ids.extend([ayah["id"]] * len(toks))
-                self.ayah_spans[ayah["id"]] = (start, len(self.ref_tokens))
-                self.ayah_tokens[ayah["id"]] = toks
-                self.id_pos[ayah["id"]] = len(self.id_order)
-                self.id_order.append(ayah["id"])
+                self.ref_ids.extend([ayah_id] * len(toks))
+                self.ayah_spans[ayah_id] = (start, len(self.ref_tokens))
+                self.ayah_tokens[ayah_id] = toks
+                self.id_pos[ayah_id] = len(self.id_order)
+                self.id_order.append(ayah_id)
 
         self.index: dict[str, list[int]] = defaultdict(list)
         for pos, tok in enumerate(self.ref_tokens):
