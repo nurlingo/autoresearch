@@ -124,24 +124,24 @@ class Solution:
                 return {"abstain": True}
             candidates = exact[:4]
         else:
-            candidates = sorted(votes, key=lambda o: votes[o], reverse=True)
-            candidates = [o for o in candidates if votes[o] >= 0.5 * votes_best][:4]
+            best_off = max(votes, key=lambda o: votes[o])
+            # Keep every well-supported offset that sits near the top one. An
+            # early stumble/repetition splits a single recitation into two nearby
+            # offset clusters; spanning one window across all of them lets difflib
+            # bridge the internal insertion instead of dropping half the ayahs.
+            candidates = [o for o in votes
+                          if votes[o] >= max(2, 0.2 * votes_best) and abs(o - best_off) <= 2 * n]
+            candidates = candidates or [best_off]
 
-        def align(best_off):
-            lo = max(0, best_off)
-            hi = min(len(self.corpus_tok), best_off + n + 5)
-            win_id = self.corpus_id[lo:hi]
-            matcher = SequenceMatcher(a=tnorm, b=self.corpus_tok[lo:hi], autojunk=False)
-            assigned: list[str | None] = [None] * n
-            m = 0
-            for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-                if tag == "equal":
-                    m += i2 - i1
-                    for k in range(i2 - i1):
-                        assigned[i1 + k] = win_id[j1 + k]
-            return assigned, m
-
-        assigned, _ = max((align(o) for o in candidates), key=lambda r: r[1])
+        lo = max(0, min(candidates))
+        hi = min(len(self.corpus_tok), max(candidates) + n + 5)
+        win_id = self.corpus_id[lo:hi]
+        matcher = SequenceMatcher(a=tnorm, b=self.corpus_tok[lo:hi], autojunk=False)
+        assigned: list[str | None] = [None] * n
+        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+            if tag == "equal":
+                for k in range(i2 - i1):
+                    assigned[i1 + k] = win_id[j1 + k]
         anchors = [i for i in range(n) if assigned[i] is not None]
         if not anchors:
             return {"abstain": True}
