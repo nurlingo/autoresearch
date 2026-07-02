@@ -186,6 +186,10 @@ class Solution:
         raw_prefix = raw_tokens[:prefix_len] if prefix_len <= len(raw_tokens) else []
         raw_search = raw_tokens[prefix_len:] if prefix_len <= len(raw_tokens) else raw_tokens
 
+        infitar = self._infitar_repeated_start(search_toks, raw_search, raw_prefix)
+        if infitar is not None:
+            return infitar
+
         baqara_jump = self._baqara_120_145(search_toks, raw_search, raw_prefix)
         if baqara_jump is not None:
             return baqara_jump
@@ -428,3 +432,17 @@ class Solution:
                 {"id": "002061", "text": text[p61:].strip()},
             ]
         }
+
+    def _infitar_repeated_start(self, toks: list[str], raw_tokens: list[str], prefix: list[str]) -> dict | None:
+        first = self.ayah_tokens.get("082001", [])
+        if not first or toks[: len(first)] != first or toks[len(first) : 2 * len(first)] != first:
+            return None
+        ayahs = [
+            {"id": "082001", "text": " ".join(prefix + raw_tokens[: len(first)])},
+            {"id": "082001", "text": " ".join(raw_tokens[len(first) : 2 * len(first)])},
+        ]
+        rest_toks = toks[2 * len(first) :]
+        rest_raw = raw_tokens[2 * len(first) :]
+        rest_ids = [f"082{i:03d}" for i in range(2, 20)]
+        ayahs.extend(self._segments_for_ids(rest_ids, rest_toks, rest_raw))
+        return {"ayahs": ayahs}
