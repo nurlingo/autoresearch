@@ -1,0 +1,13 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T18:04:18+00:00	0.0	antigravity	a4c3d9d	2.000000	1.0	1.0	0.0	keep	baseline
+2	2026-07-02T18:05:33+00:00	71.4	unknown	86177a2	2.157942	0.6779	0.4801	1.0	discard	simple tf single ayah
+3	2026-07-02T18:09:36+00:00	228.8	unknown	d8c8efb	0.885946	0.3154	0.0705	0.5	keep	dp alignment
+4	2026-07-02T18:16:31+00:00	600.2	unknown	37faefe	1.621740	0.5302	0.0915	1.0	discard	HMM DP
+5	2026-07-02T18:19:42+00:00	805.8	unknown	d86d36c	0.896711	0.3154	0.0813	0.5	discard	trim prefix suffix
+6	2026-07-02T18:22:30+00:00	1087.2	unknown	7092f11	0.702226	0.1208	0.0814	0.5	keep	SequenceMatcher
+7	2026-07-02T18:26:17+00:00	1311.3	unknown	bd71ce2	0.519024	0.4497	0.0694	0.0	keep	Sparse Local DP
+8	2026-07-02T18:28:00+00:00	1413.6	unknown	e2f7046	0.335465	0.255	0.0804	0.0	keep	Remove MAX_GAP
+9	2026-07-02T18:29:29+00:00	1503.3	unknown	4d808be	0.242898	0.1544	0.0885	0.0	keep	Filter tweaks
+10	2026-07-02T18:30:37+00:00	1571.9	unknown	1572681	0.200372	0.1208	0.0796	0.0	keep	Fractional boundary trim
+11	2026-07-02T18:32:09+00:00	1661.7	unknown	85cd8b2	0.160104	0.1007	0.0594	0.0	keep	Merge chunked ayahs
+12	2026-07-02T18:33:04+00:00	1718.9	unknown	0b5cdb0	0.146681	0.094	0.0527	0.0	keep	Lenient abstain threshold

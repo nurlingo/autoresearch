@@ -1,0 +1,2496 @@
+{
+  "summary": {
+    "research_score": 0.09055,
+    "score_direction": "lower_is_better",
+    "stage": "1_detection_and_split",
+    "cases": 107,
+    "detection": {
+      "exact": 100,
+      "total": 105,
+      "accuracy": 0.9524
+    },
+    "split": {
+      "mean_word_assignment_accuracy": 0.9571,
+      "scored_cases": 105
+    },
+    "abstain": {
+      "correct": 2,
+      "total": 2,
+      "accuracy": 1.0
+    }
+  },
+  "cases": [
+    {
+      "recording_id": "575e2889-16ec-42d6-acab-a1df15485fe2",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "095001",
+        "095002",
+        "095003"
+      ],
+      "predicted_ayah_ids": [
+        "095001",
+        "095002",
+        "095003"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "56e4a8e4-abdf-4458-b2d1-075434d37af9",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "095001",
+        "095002",
+        "095003",
+        "095004",
+        "095005",
+        "095006",
+        "095007"
+      ],
+      "predicted_ayah_ids": [
+        "095001",
+        "095002",
+        "095003",
+        "095004",
+        "095005",
+        "095006",
+        "095007",
+        "095008"
+      ],
+      "detection_exact": false,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "1feb7b1c-1ec6-4c47-895a-2336c077956e",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "predicted_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d2704d24-2542-43df-a6dc-f72dbaded612",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "044001",
+        "044002",
+        "044003",
+        "044004",
+        "044005",
+        "044006",
+        "044007",
+        "044008",
+        "044009",
+        "044010",
+        "044011",
+        "044012",
+        "044013",
+        "044014",
+        "044015",
+        "044016",
+        "044017",
+        "044018"
+      ],
+      "predicted_ayah_ids": [
+        "044001",
+        "044002",
+        "044003",
+        "044004",
+        "044005",
+        "044006",
+        "044007",
+        "044008",
+        "044009",
+        "044010",
+        "044011",
+        "044012",
+        "044013",
+        "044014",
+        "044015",
+        "044016",
+        "044017",
+        "044018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9099,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "4219e9ad-ce9f-4cc4-a27c-99746d7160df",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "044032",
+        "044033",
+        "044034",
+        "044035",
+        "044036",
+        "044037"
+      ],
+      "predicted_ayah_ids": [
+        "044032",
+        "044033",
+        "044034",
+        "044035",
+        "044036",
+        "044037"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3ba1e502-e0c8-4b2e-90aa-f3aad7ec0424",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "018001",
+        "018002",
+        "018003",
+        "018004",
+        "018005",
+        "018006",
+        "018007",
+        "018008",
+        "018009",
+        "018010"
+      ],
+      "predicted_ayah_ids": [
+        "018001",
+        "018002",
+        "018003",
+        "018004",
+        "018005",
+        "018006",
+        "018007",
+        "018008",
+        "018009",
+        "018010"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9714,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "401a4400-905e-4475-a608-4d76d9d1070e",
+      "kind": "abstain",
+      "confidence": "high",
+      "expected_ayah_ids": [],
+      "predicted_ayah_ids": [],
+      "detection_exact": false,
+      "split_accuracy": null,
+      "abstain_correct": true,
+      "error": null
+    },
+    {
+      "recording_id": "6ae8a455-4866-4a30-9dcd-8e861f6d1647",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "31e33eb7-bae4-4a75-b054-9ded8a858ca1",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "066001",
+        "066002"
+      ],
+      "predicted_ayah_ids": [
+        "066001",
+        "066002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "0578104c-2d54-4080-9b8c-358e71258edd",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "fa87b572-b3b2-498e-9b81-83b52ede4696",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002021",
+        "002022",
+        "002023",
+        "002024"
+      ],
+      "predicted_ayah_ids": [
+        "002021",
+        "002022",
+        "002023",
+        "002024"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9714,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "a67a0bd1-2cd2-44a6-8205-628f2c9910e0",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "066001",
+        "066002"
+      ],
+      "predicted_ayah_ids": [
+        "066001",
+        "066002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "92d84f5c-13b3-484b-b0f4-70d828a31dab",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002049",
+        "002050"
+      ],
+      "predicted_ayah_ids": [
+        "002049",
+        "002050"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "153da6f8-0df8-4135-b44a-5719af0c18e4",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002125"
+      ],
+      "predicted_ayah_ids": [
+        "002125"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d75b89d2-642c-4994-9dda-81cc6a1b3d44",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ebf89233-d444-4936-bebd-701c379e023a",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "58d5bcbc-9a56-4ad3-a67b-fb745476cd74",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "598a1359-6654-48fe-a89a-1bd6fd55a2bf",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002037",
+        "002038",
+        "002039"
+      ],
+      "predicted_ayah_ids": [
+        "002037",
+        "002038",
+        "002039"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8f7fc55d-e088-49bc-bd26-9df831c16090",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "predicted_ayah_ids": [
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9375,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "e4f25f8d-5293-465e-87e7-f5ed7a199849",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "069011",
+        "069012"
+      ],
+      "predicted_ayah_ids": [
+        "069011",
+        "069012"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "fdfacf91-e853-4b1f-b325-dd3f57a9ae9e",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "predicted_ayah_ids": [
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "f6c38e66-5e53-44fe-bce9-83c0326f7398",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "predicted_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.5556,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "41d067b1-4aec-47c0-9884-5b2e526ecd32",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "predicted_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "0a35482f-fe6e-4b16-9e4b-aca08df044fc",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "predicted_ayah_ids": [
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8bbe8c31-70cb-4931-8d5d-3d6cd814e270",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "predicted_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "a54b4aba-9463-4b57-9a81-2461ea506799",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002055",
+        "002056",
+        "002057"
+      ],
+      "predicted_ayah_ids": [
+        "002055",
+        "002056",
+        "002057"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "26363eb4-3222-45ab-989a-753895b45ff3",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002057"
+      ],
+      "predicted_ayah_ids": [
+        "002057"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "b4c8679b-9aa9-42e7-842e-cdea29b4ebc5",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "5261eaeb-5fb0-48a0-a565-85f29e77f692",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8088c1a1-b96a-49e0-8c63-2d3cde9cb558",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d698c323-b473-4305-9d70-4b2062e0e532",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "da326d36-f2dc-4866-961a-3858e805b7f9",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "dc85549e-1835-4903-8301-0fb15fc61d18",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "0ed5f4ec-284b-4077-891e-7f4b4fab7b47",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "5eeb4afd-e7b7-4017-b419-5e76eb2414e9",
+      "kind": "range",
+      "confidence": "medium",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [],
+      "detection_exact": false,
+      "split_accuracy": 0.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ac6a8fcb-18b9-423b-ae2c-c7cf317fde61",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "5b26e9b0-ae3d-4541-96f1-47ff019ef038",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8af8a8ad-d908-4066-9638-fd140090da23",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "65bdeaeb-4497-4852-8074-c16525b82703",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "609a7ed3-74d3-4550-b90e-056505b163bd",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d1b768cb-274f-4e72-9f6e-1234e2f2f40e",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "9a95ec98-bc14-4dce-85d8-b4b3f123b02a",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "f001d865-a1e4-4234-99e2-69463ab2f995",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "065001"
+      ],
+      "predicted_ayah_ids": [
+        "065001"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d8002cbe-9795-4d60-86f6-a9f3198a659f",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "predicted_ayah_ids": [
+        "002058",
+        "002059",
+        "002060",
+        "002061"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "1f05e926-5a63-4b84-a5f7-477115b225f5",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002047"
+      ],
+      "predicted_ayah_ids": [
+        "002047"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "b5c6ac30-761d-4ece-a68c-1e74230b025b",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "predicted_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "dd1f124c-3d69-483c-9727-602434bfa36e",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "predicted_ayah_ids": [
+        "002144",
+        "002145"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "e154ce2a-5961-4d6a-b51f-b7584888e2dc",
+      "kind": "range",
+      "confidence": "medium",
+      "expected_ayah_ids": [
+        "069008",
+        "069009",
+        "069010",
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "predicted_ayah_ids": [
+        "069008",
+        "069009",
+        "069010",
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "27d84372-e845-4c7d-a3aa-13a7ef171799",
+      "kind": "range",
+      "confidence": "medium",
+      "expected_ayah_ids": [
+        "069008",
+        "069009",
+        "069010",
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "predicted_ayah_ids": [
+        "069008",
+        "069009",
+        "069010",
+        "069011",
+        "069012",
+        "069013",
+        "069014",
+        "069015",
+        "069016",
+        "069017",
+        "069018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9375,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "077d7ea9-62ed-40a6-8051-e2b7bd9ec021",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "072001",
+        "072002",
+        "072003"
+      ],
+      "predicted_ayah_ids": [
+        "072001",
+        "072002",
+        "072003"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "56ba0060-0fa5-4e35-a656-6ed230649451",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "072006",
+        "072007",
+        "072008",
+        "072009"
+      ],
+      "predicted_ayah_ids": [
+        "072006",
+        "072007",
+        "072008",
+        "072009"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9756,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "c9ac41ae-055e-43fb-8782-ee9ec90f32f0",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002255"
+      ],
+      "predicted_ayah_ids": [],
+      "detection_exact": false,
+      "split_accuracy": 0.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3e0efa2d-af82-4179-a3c8-3497d14cde60",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073005",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "predicted_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073005",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9836,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "618a7296-a829-4140-b697-08a0b9b83d4f",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "predicted_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "c17c7d07-d864-4238-a763-2ac758df244c",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073005",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "predicted_ayah_ids": [
+        "073001",
+        "073002",
+        "073003",
+        "073004",
+        "073005",
+        "073006",
+        "073007",
+        "073008",
+        "073009",
+        "073010",
+        "073011",
+        "073012",
+        "073013",
+        "073014",
+        "073015",
+        "073016",
+        "073017",
+        "073018",
+        "073019"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9918,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "84dccbad-0b87-4bff-8c29-2ad51feb7454",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "predicted_ayah_ids": [
+        "112001",
+        "112002",
+        "112003",
+        "112004"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "a123c754-c9a7-44c4-bd11-2d5bee3890a8",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "074038",
+        "074039",
+        "074040",
+        "074041",
+        "074042",
+        "074043",
+        "074044",
+        "074045",
+        "074046",
+        "074047",
+        "074048",
+        "074049",
+        "074050",
+        "074051",
+        "074052",
+        "074053",
+        "074054",
+        "074055",
+        "074056"
+      ],
+      "predicted_ayah_ids": [
+        "074038",
+        "074039",
+        "074040",
+        "074041",
+        "074042",
+        "074043",
+        "074044",
+        "074045",
+        "074046",
+        "074047",
+        "074048",
+        "074049",
+        "074050",
+        "074051",
+        "074052",
+        "074053",
+        "074054",
+        "074055",
+        "074056"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9759,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "f6d20a39-9652-4210-8b1d-4e7a60c3d9c0",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "077001",
+        "077002",
+        "077003",
+        "077004",
+        "077005",
+        "077006",
+        "077007",
+        "077008",
+        "077009",
+        "077010",
+        "077011",
+        "077012",
+        "077013",
+        "077014",
+        "077015",
+        "077016",
+        "077017",
+        "077018",
+        "077019"
+      ],
+      "predicted_ayah_ids": [
+        "077001",
+        "077002",
+        "077003",
+        "077004",
+        "077005",
+        "077006",
+        "077007",
+        "077008",
+        "077009",
+        "077010",
+        "077011",
+        "077012",
+        "077013",
+        "077014",
+        "077015",
+        "077016",
+        "077017",
+        "077018",
+        "077019"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "b06b49e3-32d1-4c97-abcb-4a939e1643e2",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "077029",
+        "077030",
+        "077031",
+        "077032",
+        "077033",
+        "077034",
+        "077035",
+        "077036",
+        "077037",
+        "077038",
+        "077039",
+        "077040",
+        "077041",
+        "077042",
+        "077043",
+        "077045",
+        "077046",
+        "077047",
+        "077048",
+        "077049",
+        "077050"
+      ],
+      "predicted_ayah_ids": [
+        "077029",
+        "077030",
+        "077031",
+        "077032",
+        "077033",
+        "077034",
+        "077035",
+        "077036",
+        "077037",
+        "077038",
+        "077039",
+        "077040",
+        "077041",
+        "077042",
+        "077043",
+        "077045",
+        "077046",
+        "077047",
+        "077048",
+        "077049",
+        "077050"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9674,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "0f00e752-2d5d-4c8e-b9be-f1c65b86f58c",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "077020",
+        "077021",
+        "077022",
+        "077023",
+        "077024",
+        "077025",
+        "077026",
+        "077027",
+        "077028",
+        "077029",
+        "077030",
+        "077031"
+      ],
+      "predicted_ayah_ids": [
+        "077020",
+        "077021",
+        "077022",
+        "077023",
+        "077024",
+        "077025",
+        "077026",
+        "077027",
+        "077028",
+        "077029",
+        "077030",
+        "077031"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9615,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "4af052f4-990f-4a69-bf8a-9e62b50a1c3d",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "065001",
+        "065002",
+        "065003",
+        "065004",
+        "065005"
+      ],
+      "predicted_ayah_ids": [
+        "065001",
+        "065002",
+        "065003",
+        "065004",
+        "065005"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "5f88c047-cf19-4b89-901a-02d30c10a985",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002113",
+        "002114",
+        "002115",
+        "002116",
+        "002117",
+        "002118",
+        "002119",
+        "002120"
+      ],
+      "predicted_ayah_ids": [
+        "002113",
+        "002114",
+        "002115",
+        "002116",
+        "002117",
+        "002118",
+        "002119",
+        "002120"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "a77711b7-27b4-4382-90f3-ca6356b81e25",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "079001",
+        "079002",
+        "079003",
+        "079004",
+        "079005",
+        "079006",
+        "079007",
+        "079008",
+        "079009",
+        "079010",
+        "079011",
+        "079012",
+        "079013",
+        "079014",
+        "079015",
+        "079016",
+        "079017",
+        "079018",
+        "079019",
+        "079020",
+        "079021",
+        "079022",
+        "079023",
+        "079024",
+        "079025",
+        "079026",
+        "079027",
+        "079028",
+        "079029",
+        "079030",
+        "079031",
+        "079032",
+        "079033",
+        "079034",
+        "079035",
+        "079036",
+        "079037",
+        "079038",
+        "079039",
+        "079040",
+        "079041",
+        "079042",
+        "079043",
+        "079044",
+        "079045",
+        "079046"
+      ],
+      "predicted_ayah_ids": [
+        "079001",
+        "079002",
+        "079003",
+        "079004",
+        "079005",
+        "079006",
+        "079007",
+        "079008",
+        "079009",
+        "079010",
+        "079011",
+        "079012",
+        "079013",
+        "079014",
+        "079015",
+        "079016",
+        "079017",
+        "079018",
+        "079019",
+        "079020",
+        "079021",
+        "079022",
+        "079023",
+        "079024",
+        "079025",
+        "079026",
+        "079027",
+        "079028",
+        "079029",
+        "079030",
+        "079031",
+        "079032",
+        "079033",
+        "079034",
+        "079035",
+        "079036",
+        "079037",
+        "079038",
+        "079039",
+        "079040",
+        "079041",
+        "079042",
+        "079043",
+        "079044",
+        "079045",
+        "079046"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9777,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "bfa80b08-a514-40b7-aa11-e7247a7c7b90",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002143"
+      ],
+      "predicted_ayah_ids": [
+        "002143"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "af7c4885-7ba3-4999-9000-8684f4edaf14",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002145"
+      ],
+      "predicted_ayah_ids": [
+        "002145"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "42b229a0-9e53-45b3-933c-63a261f04d77",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002154",
+        "002155",
+        "002156",
+        "002157"
+      ],
+      "predicted_ayah_ids": [
+        "002154",
+        "002155",
+        "002156",
+        "002157"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8623603d-edd8-4324-9b8d-ec83ecce6d9b",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002177"
+      ],
+      "predicted_ayah_ids": [
+        "002177"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "249b8783-c5a8-427b-9030-f4e0c17c21df",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002178"
+      ],
+      "predicted_ayah_ids": [
+        "002178"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "5d439c34-acc8-4f73-a8a4-31f050bef855",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002177"
+      ],
+      "predicted_ayah_ids": [
+        "002177"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "05d9b573-20e9-42cd-bd92-61252af730dd",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002179",
+        "002180",
+        "002181"
+      ],
+      "predicted_ayah_ids": [
+        "002179",
+        "002180",
+        "002181"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.875,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "d15ceb27-def1-49de-a5c4-0fe3b66b9257",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002184"
+      ],
+      "predicted_ayah_ids": [
+        "002184"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8ec39592-dcfd-4d82-b52a-81e2219b1781",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002182",
+        "002183",
+        "002184"
+      ],
+      "predicted_ayah_ids": [
+        "002182",
+        "002183",
+        "002184"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ef98b203-cf63-41f5-86ff-6ff345b3fe7c",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002188"
+      ],
+      "predicted_ayah_ids": [
+        "002188"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "766ea6e7-24a3-405a-b7e2-8c0f03a300e5",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002177",
+        "002178",
+        "002179",
+        "002180",
+        "002181",
+        "002182",
+        "002183",
+        "002184",
+        "002185",
+        "002186"
+      ],
+      "predicted_ayah_ids": [
+        "002177",
+        "002178",
+        "002179",
+        "002180",
+        "002181",
+        "002182",
+        "002183",
+        "002184",
+        "002185",
+        "002186"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9766,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "6f47efb8-8839-4850-a641-a1629af576ef",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "002187",
+        "002188"
+      ],
+      "predicted_ayah_ids": [
+        "002187",
+        "002188"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "08fcb7dd-2ad5-4d24-b9d0-df4c312e5459",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "001001",
+        "001002",
+        "001003",
+        "001004",
+        "001005",
+        "001006",
+        "001007"
+      ],
+      "predicted_ayah_ids": [
+        "001001",
+        "001002",
+        "001003",
+        "001004",
+        "001005",
+        "001006",
+        "001007"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "865a37f6-f91c-4c1e-92c2-04b081066e82",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "111001"
+      ],
+      "predicted_ayah_ids": [
+        "111001"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8049c411-c72d-48a0-8514-4075c7d23114",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "001002"
+      ],
+      "predicted_ayah_ids": [
+        "001002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ca83127a-e667-4618-8002-f3f9f48c991f",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "111001"
+      ],
+      "predicted_ayah_ids": [
+        "111001"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "12ec0abf-75a8-45ca-be00-cd59c3fa9cfd",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "001001",
+        "001002"
+      ],
+      "predicted_ayah_ids": [
+        "001001",
+        "001002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3519df4e-fa4d-41c2-b837-c476e72ab696",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "073020"
+      ],
+      "predicted_ayah_ids": [
+        "073020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ebec3395-92a7-4e8b-a937-abd367e96efe",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "018046"
+      ],
+      "predicted_ayah_ids": [
+        "018046"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "1ee682a3-cdff-4d82-8e61-363a275117bb",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "023001",
+        "023002",
+        "023003",
+        "023004",
+        "023005",
+        "023006",
+        "023007",
+        "023008",
+        "023009",
+        "023010",
+        "023011"
+      ],
+      "predicted_ayah_ids": [
+        "023001",
+        "023002",
+        "023003",
+        "023004",
+        "023005",
+        "023006",
+        "023007",
+        "023008",
+        "023009",
+        "023010",
+        "023011"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3f447db0-0bd6-4774-9667-6affaf9e60d6",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "011001",
+        "011002",
+        "011003",
+        "011004",
+        "011005"
+      ],
+      "predicted_ayah_ids": [
+        "011001",
+        "011002",
+        "011003",
+        "011004",
+        "011005"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "27ae5c01-da21-4d91-8a3d-08cfc032ef53",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "023012",
+        "023013",
+        "023014",
+        "023015",
+        "023016",
+        "023017"
+      ],
+      "predicted_ayah_ids": [
+        "023012",
+        "023013",
+        "023014",
+        "023015",
+        "023016",
+        "023017"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "6367fc57-ab4a-44e4-8511-22ecd5707e40",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "045001",
+        "045002",
+        "045003",
+        "045004",
+        "045005",
+        "045006",
+        "045007",
+        "045008",
+        "045009",
+        "045010"
+      ],
+      "predicted_ayah_ids": [
+        "045001",
+        "045002",
+        "045003",
+        "045004",
+        "045005",
+        "045006",
+        "045007",
+        "045008",
+        "045009",
+        "045010"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "697ecabd-85b3-4395-9a5b-0ad7f0ae3c96",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "055001",
+        "055002",
+        "055003",
+        "055004",
+        "055005",
+        "055006",
+        "055007",
+        "055008",
+        "055009",
+        "055010",
+        "055011",
+        "055012",
+        "055013",
+        "055014",
+        "055015",
+        "055016",
+        "055017",
+        "055018"
+      ],
+      "predicted_ayah_ids": [
+        "055001",
+        "055002",
+        "055003",
+        "055004",
+        "055005",
+        "055006",
+        "055007",
+        "055008",
+        "055009",
+        "055010",
+        "055011",
+        "055012",
+        "055013",
+        "055014",
+        "055015",
+        "055016",
+        "055017",
+        "055018"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "b92f1731-51db-455d-9a9d-6ae60ccd05a6",
+      "kind": "abstain",
+      "confidence": "high",
+      "expected_ayah_ids": [],
+      "predicted_ayah_ids": [],
+      "detection_exact": false,
+      "split_accuracy": null,
+      "abstain_correct": true,
+      "error": null
+    },
+    {
+      "recording_id": "cd05d53a-35f4-411a-911e-c012fdce969f",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "037001",
+        "037002",
+        "037003"
+      ],
+      "predicted_ayah_ids": [
+        "037001",
+        "037002",
+        "037003"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "28cb3dae-68f8-4af1-bdf1-b8f9e26a6a89",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "051001",
+        "051002",
+        "051003",
+        "051004"
+      ],
+      "predicted_ayah_ids": [
+        "051002",
+        "051003",
+        "051004"
+      ],
+      "detection_exact": false,
+      "split_accuracy": 0.75,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "c0f24ab3-fa50-44fb-ad58-7539c6d08588",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "093009",
+        "093010",
+        "093011"
+      ],
+      "predicted_ayah_ids": [
+        "093009",
+        "093010",
+        "093011"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "fbbb0941-fa68-4150-8385-e541c5d60c87",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "089021",
+        "089022"
+      ],
+      "predicted_ayah_ids": [
+        "089021",
+        "089022"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "72e88f25-6b03-4f99-80e6-7f1349e2ab3a",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "089021",
+        "089022",
+        "089023"
+      ],
+      "predicted_ayah_ids": [
+        "089021",
+        "089022",
+        "089023"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "c0364c0c-ccc5-4ed0-a730-bcaeb1761604",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "049003"
+      ],
+      "predicted_ayah_ids": [
+        "049003"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "ffd39f79-2c52-4860-a451-a6e612bfd5fd",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "049003"
+      ],
+      "predicted_ayah_ids": [
+        "049003"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "7a48d947-33e0-40a2-b805-f6984ef24bf6",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "019001"
+      ],
+      "predicted_ayah_ids": [],
+      "detection_exact": false,
+      "split_accuracy": 0.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "8530215d-9382-4600-8622-8cec470ffffc",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "036001",
+        "036002"
+      ],
+      "predicted_ayah_ids": [
+        "036001",
+        "036002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "833656c6-c787-44af-b524-8b80e13dce39",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "006086"
+      ],
+      "predicted_ayah_ids": [
+        "006086"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "eb309932-7006-498b-a285-a93c7bdd48c2",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "076010"
+      ],
+      "predicted_ayah_ids": [
+        "076010"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "0348c16a-0896-46ce-a3b1-453c0147b798",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "076010"
+      ],
+      "predicted_ayah_ids": [
+        "076010"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "49976acc-fc60-43db-b14a-c87b298f891f",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "076011",
+        "076012",
+        "076013",
+        "076015",
+        "076016",
+        "076017",
+        "076018",
+        "076019",
+        "076020"
+      ],
+      "predicted_ayah_ids": [
+        "076011",
+        "076012",
+        "076013",
+        "076015",
+        "076016",
+        "076017",
+        "076018",
+        "076019",
+        "076020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9839,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3fc0973c-1986-4174-bddc-de725ccf4cbe",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "076011",
+        "076012",
+        "076013",
+        "076014",
+        "076015",
+        "076016",
+        "076017",
+        "076018",
+        "076019",
+        "076020"
+      ],
+      "predicted_ayah_ids": [
+        "076011",
+        "076012",
+        "076013",
+        "076014",
+        "076015",
+        "076016",
+        "076017",
+        "076018",
+        "076019",
+        "076020"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9853,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "597fdd38-6f84-4cc5-a16b-72801980682e",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "078001",
+        "078002",
+        "078003",
+        "078004",
+        "078005",
+        "078006",
+        "078007",
+        "078008",
+        "078009",
+        "078010",
+        "078011",
+        "078012"
+      ],
+      "predicted_ayah_ids": [
+        "078001",
+        "078002",
+        "078003",
+        "078004",
+        "078005",
+        "078006",
+        "078007",
+        "078008",
+        "078009",
+        "078010",
+        "078011",
+        "078012"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "2a509571-e668-4539-95d9-b9a972c8ac83",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "053001",
+        "053002"
+      ],
+      "predicted_ayah_ids": [
+        "053001",
+        "053002"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "dbcb2a7a-5582-46fe-a1d5-217f369a4d26",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "053005",
+        "053006"
+      ],
+      "predicted_ayah_ids": [
+        "053005",
+        "053006"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.8333,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "3153fcf3-857e-4d3f-9d06-eb4b358721a8",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "053001",
+        "053002",
+        "053003",
+        "053004",
+        "053005",
+        "053006",
+        "053007",
+        "053008",
+        "053009",
+        "053010",
+        "053011",
+        "053012",
+        "053013",
+        "053014"
+      ],
+      "predicted_ayah_ids": [
+        "053001",
+        "053002",
+        "053003",
+        "053004",
+        "053005",
+        "053006",
+        "053007",
+        "053008",
+        "053009",
+        "053010",
+        "053011",
+        "053012",
+        "053013",
+        "053014"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 1.0,
+      "abstain_correct": null,
+      "error": null
+    },
+    {
+      "recording_id": "7c8f55a5-62ef-4325-ad6d-1b9c79d8fd19",
+      "kind": "range",
+      "confidence": "high",
+      "expected_ayah_ids": [
+        "076001",
+        "076002",
+        "076004",
+        "076005"
+      ],
+      "predicted_ayah_ids": [
+        "076001",
+        "076002",
+        "076004",
+        "076005"
+      ],
+      "detection_exact": true,
+      "split_accuracy": 0.9714,
+      "abstain_correct": null,
+      "error": null
+    }
+  ]
+}

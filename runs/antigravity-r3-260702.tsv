@@ -1,0 +1,17 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T19:13:43+00:00	0.0	antigravity	a8287ed	2.000000	1.0	1.0	0.0	keep	baseline
+2	2026-07-02T19:15:43+00:00	119.5	unknown	a8287ed	0.479881	0.4161	0.0638	0.0	keep	DP with bigram index and difflib matcher
+3	2026-07-02T19:17:02+00:00	198.7	unknown	a8287ed	9.999999	9.999999	9.999999	9.999999	crash	DP with difflib and n=1 freq filter
+4	2026-07-02T19:17:08+00:00	204.9	unknown	a8287ed	9.999999	9.999999	9.999999	9.999999	crash	DP with difflib and n=1 freq filter
+5	2026-07-02T19:17:14+00:00	210.1	unknown	a8287ed	0.168509	0.1074	0.0611	0.0	keep	DP with difflib and n=1 freq filter
+6	2026-07-02T19:20:47+00:00	423.5	unknown	a8287ed	0.134952	0.094	0.041	0.0	keep	DP with multiple offset intervals and prefix trimming
+7	2026-07-02T19:22:57+00:00	553.8	unknown	a8287ed	0.102003	0.0604	0.0416	0.0	keep	DP with ayah_counts check and 016098 filter
+8	2026-07-02T19:24:59+00:00	675.5	unknown	a8287ed	0.107570	0.0805	0.027	0.0	discard	DP with muqatta replacement
+9	2026-07-02T19:25:36+00:00	712.7	unknown	a8287ed	0.095825	0.0738	0.022	0.0	keep	DP with muqatta and punctuation fix
+10	2026-07-02T19:27:22+00:00	818.9	unknown	a8287ed	0.063412	0.0403	0.0231	0.0	keep	DP with muqatta, punct fix, and correct ayah matching logic
+11	2026-07-02T19:28:16+00:00	872.0	unknown	a8287ed	0.080601	0.0537	0.0269	0.0	discard	DP with max_votes * 0.2
+12	2026-07-02T19:30:34+00:00	1010.2	unknown	a8287ed	0.063412	0.0403	0.0231	0.0	discard	DP with max_votes * 0.35
+13	2026-07-02T19:31:12+00:00	1048.9	unknown	a8287ed	0.112744	0.0805	0.0322	0.0	discard	DP with valid_offsets c >= 5 absolute threshold
+14	2026-07-02T19:35:05+00:00	1280.9	unknown	a8287ed	1.126211	0.1007	0.0255	1.0	discard	Recovered best from scratch
+15	2026-07-02T19:35:31+00:00	1307.3	unknown	a8287ed	0.070720	0.047	0.0237	0.0	discard	Recovered best from scratch 2
+16	2026-07-02T19:35:44+00:00	1320.8	unknown	a8287ed	0.070720	0.047	0.0237	0.0	discard	Final restored model run
