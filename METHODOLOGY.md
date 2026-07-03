@@ -117,6 +117,43 @@ Machine: the same MacBook Pro for both arms. **Reasoning effort is matched acros
 `high` and Codex `high`. The scales differ (Claude: low/medium/high/xhigh/max;
 Codex: low/medium/high/xhigh) but `high` is the same named tier on both.
 
+### 5.1 Community arms — exploratory (Study 2 only)
+
+After the preregistered 3×2 Claude/Codex matrix completed, a collaborator ran
+**two additional arms** on the same Study 2 harness (TAG `260702`, dataset v1,
+hash-verified). These are **exploratory extensions**, not part of the core A/B:
+model routing and hardware differ from the preregistered arms.
+
+| `AR_AGENT` | Tool | Model / mode | Autonomy | Machine |
+|---|---|---|---|---|
+| `cursor` | Cursor Agent | **Auto mode** (unpinned model routing) | auto-run / YOLO | Linux (contributor) |
+| `antigravity` | Google Antigravity | **Gemini 3.1 Pro (High)** | full-auto in app | Linux (contributor) |
+
+Runbooks: `CURSOR.md`, `ANTIGRAVITY.md`. **3 runs per arm** (same budget and
+verbatim prompt as Study 2). Log every run; report train best + held-out test.
+
+**Isolation (same as Study 2 core).** Each run: `tools/new_run.sh <agent> <k>`
+→ fresh single-commit clone at `../ar-runs/<tag>-<agent>-r<k>` containing
+`train.csv` + `quran_ref.json` only. The agent workspace is **only** that
+clone — never the main repo (which holds `test.csv`, other agents' bundles, and
+`runs/`). After the session: `TAG=<tag> tools/collect_run.sh <agent> <k>` scores
+held-out test and archives `.tsv` + `-holdout.json` + `.bundle`, then deletes
+the clone.
+
+**Cross-run contamination controls.** Runs do not share git history, run
+directories, or test labels. What *can* leak across runs is harness-external
+agent state (e.g. Cursor persistent memory, Antigravity account-level chat if
+the same project is reused) — mitigated by **never reusing run paths** and
+opening a **new Antigravity project / Cursor workspace per run**. Train scores
+improving across r1→r2→r3 for one arm are therefore **not** evidence of
+held-out leakage; they reflect per-run optimization plus stochasticity. The
+Antigravity held-out series is **not** monotonic (r2 test = 0.652 from one
+abstain miss; r3 test = 0.091 is best).
+
+**Logging caveat:** several Antigravity rows logged `agent=unknown` because
+`AR_AGENT` was not exported in the shell before `make exp`; the arm is identified
+by run folder and bundle, not those rows.
+
 ## 6. Protocol
 
 Per agent, per run *k*:
@@ -225,7 +262,7 @@ errors do not pollute it. Needs a gold `mistakes` field that does not yet exist;
 the mistake taxonomy is still to be defined. Transcript-only → cannot catch
 vowel/tajweed errors.
 
-## 12. Study 2 — held-out generalization (planned)
+## 12. Study 2 — held-out generalization (complete)
 
 Study 1 scores agents on the same 254 rows they optimize, and `eval.py` prints
 expected ids in its failure report — which *rewards memorization*. Codex exploited

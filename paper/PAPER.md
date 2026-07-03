@@ -231,6 +231,42 @@ fresh single-commit clones per run. Design rule: enumerate the state channels
 an agent's *own tooling* provides (git history, logs, persistent memory) and
 close them structurally, not by instruction.
 
+### 7.4 Community arms: Cursor (Auto) and Antigravity (Gemini 3.1 Pro High)
+
+A collaborator added two exploratory arms on the same Study 2 harness (TAG
+`260702`, dataset v1, hash-verified; runbooks `CURSOR.md` / `ANTIGRAVITY.md`).
+Same budget, prompt, and isolation (fresh single-commit clone per run; held-out
+scoring by us). **Not preregistered** — different machine, and Cursor uses
+**Auto mode** (unpinned model routing) rather than a fixed model id.
+
+| run | train | test | test det+split | abstain miss | exps |
+|---|---:|---:|---:|---:|---:|
+| antigravity-r1 | 0.147 | 0.133 | 0.133 | – | 12 |
+| antigravity-r2 | 0.109 | 0.652 | 0.152 | 0.5 | 12 |
+| antigravity-r3 | 0.063 | 0.091 | 0.091 | – | 16 |
+| cursor-r1 | 0.388 | 0.305 | 0.305 | – | 5 |
+| cursor-r2 | 0.293 | 0.229 | 0.229 | – | 9 |
+| cursor-r3 | 0.347 | 0.286 | 0.286 | – | 7 |
+
+**Held-out detection+split (four-arm comparison):** Codex 0.085±0.004 <
+Claude 0.121±0.031 ≈ Antigravity 0.125±0.026 < Cursor 0.273±0.032. Figure:
+`study2_generalization.png` (updated with all four arms).
+
+Three patterns extend Study 2 rather than overturn it. **(i) Cursor underfits:**
+5–9 experiments per run, train never below 0.29, and test beats train on every
+run (negative gap) — the only arm to generalize *better* than its train score,
+consistent with early stopping + unpinned Auto routing. Treat as exploratory.
+**(ii) Antigravity sits between Claude and Codex** on held-out core accuracy,
+with the same rare abstain failure mode as Codex (r2, cost 0.5). Train improved
+monotonically r1→r3 (0.147→0.109→0.063) but held-out did not (r2 test blow-up) —
+so improving train across runs is not cross-run leakage, it is within-run
+optimization and run-to-run variance. **(iii) Cross-arm ranking on held-out core
+tracks optimization effort:** arms that spent more experiments on general
+machinery transferred better; wasted train-side margin was harmless, echoing §7.1.
+Zero hardcoded per-recording ids in any community final solution. Bundles confirm
+each run starts from the identical stub commit; `collect_run.sh` was updated to
+auto-commit final working tree when an agent forgets to commit (antigravity-r3).
+
 ## 8. Limitations & threats
 
 Single task/domain; n=3 per arm (report effect sizes, not just p); pretraining
@@ -238,7 +274,9 @@ familiarity with the Quran (equal across arms; task is algorithm engineering,
 not recall); transcript-only ceiling (harakat-blind); temporal confound between
 arms (runs days apart); harness authored with one of the compared agents
 (Claude) — mitigated by fixed files + hashes; agent CLIs are moving targets
-(versions pinned in confounds table).
+(versions pinned in confounds table). **Community arms** (Cursor Auto, Antigravity
+on a different Linux box) are exploratory extensions with unpinned model routing
+(Cursor) and are not matched to the preregistered Claude/Codex confounds.
 
 ## 9. Reproducibility
 
