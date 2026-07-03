@@ -28,7 +28,12 @@ test_score=$("$PYTHON" -c "import json;print(json.load(open('$HOLDOUT'))['summar
 echo "train best: $train_best   heldout test: $test_score"
 
 # Preserve the full per-experiment history (train.csv is gitignored in the
-# clone, so the bundle contains no user data), then remove the clone.
+# clone, so the bundle contains no user data), then remove the clone. Commit any
+# uncommitted final state first — some agent sandboxes block git, and losing the
+# final solution.py (antigravity-r3) is worse than an extra collector commit.
+git -C "$DIR" add -A
+git -C "$DIR" -c user.name=collector -c user.email=collector@local \
+  commit -q -m "final state (committed by collector)" 2>/dev/null || true
 git -C "$DIR" bundle create -q "$BUNDLE" --all
 rm -rf "$DIR"
 echo "collected -> $(basename "$OUT") + $(basename "$HOLDOUT") + $(basename "$BUNDLE")  (clone removed)"

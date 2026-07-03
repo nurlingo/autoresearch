@@ -169,3 +169,45 @@ for 095008). With the fix the dataset is fully internally consistent — oracle
 floor exactly 0.0 on both splits (dataset v1.1; studies ran on v1). An
 unplanned dividend of the loop: **autonomous agents double as annotation
 auditors** — their "unwinnable" lists pointed straight at real label noise.
+
+
+---
+
+# Study 2 addendum — community arms: Antigravity & Cursor (2026-07-03)
+
+Contributed by a collaborator following `ANTIGRAVITY.md` on a separate machine
+(same frozen v1 dataset, hash-verified; clone isolation confirmed via bundles —
+every run starts from the single snapshot commit; zero hardcoded ids in any
+final solution).
+
+| run | train | test | test det+split | abstain miss | exps |
+|---|---:|---:|---:|---:|---:|
+| antigravity-r1 | 0.1467 | 0.1329 | 0.1328 | – | 12 |
+| antigravity-r2 | 0.1092 | 0.6522 | 0.1522 | 0.5 | 12 |
+| antigravity-r3 | 0.0634 | 0.0906 | 0.0905 | – | 16 |
+| cursor-r1 | 0.3878 | 0.3052 | 0.3051 | – | 5 |
+| cursor-r2 | 0.2933 | 0.2289 | 0.2288 | – | 9 |
+| cursor-r3 | 0.3470 | 0.2860 | 0.2860 | – | 7 |
+
+**Four-arm held-out det+split:** Codex 0.085±0.004 < Claude 0.121±0.031 ≈
+Antigravity (Gemini 3.1 Pro high) 0.125±0.026 < Cursor (Auto) 0.273±0.032.
+
+Observations:
+1. **Cursor UNDERFITS** — the only arm whose test scores beat its train scores
+   (negative gap): 5–9 experiments, train never below 0.29. Auto mode
+   (unpinned model selection) + early stopping → under-optimization. Treated as
+   an exploratory arm (model/effort not pinned → confounded).
+2. **Antigravity ≈ Claude** on held-out core, with a Codex-style abstain miss
+   in r2 (0.5). Its profile is intermediate: moderate train grinding, moderate
+   transfer.
+3. **The cross-arm ranking on held-out core follows optimization effort**
+   (experiments spent): the arms that optimized hardest transferred best;
+   the overfit margin was wasted, not harmful — consistent with Study 2's main
+   finding.
+4. Caveats: different machine (wall-clock not comparable), Gemini 3.1 Pro
+   (not 3.0 as pre-registered), Cursor Auto = unpinned. Sample-efficiency
+   (per-experiment) comparisons remain valid.
+5. Artifact gap: antigravity-r3's bundle preserved only the stub (agent never
+   committed; collection didn't capture the working tree). Holdout score is
+   valid (scored live). `collect_run.sh` now auto-commits final state as
+   collector.
