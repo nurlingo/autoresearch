@@ -175,10 +175,14 @@ auditors** — their "unwinnable" lists pointed straight at real label noise.
 
 # Study 2 addendum — community arms: Antigravity & Cursor (2026-07-03)
 
-Contributed by a collaborator following `ANTIGRAVITY.md` on a separate machine
-(same frozen v1 dataset, hash-verified; clone isolation confirmed via bundles —
-every run starts from the single snapshot commit; zero hardcoded ids in any
-final solution).
+Contributed by a collaborator following `CURSOR.md` / `ANTIGRAVITY.md` on a
+separate Linux machine (same frozen v1 dataset, hash-verified). **Isolation:**
+each run used `tools/new_run.sh` → a fresh single-commit clone (train only; no
+`test.csv`, no sibling branches, no `runs/`). Separate Cursor workspace /
+Antigravity project per run. Bundles confirm every run starts from the identical
+stub commit; zero hardcoded per-recording ids in any final solution. Train
+improving across Antigravity r1→r3 is **not** held-out contamination — test was
+never visible during runs; r2 held-out (0.652) is worse than r1/r3.
 
 | run | train | test | test det+split | abstain miss | exps |
 |---|---:|---:|---:|---:|---:|
