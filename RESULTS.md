@@ -215,3 +215,21 @@ Observations:
    committed; collection didn't capture the working tree). Holdout score is
    valid (scored live). `collect_run.sh` now auto-commits final state as
    collector.
+
+
+---
+
+# Incumbent baseline (2026-07-06)
+
+The hand-built production pipeline (`AyahDetector` + alignment segmenter,
+iterated for months in `follow_my_reading`, tuned on a 22-case manifest that
+overlaps ~20 of these rows) scored with `tools/incumbent_baseline.py`:
+
+| | held-out test | full v1.1 |
+|---|---:|---:|
+| incumbent | 0.760 (det 82.9%, split 91.1%, abstain 1/2) | 0.785 |
+| agent winner (codex-r3) | 0.079 (det 94.3%, split 97.8%, abstain 2/2) | 0.034 |
+
+Every agent arm's held-out core matched or beat the incumbent (worst arm,
+Cursor ~0.27 ≈ incumbent's 0.26 det+split; best arm 3.3× better). One-hour
+autonomous loops beat months of incremental hand engineering on this task.

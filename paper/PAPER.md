@@ -35,7 +35,10 @@ both studies. We also catalogue the isolation failures the agents surfaced —
 reading sibling branches through a shared git database, and unprompted
 persistent-memory notes addressed to "future runs" — and derive design rules
 for autoresearch harnesses: agents will use any state channel the design
-leaves open, including their own tooling's.
+leaves open, including their own tooling's. Against the incumbent hand-built
+production pipeline (0.760 on the same held-out test), every agent arm matched
+or won, the best by an order of magnitude — the loop beats months of
+incremental human engineering on this task.
 
 ## 1. Introduction
 
@@ -154,8 +157,13 @@ keep rates similar (~75–95%); zero crashes in all six runs. Figure:
   requirements, not hygiene.
 - Practical lesson for our product: with a held-out harness both agents
   produce deployable artifacts; Codex's core is the most accurate and stable
-  held-out, Claude's is safest on rejection behavior. A deployment could use
-  Codex's aligner with Claude's abstention margin.
+  held-out, Claude's is safest on rejection behavior. We tested compositions
+  (Codex aligner + Claude abstention gate): the union gate *degrades* held-out
+  score via false abstentions, and a disagreement-router wins by only 0.0003 —
+  so the shipped artifact is the single best file (Study-2 codex-r3), selected
+  on held-out evidence. Study-1 artifacts were categorically excluded: with no
+  held-out measurement, their scores are unfalsifiable — the deployment-facing
+  consequence of Goodharting.
 - Study 2 reframes Study 1: the "metric-maximizer" pathology is real but
   train-side; generalization damage was concentrated in a rare-event component.
   Conversely the "generalizer" discipline did not buy held-out accuracy — it
@@ -210,6 +218,15 @@ floor-grinding on train was wasted effort, not poison. What Codex lost was a
 single abstention on a non-Quran row (cost 0.5) — rare-event robustness, where
 Claude is 10/10 across both studies. **H3 confirmed:** every run beats the
 stub by ≥14×. Figure: `study2_generalization.png`.
+
+**Incumbent baseline.** The hand-built production pipeline this task aims to
+replace — an n-gram detector + DP segmenter iterated over months, and tuned on
+a case set overlapping ~20 of these rows — scores **0.760** on the same
+held-out test (detection 82.9%, split 91.1%, abstain 1/2). Every agent arm's
+held-out core matched or beat it; the best beat it by an order of magnitude.
+The autoresearch loop did not merely optimize a toy metric: one-hour agent
+runs outperformed months of incremental human engineering on the deployed
+task.
 
 ### 7.2 Disclosure changes the *form* of Goodharting, not the drive
 
