@@ -1,0 +1,81 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{alagrami2021smartajweed}
+Alagrami, A.M., Eljazzar, M.M.: Smartajweed automatic recognition of arabic quranic recitation rules. arXiv preprint arXiv:2101.04200  (2020)
+
+\bibitem{alekseev2025kyrgyznlp}
+Alekseev, A., Turatali, T.: Kyrgyznlp: challenges, progress, and future. In: International Conference on Analysis of Images, Social Networks and Texts. pp. 3--39. Springer (2024)
+
+\bibitem{amodei2016concrete}
+Amodei, D., Olah, C., Steinhardt, J., Christiano, P., Schulman, J., Man{\'e}, D.: Concrete problems in {AI} safety. arXiv preprint arXiv:1606.06565  (2016)
+
+\bibitem{andryushchenko2024codeqa}
+Andryushchenko, G., Ivanov, V., Makharev, V., Tukhtina, E., Valeev, A.: Leveraging large language models in code question answering: Baselines and issues. In: International Conference on Analysis of Images, Social Networks and Texts. pp. 3--17. Springer (2024)
+
+\bibitem{baker2025monitoring}
+Baker, B., Huizinga, J., Gao, L., Dou, Z., Guan, M.Y., Madry, A., Zaremba, W., Pachocki, J., Farhi, D.: Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv preprint arXiv:2503.11926  (2025)
+
+\bibitem{farghaly2021asrreview}
+Balula, N.O., Rashwan, M., Abdou, S.: Automatic speech recognition (asr) systems for learning arabic language and al-quran recitation: a review. International Journal of Computer Science and Mobile Computing  \textbf{10}(7),  91--100 (2021)
+
+\bibitem{beel2025evaluating}
+Beel, J., Kan, M.Y., Baumgart, M.: Evaluating sakana's ai scientist: Bold claims, mixed results, and a promising future? In: ACM SIGIR Forum. vol.~59, pp. 1--20. ACM New York, NY, USA (2025)
+
+\bibitem{chan2024mlebench}
+Chan, J.S., Chowdhury, N., Jaffe, O., Aung, J., Sherburn, D., Mays, E., Starace, G., Liu, K., Maksin, L., Patwardhan, T., et~al.: Mle-bench: Evaluating machine learning agents on machine learning engineering. In: International Conference on Learning Representations. vol.~2025, pp. 50466--50494 (2025)
+
+\bibitem{alharbi2026comparative}
+Hossain, N.M., Islam, R., Obaidellah, U.: A comparative study of pretrained transformer models for quranic asr: Speech representations, label formats, and dataset composition. arXiv preprint arXiv:2606.19747  (2026)
+
+\bibitem{jimenez2024swebench}
+Jimenez, C.E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O., Narasimhan, K.: Swe-bench: Can language models resolve real-world github issues? In: Kim, B., Yue, Y., Chaudhuri, S., Fragkiadaki, K., Khan, M., Sun, Y. (eds.) International Conference on Learning Representations. vol.~2024, pp. 54107--54157 (2024)
+
+\bibitem{karpathy2026autoresearch}
+Karpathy, A.: autoresearch: {AI} agents running research on single-{GPU} nanochat training automatically. GitHub repository (2026), \url{https://github.com/karpathy/autoresearch}, accessed 2026-07
+
+\bibitem{yousfi2018tarteel}
+Khan, H.I., Abid, A., Moussa, M.M., Abou-Allaban, A.: The tarteel dataset: crowd-sourced and labeled quranic recitation  (2021)
+
+\bibitem{krakovna2019retrospective}
+Krakovna, V.: Retrospective on the specification gaming examples list. Personal blog (2019), \url{https://vkrakovna.wordpress.com/2019/12/20/retrospective-on-the-specification-gaming-examples-list}
+
+\bibitem{krakovna2020specification}
+Krakovna, V., Uesato, J., Mikulik, V., Rahtz, M., Everitt, T., Kumar, R., Kenton, Z., Leike, J., Legg, S.: Specification gaming: the flip side of ai ingenuity. DeepMind Blog (2020), \url{https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity}
+
+\bibitem{sakana2024aiscientist}
+Lu, C., Lu, C., Lange, R.T., Foerster, J., Clune, J., Ha, D.: The ai scientist: Towards fully automated open-ended scientific discovery. arXiv preprint arXiv:2408.06292  (2024)
+
+\bibitem{manheim2018goodhart}
+Manheim, D., Garrabrant, S.: Categorizing variants of {Goodhart's} law. arXiv preprint arXiv:1803.04585  (2019)
+
+\bibitem{nathani2025mlgym}
+Nathani, D., Madaan, L., Roberts, N., Bashlykov, N., Menon, A., Moens, V., Budhiraja, A., Magka, D., Vorotilov, V., Chaurasia, G., et~al.: Mlgym: A new framework and benchmark for advancing ai research agents. arXiv preprint arXiv:2502.14499  (2025)
+
+\bibitem{novikov2025alphaevolve}
+Novikov, A., V{\~u}, N., Eisenberger, M., Dupont, E., Huang, P.S., Wagner, A.Z., Shirobokov, S., Kozlovskii, B., Ruiz, F.J., Mehrabian, A., et~al.: Alphaevolve: A coding agent for scientific and algorithmic discovery. arXiv preprint arXiv:2506.13131  (2025)
+
+\bibitem{schmidgall2025agentlab}
+Schmidgall, S., Su, Y., Wang, Z., Sun, X., Wu, J., Yu, X., Liu, J., Moor, M., Liu, Z., Barsoum, E.: Agent laboratory: Using llm agents as research assistants. Findings of the Association for Computational Linguistics: EMNLP 2025 pp. 5977--6043 (2025)
+
+\bibitem{skalse2022goodhart}
+Skalse, J., Howe, N., Krasheninnikov, D., Krueger, D.: Defining and characterizing reward gaming. In: Koyejo, S., Mohamed, S., Agarwal, A., Belgrave, D., Cho, K., Oh, A. (eds.) Advances in Neural Information Processing Systems. vol.~35, pp. 9460--9471. Curran Associates, Inc. (2022)
+
+\bibitem{starace2025paperbench}
+Starace, G., Jaffe, O., Sherburn, D., Aung, J., Chan, J.S., Maksin, L., Dias, R., Mays, E., Kinsella, B., Thompson, W., Heidecke, J., Glaese, A., Patwardhan, T.: Paperbench: Evaluating {AI}{\textquoteright}s ability to replicate {AI} research. In: Forty-second International Conference on Machine Learning (2025)
+
+\bibitem{tabbal2006recitation}
+Tabbal, H., El~Falou, W., Monla, B.: Analysis and implementation of a" quranic" verses delimitation system in audio files using speech recognition techniques. In: 2006 2nd international conference on information \& communication technologies. vol.~2, pp. 2979--2984. IEEE (2006)
+
+\bibitem{wijk2024rebench}
+Wijk, H., Lin, T.R., Becker, J., Jawhar, S., Parikh, N., Broadley, T., Chan, L., Chen, M., Clymer, J.M., Dhyani, J., Ericheva, E., Garcia, K., Goodrich, B., Jurkovic, N., Kinniment, M., Lajko, A., Nix, S., Sato, L.J.K., Saunders, W., Taran, M., West, B., Barnes, E.: {RE}-bench: Evaluating frontier {AI} r\&d capabilities of language model agents against human experts. In: Forty-second International Conference on Machine Learning (2025)
+
+\bibitem{zhao2026specbench}
+Zhao, B., Srikanth, D., Wu, Y., Jiang, Z.: Specbench: Measuring reward hacking in long-horizon coding agents. arXiv preprint arXiv:2605.21384  (2026)
+
+\bibitem{zhong2025impossiblebench}
+Zhong, Z., Raghunathan, A., Carlini, N.: Impossiblebench: Measuring llms' propensity of exploiting test cases. arXiv preprint arXiv:2510.20270  (2025)
+
+\end{thebibliography}
