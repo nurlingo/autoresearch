@@ -45,7 +45,9 @@ sys.path.insert(0, str(HERE))
 
 from solution import Solution  # noqa: E402  (the editable algorithm)
 
-DEFAULT_CSV = HERE / "data/bot_review.csv"
+# Study 2: the loop optimizes the TRAIN split only. A held-out test set exists;
+# final solutions are scored on it by the experimenters (eval.py --csv data/test.csv).
+DEFAULT_CSV = HERE / "data/train.csv"
 SCORED_CONFIDENCE = {"high", "medium"}
 ASSIGNMENT_RE = re.compile(r"^\d{6}(?:-\d{6})?(?:,\d{6}(?:-\d{6})?)*$")
 _HARAKAT_RE = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
@@ -233,7 +235,9 @@ def print_report(summary: dict[str, Any], results: list[CaseResult]) -> None:
                 print(f"    {tag} abstain: expected none, got {r.predicted_ayah_ids or '∅'}")
             else:
                 sp = f"split={r.split_accuracy:.2f}" if r.split_accuracy is not None else "split=-"
-                print(f"    {tag} range: expected {r.expected_ayah_ids} got {r.predicted_ayah_ids or '∅'} {sp}")
+                # Study 2: expected ids are not printed; look rows up in the train
+                # CSV yourself. (Keeps the report from spoon-feeding answers.)
+                print(f"    {tag} range: got {r.predicted_ayah_ids or '∅'} {sp}")
         if len(failures) > 40:
             print(f"    ... {len(failures) - 40} more")
 

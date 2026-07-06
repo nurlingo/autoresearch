@@ -1,0 +1,9 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T12:41:20+00:00	0.0	codex	3b880df	2.000000	1.0	1.0	0.0	keep	baseline abstain all
+2	2026-07-02T12:43:19+00:00	117.9	codex	72d1bcc	0.877746	0.3087	0.069	0.5	keep	exact token surah alignment
+3	2026-07-02T12:45:18+00:00	212.1	codex	eac45e6	0.112177	0.0738	0.0384	0.0	keep	compact local alignment and canonical ayah ids
+4	2026-07-02T13:30:34+00:00	371.3	codex	6550414	0.565197	0.047	0.0182	0.5	discard	short exact matches fuzzy words and muqattaat
+5	2026-07-02T13:32:51+00:00	3066.1	codex	ad3a87b	0.085331	0.0604	0.0249	0.0	keep	muqattaat normalization and exact whole ayah preference
+6	2026-07-02T13:35:49+00:00	3227.2	codex	50335f1	0.046740	0.0403	0.0065	0.0	keep	short exact spans and conservative short fuzzy fallback
+7	2026-07-02T13:37:54+00:00	3351.8	codex	bb4d16c	0.058180	0.0537	0.0045	0.0	discard	recover unmatched prefix and suffix spans
+8	2026-07-02T13:39:03+00:00	3420.2	codex	774fc30	0.045062	0.0403	0.0048	0.0	keep	trim punctuation on collapsed muqattaat split

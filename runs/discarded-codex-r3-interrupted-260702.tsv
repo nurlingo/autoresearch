@@ -1,0 +1,15 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T16:58:31+00:00	0.0	codex	f2c5caf	2.000000	1.0	1.0	0.0	keep	baseline abstain all
+2	2026-07-02T17:31:34+00:00	1981.8	codex	0606952	0.092184	0.0537	0.0385	0.0	keep	add fuzzy reference matcher
+3	2026-07-02T17:32:36+00:00	2044.3	codex	6b144f4	0.067016	0.0403	0.0267	0.0	keep	handle named opening letters
+4	2026-07-02T17:33:14+00:00	2082.0	codex	ee14959	0.069653	0.0403	0.0294	0.0	discard	return normalized segment tokens
+5	2026-07-02T17:33:38+00:00	2105.7	codex	88ed2f4	0.068694	0.0403	0.0284	0.0	discard	normalize opening letter output
+6	2026-07-02T17:35:51+00:00	2218.7	codex	f2468a6	0.026748	0.0201	0.0066	0.0	keep	add short character fallback
+7	2026-07-02T17:37:54+00:00	2341.4	codex	d15f1e2	0.018053	0.0134	0.0046	0.0	keep	split repeated suffix matches
+8	2026-07-02T17:39:16+00:00	2424.1	codex	76bbaa4	0.010968	0.0067	0.0043	0.0	keep	merge duplicate short runs
+9	2026-07-02T17:47:37+00:00	2924.5	codex	35cd1cc	0.009291	0.0067	0.0026	0.0	keep	strip first opening-letter comma
+10	2026-07-02T17:48:51+00:00	2997.9	codex	2fdbc40	0.030455	0.0268	0.0036	0.0	discard	overlay exact ayah spans
+11	2026-07-02T17:49:38+00:00	3044.8	codex	d702c11	0.016320	0.0134	0.0029	0.0	discard	overlay repeated exact ayahs
+12	2026-07-02T17:50:51+00:00	3118.3	codex	a07dfa6	0.007968	0.0067	0.0013	0.0	keep	label same-ayah replace blocks
+13	2026-07-02T17:51:58+00:00	3185.3	codex	5e54858	0.014995	0.0134	0.0016	0.0	discard	expand short replace labels
+14	2026-07-02T17:52:38+00:00	3225.3	codex	5cc266a	0.008374	0.0067	0.0017	0.0	discard	lower long replace threshold

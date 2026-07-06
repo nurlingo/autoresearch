@@ -1,7 +1,7 @@
 # Running the autoresearch arm with Google Antigravity
 
 Instructions for running the same experiments (Study 1 and Study 2) with Google
-Antigravity / Gemini 3 Pro as a third agent arm. The harness is agent-agnostic:
+Antigravity / Gemini 3.1 Pro as a third agent arm. The harness is agent-agnostic:
 you change nothing in the repo — you only launch a different agent inside a run
 worktree.
 
@@ -25,7 +25,7 @@ worktree.
 3. **Python 3.11+** (stdlib only for the loop; `pip install matplotlib` only if
    you want plots). On Linux, if `shasum` is missing: `apt install libdigest-sha-perl`
    (or compare with `sha256sum` manually).
-4. **Google Antigravity** installed and signed in, with **Gemini 3 Pro,
+4. **Google Antigravity** installed and signed in, with **Gemini 3.1 Pro,
    thinking level High** selected — this arm's counterpart to Claude Opus 4.8
    `high` and GPT-5.5 `high`.
 

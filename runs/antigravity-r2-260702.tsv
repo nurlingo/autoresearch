@@ -1,0 +1,13 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T18:47:05+00:00	0.0	antigravity	293fc17	2.000000	1.0	1.0	0.0	keep	baseline
+2	2026-07-02T18:47:49+00:00	42.6	antigravity	da6a070	1.788953	0.9262	0.3628	0.5	keep	Naive word matcher
+3	2026-07-02T18:49:52+00:00	165.6	antigravity	ac5f168	0.829828	0.1544	0.1755	0.5	keep	Speed up DP by filtering high-freq words
+4	2026-07-02T18:51:22+00:00	250.1	antigravity	c62af55	0.672901	0.1141	0.0588	0.5	keep	Candidate generation + full DP
+5	2026-07-02T18:52:32+00:00	324.8	antigravity	e1a73f5	1.286684	0.2282	0.0585	1.0	discard	Ayah-level Viterbi algorithm
+6	2026-07-02T18:53:56+00:00	409.2	antigravity	5f9191e	0.688040	0.1275	0.0605	0.5	discard	Speed up DP constants and tighten penalty
+7	2026-07-02T18:56:27+00:00	560.4	antigravity	2d16b96	0.647771	0.1074	0.0404	0.5	keep	Truncate sub-ayah IDs to standard 6-digits
+8	2026-07-02T18:58:03+00:00	656.2	antigravity	5df8168	1.119248	0.0872	0.032	1.0	discard	Exclude >114 surahs, map Muqatta'at, relax abstain logic
+9	2026-07-02T18:58:54+00:00	707.6	antigravity	efeb9f7	0.129265	0.094	0.0353	0.0	keep	Safe abstain logic
+10	2026-07-02T19:00:07+00:00	780.1	antigravity	6a24dc5	0.120926	0.094	0.027	0.0	keep	Fix Muqatta'at and dynamic abstain
+11	2026-07-02T19:02:00+00:00	893.1	antigravity	56dd085	0.109181	0.0872	0.0219	0.0	keep	Strip commas in canon
+12	2026-07-02T19:02:43+00:00	936.1	antigravity	834d8a0	0.109181	0.0872	0.0219	0.0	discard	Increase MAX_GAP_J to 500

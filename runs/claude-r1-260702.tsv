@@ -1,0 +1,13 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T11:55:07+00:00	0.0	claude	feab8a7	2.000000	1.0	1.0	0.0	keep	baseline abstain-all
+2	2026-07-02T11:58:48+00:00	211.2	claude	b771db9	0.720401	0.1275	0.0929	0.5	keep	trigram detection + SW alignment
+3	2026-07-02T12:00:07+00:00	290.0	claude	e36f4cd	0.180133	0.1074	0.0728	0.0	keep	exclude 999 supplications
+4	2026-07-02T12:01:53+00:00	395.7	claude	a71dfc4	0.139864	0.0872	0.0526	0.0	keep	collapse sub-ayah ids to parent
+5	2026-07-02T12:02:58+00:00	459.4	claude	f800c61	0.126442	0.0805	0.0459	0.0	keep	ngram backoff candidates
+6	2026-07-02T12:04:43+00:00	563.9	claude	239ac87	0.099596	0.0671	0.0325	0.0	keep	deterministic tie-breaks
+7	2026-07-02T12:12:39+00:00	1042.3	claude	1cdec53	0.086899	0.0537	0.0332	0.0	keep	semiglobal align + prefix strip
+8	2026-07-02T12:17:12+00:00	1314.1	claude	89d29a9	0.081165	0.047	0.0342	0.0	keep	MISMATCH=-3 (indels over subs)
+9	2026-07-02T12:19:13+00:00	1435.2	claude	1c69907	0.080132	0.047	0.0332	0.0	keep	nearest-neighbour fill
+10	2026-07-02T12:24:05+00:00	1726.5	claude	fa1a9fd	0.070560	0.0403	0.0303	0.0	keep	multi-region rerun (MIN=6,thr=0.9)
+11	2026-07-02T12:28:14+00:00	1975.8	claude	08d931b	0.045393	0.0268	0.0185	0.0	keep	muqattaat opening handler
+12	2026-07-02T12:32:02+00:00	2203.4	claude	91c3b2d	0.044108	0.0268	0.0173	0.0	keep	fill tie toward next ayah

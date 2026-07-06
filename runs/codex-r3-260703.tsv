@@ -1,0 +1,23 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T18:03:30+00:00	0.0	codex	bf0c90b	2.000000	1.0	1.0	0.0	keep	baseline abstain all
+2	2026-07-02T18:08:07+00:00	276.7	codex	7257d5b	0.786248	0.2416	0.0446	0.5	keep	fuzzy quran reference alignment
+3	2026-07-02T18:10:20+00:00	409.8	codex	2fc3b64	0.780858	0.2148	0.0661	0.5	keep	trim weak alignment edges and letter ayahs
+4	2026-07-02T18:11:13+00:00	462.2	codex	7b483b2	0.780817	0.2148	0.0661	0.5	keep	only trim zero-evidence edge labels
+5	2026-07-02T18:19:49+00:00	979.0	codex	d7302b2	0.595300	0.0671	0.0282	0.5	keep	restrict disjoint letter expansion
+6	2026-07-02T18:20:35+00:00	1024.5	codex	164ee94	0.083555	0.0604	0.0232	0.0	keep	tighten punctuation and short transcript matching
+7	2026-07-02T18:21:13+00:00	1063.1	codex	53e1ab8	0.086192	0.0604	0.0258	0.0	discard	emit clean matched tokens
+8	2026-07-02T18:22:21+00:00	1131.0	codex	e48c166	0.060049	0.0403	0.0198	0.0	keep	iterate zero-evidence edge trimming
+9	2026-07-02T18:25:59+00:00	1188.2	codex	d690311	0.046626	0.0336	0.0131	0.0	keep	bounded fuzzy word matching
+10	2026-07-02T18:29:59+00:00	1524.2	codex	6e56a80	0.046626	0.0336	0.0131	0.0	discard	cache fuzzy word lookup
+11	2026-07-02T18:33:05+00:00	1708.0	codex	950082f	0.037484	0.0268	0.0106	0.0	keep	repair unsupported suffix matches
+12	2026-07-02T18:33:30+00:00	1796.4	codex	7a7da95	0.037484	0.0268	0.0106	0.0	discard	limit fuzzy seeds to unknown words
+13	2026-07-02T18:34:01+00:00	1827.8	codex	71a8b3e	0.040121	0.0268	0.0133	0.0	discard	strip punctuation in segment text
+14	2026-07-02T18:34:54+00:00	1881.0	codex	dd220ae	0.030101	0.0201	0.01	0.0	keep	merge weak bridge labels
+15	2026-07-02T18:36:00+00:00	1946.2	codex	7341485	0.050433	0.0336	0.0169	0.0	discard	prefer earlier equal-score matches
+16	2026-07-02T18:36:36+00:00	1982.4	codex	0f622d2	0.031779	0.0201	0.0116	0.0	discard	strip punctuation for letter ayahs
+17	2026-07-02T18:37:14+00:00	2021.0	codex	81d0835	0.030101	0.0201	0.01	0.0	discard	relax fuzzy word threshold
+18	2026-07-02T18:37:52+00:00	2059.0	codex	4f9df8a	0.030101	0.0201	0.01	0.0	discard	copy labels for repeated blocks
+19	2026-07-02T18:38:46+00:00	2107.2	codex	0209aab	0.030101	0.0201	0.01	0.0	discard	score fuzzy replace spans
+20	2026-07-02T18:39:34+00:00	2161.1	codex	a31409c	0.028423	0.0201	0.0083	0.0	keep	strip compact letter punctuation
+21	2026-07-02T18:41:17+00:00	2263.4	codex	44ebc4d	0.015001	0.0134	0.0016	0.0	keep	add short ayah fuzzy fallback
+22	2026-07-02T18:42:08+00:00	2314.1	codex	60fe7c2	0.008156	0.0067	0.0014	0.0	keep	repair complete previous ayah prefixes

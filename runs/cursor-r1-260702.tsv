@@ -1,0 +1,6 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T17:14:21+00:00	0.0	cursor	a4c3d9d	2.000000	1.0	1.0	0.0	keep	baseline abstain-all
+2	2026-07-02T17:16:25+00:00	104.0	cursor	8e1ac94	0.481383	0.2752	0.2062	0.0	keep	v1: ngram surah detect + semi-global DP align + preamble strip
+3	2026-07-02T17:17:25+00:00	167.2	cursor	421847b	0.402544	0.2282	0.1744	0.0	keep	v2: sliding ayah window before DP align
+4	2026-07-02T17:20:05+00:00	327.8	cursor	63cb2e8	0.401174	0.2282	0.173	0.0	keep	v3: nearest-neighbor gap fill after DP align
+5	2026-07-02T17:22:29+00:00	472.4	cursor	a51f182	0.387751	0.2215	0.1663	0.0	keep	v4: disambiguate close surah candidates via align score

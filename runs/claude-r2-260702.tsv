@@ -1,0 +1,8 @@
+iter	timestamp	elapsed_sec	agent	commit	research_score	detection_err	split_err	abstain_err	status	description
+1	2026-07-02T12:44:17+00:00	0.0	claude	3b880df	2.000000	1.0	1.0	0.0	keep	baseline: abstain-all
+2	2026-07-02T12:47:46+00:00	208.0	claude	81d1607	1.733852	0.7517	0.4822	0.5	keep	greedy anchor+align engine
+3	2026-07-02T12:50:37+00:00	379.8	claude	2a2c9ec	0.680858	0.1007	0.0802	0.5	keep	surah-seq semi-global alignment
+4	2026-07-02T13:31:31+00:00	2833.7	claude	36ded5e	0.113744	0.0671	0.0466	0.0	keep	collapse split ids + deterministic anchor
+5	2026-07-02T13:32:53+00:00	2915.1	claude	022bd8f	0.100321	0.0604	0.0399	0.0	keep	insertion-tolerant anchor ranking
+6	2026-07-02T13:35:15+00:00	3056.4	claude	744481c	0.098193	0.0604	0.0378	0.0	keep	next-bias inserted-word fill
+7	2026-07-02T13:41:09+00:00	3410.4	claude	1849eae	0.098193	0.0604	0.0378	0.0	discard	center abstain threshold 0.5

@@ -85,7 +85,7 @@ dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 1. **Exclude leading isti'adha and basmala** from gold segment text — they are not
    recited ayah text. (Exception: Al-Fatiha, where the basmala *is* ayah 001001.)
    The concatenated split should reproduce the recited transcript *minus* that
-   prefix. *Known fix needed:* row `fcdb0888` currently includes the basmala.
+   prefix. (Historical: row `fcdb0888` once violated this; fixed during review.)
 2. **Repetition is allowed.** If the reciter repeats ayahs, the split may repeat
    ids in sequence (e.g. `f6c38e66`, Al-Ikhlas ×3). Detection scores the id set,
    so this is not penalized; the repeated segments matter for Stage 2.
@@ -102,17 +102,57 @@ dataset mid-study. Recompute the baseline and oracle floor at freeze time.
 The agent. **This study compares two conditions**, tagged via `AR_AGENT` (logged
 in every row):
 
-- `claude` — Claude Code
-- `codex` — OpenAI Codex
+- `claude` — Claude Code (Study 1 & 2: Claude Opus 4.8, reasoning effort `high`)
+- `codex` — OpenAI Codex (Study 1 & 2: GPT-5.5, reasoning effort `high`)
 
 A `human` baseline and a `claude+skill` arm (Claude Code + the
 uditgoenka/autoresearch skill) are **deferred to future work** — out of scope
 here to keep the A/B clean.
 
 Pin and report for each: model id + build date, permission mode (full-auto),
-reasoning effort, CLI version. **Reasoning effort is matched across arms:** Claude
+reasoning effort, CLI version. **Recorded (Study 2 runs, 2026-07-05):** Claude
+Code v2.1.198 (Opus 4.8, effort `high`, `--dangerously-skip-permissions`);
+Codex CLI v0.139.0 (GPT-5.5, effort `high`, `-s workspace-write -a never`).
+Machine: the same MacBook Pro for both arms. **Reasoning effort is matched across arms:** Claude
 `high` and Codex `high`. The scales differ (Claude: low/medium/high/xhigh/max;
 Codex: low/medium/high/xhigh) but `high` is the same named tier on both.
+
+### 5.1 Community arms — exploratory (Study 2 only)
+
+After the preregistered 3×2 Claude/Codex matrix completed, a collaborator ran
+**two additional arms** on the same Study 2 harness (TAG `260702`, dataset v1,
+hash-verified). These are **exploratory extensions**, not part of the core A/B:
+model routing and hardware differ from the preregistered arms.
+
+| `AR_AGENT` | Tool | Model / mode | Autonomy | Machine |
+|---|---|---|---|---|
+| `cursor` | Cursor Agent | **Auto mode** (unpinned model routing) | auto-run / YOLO | Linux (contributor) |
+| `antigravity` | Google Antigravity | **Gemini 3.1 Pro (High)** | full-auto in app | Linux (contributor) |
+
+Runbooks: `CURSOR.md`, `ANTIGRAVITY.md`. **3 runs per arm** (same budget and
+verbatim prompt as Study 2). Log every run; report train best + held-out test.
+
+**Isolation (same as Study 2 core).** Each run: `tools/new_run.sh <agent> <k>`
+→ fresh single-commit clone at `../ar-runs/<tag>-<agent>-r<k>` containing
+`train.csv` + `quran_ref.json` only. The agent workspace is **only** that
+clone — never the main repo (which holds `test.csv`, other agents' bundles, and
+`runs/`). After the session: `TAG=<tag> tools/collect_run.sh <agent> <k>` scores
+held-out test and archives `.tsv` + `-holdout.json` + `.bundle`, then deletes
+the clone.
+
+**Cross-run contamination controls.** Runs do not share git history, run
+directories, or test labels. What *can* leak across runs is harness-external
+agent state (e.g. Cursor persistent memory, Antigravity account-level chat if
+the same project is reused) — mitigated by **never reusing run paths** and
+opening a **new Antigravity project / Cursor workspace per run**. Train scores
+improving across r1→r2→r3 for one arm are therefore **not** evidence of
+held-out leakage; they reflect per-run optimization plus stochasticity. The
+Antigravity held-out series is **not** monotonic (r2 test = 0.652 from one
+abstain miss; r3 test = 0.091 is best).
+
+**Logging caveat:** several Antigravity rows logged `agent=unknown` because
+`AR_AGENT` was not exported in the shell before `make exp`; the arm is identified
+by run folder and bundle, not those rows.
 
 ## 6. Protocol
 
@@ -222,12 +262,7 @@ errors do not pollute it. Needs a gold `mistakes` field that does not yet exist;
 the mistake taxonomy is still to be defined. Transcript-only → cannot catch
 vowel/tajweed errors.
 
-**Dataset versioning (2026-07-03).** Post-study label fix (At-Tin `6c7492bc` →
-`095001-095008`), flagged by both agents during their runs and confirmed by
-human review. Studies ran on v1 (hashes at study commits); this branch's
-`runs/inputs.sha256` now records v1.1.
-
-## 12. Study 2 — held-out generalization (planned)
+## 12. Study 2 — held-out generalization (complete)
 
 Study 1 scores agents on the same 254 rows they optimize, and `eval.py` prints
 expected ids in its failure report — which *rewards memorization*. Codex exploited
@@ -246,8 +281,45 @@ fixes. Study 2 measures **generalization**:
 - **Held-out scoring.** After each run, *we* (not the agent) score the final
   `solution.py` on the untouched test set. Report the **test** score; the
   train↔test gap quantifies overfitting per agent.
+- **Both agents are told** (identically, in PROGRAM.md) that a held-out test set
+  exists and that memorizing train rows will not transfer — so Study 2 also tests
+  whether disclosure changes optimization behavior.
+- Train floor ~0.007 (quirk rows pinned to train); test oracle floor exactly 0.0.
 - Re-run 3 Claude + 3 Codex. Hypothesis: the raw-score gap collapses (or reverses)
   on held-out data, and Codex shows the larger train↔test gap.
+
+**Persistent-memory vector (2026-07-05).** Claude Code keeps per-directory
+persistent memory (`~/.claude/projects/<path>/memory/`). Study 2 claude-r2
+autonomously saved a distilled solution cheat-sheet "for future runs on this
+repo" (preserved as `runs/artifact-claude-r2-memory.md`). It never fired — run
+paths are unique — but it is a harness-external state channel the agent created
+unprompted. Protocol rules: (1) never reuse a run directory path; (2) after each
+Claude run, audit `~/.claude/projects/` for new memory and the global
+`~/.claude/CLAUDE.md` for modification (both verified clean for all runs so
+far). Codex has no equivalent enabled channel in our setup.
+
+**Dataset versioning (2026-07-03).** After both studies completed, row
+`6c7492bc` was corrected from `095001-095007` to `095001-095008` — the At-Tin
+label quirk that **both agents independently flagged as a gold error** during
+their runs ("the transcript truly recites 8 ayahs"). The human review confirmed
+them. Studies 1–2 ran on dataset v1 (hashes in git history at the study
+commits); current files are v1.1, re-frozen in `runs/inputs.sha256`. With the
+fix, the oracle floor is exactly 0.0 on both splits. The correction lives in
+train, so no held-out score changes; Study 2 numbers are reported against v1
+as run.
+
+**Isolation postmortem (2026-07-02).** The first Study 2 attempts leaked and were
+discarded: (a) a Claude run was launched in the main repo, where `data/test.csv`
+was visible; (b) a Codex run in a git *worktree* used the shared git database to
+read Study 1 run logs (committed under `runs/`) and the in-flight Claude solution
+on a sibling branch (`git show`) — resourceful, not forbidden by PROGRAM.md, but
+fatal to independence. Isolation is now a **fresh single-commit clone** per run
+(`tools/new_run.sh`): harness snapshot + train split only; no shared `.git`, no
+other branches, no logs, no test set. **Retroactive threat to Study 1:** its runs
+shared one `.git`, so later runs (Codex ran after Claude) could in principle have
+browsed earlier run branches; session transcripts should be audited. Study 1's
+overfitting conclusion rests on code-artifact analysis (hardcoded ids), which is
+unaffected.
 
 **No existing data is held-out.** The `follow_my_reading` test manifest is NOT
 usable as a held-out set: 20/22 of its cases are the same recordings/transcripts

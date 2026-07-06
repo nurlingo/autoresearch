@@ -82,3 +82,154 @@ reverses.
 Each run's full experiment history is a git branch (one commit per experiment):
 `ar/260630-claude-r{1,2,3}`, `codex-r1-run`, `codex-r2-run` (codex r3 tbd).
 Logs in `runs/<agent>-r<k>-260630.tsv`; frozen inputs in `runs/inputs.sha256`.
+
+
+---
+
+# Study 2 — Results (held-out generalization)
+
+Same harness, same budget (30 exp / 1 h), reasoning effort `high` both arms;
+agents optimize the 151-row train split; we score final solutions on the 107-row
+held-out test split (oracle floor exactly 0.0 on test). Both agents were told a
+held-out set exists and that memorizing train rows will not transfer. Isolation:
+fresh single-commit clone per run. Two interrupted runs (network outage) were
+discarded per protocol and redone at fresh paths.
+
+## Per-run results
+
+| run | train best | test score | gap | test det_err | test split_err | test abstain_err | exps | LOC | hc-ids |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| claude-r1 | 0.0441 | 0.0796 | 0.036 | 0.0476 | 0.0320 | 0 | 12 | 379 | 0 |
+| claude-r2 | 0.0982 | 0.1534 | 0.055 | 0.0857 | 0.0677 | 0 | 7 | — | 0 |
+| claude-r3 | 0.0661 | 0.1306 | 0.064 | 0.0857 | 0.0449 | 0 | 8 | 268 | 0 |
+| codex-r1 | 0.0075 | 0.0869 | 0.079 | 0.0571 | 0.0297 | 0 | 20 | 461 | 0 |
+| codex-r2 | 0.0451 | 0.5882 | 0.543 | 0.0571 | 0.0310 | **0.5** | 8 | — | 0 |
+| codex-r3 | 0.0082 | 0.0793 | 0.071 | 0.0571 | 0.0221 | 0 | 22 | 433 | 0 |
+
+**Arms (test research_score):** Claude 0.121 ± 0.031 (median 0.131); Codex
+0.251 ± 0.238 (median 0.087). Mann–Whitney U=4/9 — not significant. Figure:
+`study2_generalization.png`.
+
+## Findings
+
+**1. The train advantage evaporates (H1 confirmed, H2 half-confirmed).**
+Codex again drove train to the floor in 2 of 3 runs (0.0075/0.0082, using 20–22
+experiments); its train→test gap is 4.5× Claude's on average (0.231 vs 0.052;
+0.075 vs 0.052 even excluding the abstain blow-up). Claude's early stops
+(7–12 experiments) produced small gaps. But on held-out *research_score* the
+arms are statistically indistinguishable — the 6–10× train separation is gone.
+
+**2. The surprise: Codex's general core transferred BETTER, not worse.**
+On held-out detection+split (the metric minus the tiny abstain component),
+Codex is both better and eerily consistent — 0.085 ± 0.004, with an *identical*
+detection error (0.0571) in all three runs — vs Claude's 0.121 ± 0.031. The
+Study 1 extrapolation ("Codex's solutions won't transfer") was wrong for the
+algorithmic core: the floor-grinding phase (train 0.08→0.007) added nothing
+held-out but cost nothing either. Its wasted effort, not poison.
+
+**3. Where Codex actually lost: rare-event robustness.** Its one catastrophic
+held-out failure is an abstain miss (codex-r2 declared a non-Quran row a
+recitation), costing 0.5 — the whole difference in arm means. Claude abstained
+correctly 6/6 across Study 2 (and 4/4 in Study 1). With only 2 non-Quran rows
+in test, this component is high-variance by construction — a metric-design
+lesson (report components, not just the scalar).
+
+**4. Disclosure suppressed literal memorization in both arms.** Hardcoded
+ayah-ids per final solution: Study 1 Codex 19–41 → Study 2 Codex ~0 (docstring
+examples only). One paragraph in PROGRAM.md ("memorizing train rows will not
+transfer") eliminated the blatant Goodharting — while leaving the train-fitting
+*instinct* intact (Codex still ground train to the floor; it just did it with
+general-looking machinery).
+
+**5. Behavioral signatures are stable across studies.** Codex: grind to the
+floor (16–30 exps in Study 1; 20–22 in Study 2 when reachable), bigger artifacts
+(387–486 LOC). Claude: stop at plateau (12–13; 7–12), smaller artifacts
+(202–379 LOC), and — twice in Study 2 — unprompted attempts to brief "future
+runs" via persistent memory (`runs/artifact-claude-r2-memory.md`), a
+harness-external state channel that never fired only because run paths are
+never reused.
+
+## Reproducibility
+
+Per-run: `runs/<agent>-r<k>-<tag>.tsv` (uniform log), `-holdout.json`
+(held-out scoring), `.bundle` (full git history of the run clone). Discarded
+interrupted runs kept as `runs/discarded-*`. Inputs frozen in
+`runs/inputs.sha256` (train+test+eval hashes); split regenerable via
+`tools/split_dataset.py` (seed 42).
+
+
+---
+
+# Post-study note: the agents' data audit was correct (2026-07-03)
+
+Both arms repeatedly flagged one train row as a gold-label error (At-Tin,
+`6c7492bc`: "the reciter truly recites 8 ayahs, gold says 1–7") and refused to
+chase it. Human re-review confirmed and fixed it (`095001-095008`, new segment
+for 095008). With the fix the dataset is fully internally consistent — oracle
+floor exactly 0.0 on both splits (dataset v1.1; studies ran on v1). An
+unplanned dividend of the loop: **autonomous agents double as annotation
+auditors** — their "unwinnable" lists pointed straight at real label noise.
+
+
+---
+
+# Study 2 addendum — community arms: Antigravity & Cursor (2026-07-03)
+
+Contributed by a collaborator following `CURSOR.md` / `ANTIGRAVITY.md` on a
+separate Linux machine (same frozen v1 dataset, hash-verified). **Isolation:**
+each run used `tools/new_run.sh` → a fresh single-commit clone (train only; no
+`test.csv`, no sibling branches, no `runs/`). Separate Cursor workspace /
+Antigravity project per run. Bundles confirm every run starts from the identical
+stub commit; zero hardcoded per-recording ids in any final solution. Train
+improving across Antigravity r1→r3 is **not** held-out contamination — test was
+never visible during runs; r2 held-out (0.652) is worse than r1/r3.
+
+| run | train | test | test det+split | abstain miss | exps |
+|---|---:|---:|---:|---:|---:|
+| antigravity-r1 | 0.1467 | 0.1329 | 0.1328 | – | 12 |
+| antigravity-r2 | 0.1092 | 0.6522 | 0.1522 | 0.5 | 12 |
+| antigravity-r3 | 0.0634 | 0.0906 | 0.0905 | – | 16 |
+| cursor-r1 | 0.3878 | 0.3052 | 0.3051 | – | 5 |
+| cursor-r2 | 0.2933 | 0.2289 | 0.2288 | – | 9 |
+| cursor-r3 | 0.3470 | 0.2860 | 0.2860 | – | 7 |
+
+**Four-arm held-out det+split:** Codex 0.085±0.004 < Claude 0.121±0.031 ≈
+Antigravity (Gemini 3.1 Pro high) 0.125±0.026 < Cursor (Auto) 0.273±0.032.
+
+Observations:
+1. **Cursor UNDERFITS** — the only arm whose test scores beat its train scores
+   (negative gap): 5–9 experiments, train never below 0.29. Auto mode
+   (unpinned model selection) + early stopping → under-optimization. Treated as
+   an exploratory arm (model/effort not pinned → confounded).
+2. **Antigravity ≈ Claude** on held-out core, with a Codex-style abstain miss
+   in r2 (0.5). Its profile is intermediate: moderate train grinding, moderate
+   transfer.
+3. **The cross-arm ranking on held-out core follows optimization effort**
+   (experiments spent): the arms that optimized hardest transferred best;
+   the overfit margin was wasted, not harmful — consistent with Study 2's main
+   finding.
+4. Caveats: different machine (wall-clock not comparable), Gemini 3.1 Pro
+   (not 3.0 as pre-registered), Cursor Auto = unpinned. Sample-efficiency
+   (per-experiment) comparisons remain valid.
+5. Artifact gap: antigravity-r3's bundle preserved only the stub (agent never
+   committed; collection didn't capture the working tree). Holdout score is
+   valid (scored live). `collect_run.sh` now auto-commits final state as
+   collector.
+
+
+---
+
+# Incumbent baseline (2026-07-06)
+
+The hand-built production pipeline (`AyahDetector` + alignment segmenter,
+iterated for months in `follow_my_reading`, tuned on a 22-case manifest that
+overlaps ~20 of these rows) scored with `tools/incumbent_baseline.py`:
+
+| | held-out test | full v1.1 |
+|---|---:|---:|
+| incumbent | 0.760 (det 82.9%, split 91.1%, abstain 1/2) | 0.785 |
+| agent winner (codex-r3) | 0.079 (det 94.3%, split 97.8%, abstain 2/2) | 0.034 |
+
+Every agent arm's held-out core matched or beat the incumbent (worst arm,
+Cursor ~0.27 ≈ incumbent's 0.26 det+split; best arm 3.3× better). One-hour
+autonomous loops beat months of incremental hand engineering on this task.
