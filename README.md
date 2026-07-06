@@ -50,6 +50,8 @@ make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"   # -> comparison.png
 
 - **PROGRAM.md** — the loop and the rules on what may/may not change.
 - **METHODOLOGY.md** — how to run the Claude-vs-Codex comparison for the paper.
+- **METHODOLOGY-STUDY3.md** — Stage 2 (within-ayah mistake detection): dataset
+  and experiment design (planned; on branch `study3`).
 
 ## Launching an agent
 
