@@ -43,21 +43,31 @@ punished as wrong on those events (see §4).
 
 ## 2. Dataset
 
-### Sources (three, complementary)
+### Sources
 
-1. **Bot-split chunks (primary, immediate).** The 258 gold-split rows (v1.1)
-   explode into per-ayah `(chunk, reference)` pairs — ~1,000+ chunks with
-   real ASR noise and real recitation behavior. Ayah-level repeats are already
-   encoded (repeated ids in the split); within-ayah events are unlabeled.
-2. **Single-ayah app recordings (scale).** 21,053 production recordings with
-   `payload.ayah_id` and stored transcripts: `(transcript, known ayah)` pairs
-   requiring no Stage-1 processing. Sample stratified by ayah length and
-   frequency; target an initial 300–500 labeled chunks.
-3. **User feedback events (adversarial gold).** The app's approve/report
-   stream: recordings where users *reported* the feedback are enriched for
-   exactly the failure this study targets (benign flagged as mistake). Every
-   reported case gets labeled; report-sourced chunks are marked
-   `source=user_report` and analyzed as a subgroup.
+**Phase 1 (current scope): bot-split chunks only.** The 258 gold-split rows
+(v1.1) explode into per-ayah `(chunk, reference)` pairs — ~1,000+ chunks with
+real ASR noise and real recitation behavior. Ayah-level repeats are already
+encoded (repeated ids in the split); within-ayah events are what Phase-1
+labeling adds. One dataset, one review pass, both stages verifiable per
+recording.
+
+Deferred to later phases (documented so they are not forgotten):
+- **Single-ayah app recordings (scale):** 21,053 production recordings with
+  `payload.ayah_id` — stratified sampling once Phase 1 saturates.
+- **User feedback events (adversarial gold):** app approve/report stream —
+  enriched for benign-flagged-as-mistake cases; label all reported cases,
+  analyze as `source=user_report` subgroup.
+
+### Timestamps (known gap)
+
+The gold dataset has **no time alignments** — splits are word-level text only,
+and the production STT configuration (gpt-4o-mini-transcribe / Tarteel) does
+not return word timestamps. Consequence: review is full-recording audio +
+highlighted text, not per-chunk seeking. If per-ayah audio becomes necessary,
+two derivation routes exist: (a) CTC forced alignment of the stored transcript
+against the audio (`ctc_alignment_service.py` already in the worker), or
+(b) re-transcription with a timestamp-capable model. Out of scope for Phase 1.
 
 ### Labeling
 
@@ -66,8 +76,14 @@ punished as wrong on those events (see §4).
   notes`. Chunks with no events are labeled `clean` — the majority class and
   the most important one to protect (false-flag rate).
 - **Workflow:** LLM-assisted pre-labeling → human review, the same pipeline
-  that produced the 258 Stage-1 splits. Review tooling: extend
-  `follow_my_reading/backend/tests/bot_review.py` with an event-marking mode.
+  that produced the 258 Stage-1 splits.
+- **Review tooling (built):** the dataset editor's **Review tab**
+  (`follow_my_reading/backend/tests/dataset_editor.py`, tab "Review") shows,
+  per recording: audio (production proxy), full transcript, each gold chunk
+  against its reference (words absent from the reference underlined), a
+  split correct/wrong verdict (Stage-1 verification), and per-chunk event
+  labeling with this taxonomy (Stage-2). Labels persist to
+  `fixtures/bot_review/bot_events.jsonl` (gitignored, production-derived).
 - **Conventions (frozen with the taxonomy):** events are anchored to the
   *hypothesis* word indices; a self-correction consumes both the wrong word
   and its correction; a restart_repeat span must re-match ≥1 reference word
@@ -103,7 +119,12 @@ Editable surface: `solution3.py` implementing
 `eval3.py`, `data/`, `PROGRAM3.md`. Reference (`quran_ref.json`) available as
 in Stages 1–2.
 
-## 4. Metric
+## 4. Metric (DRAFT — schema under review)
+
+> The reward/penalty weights below are a starting proposal, not preregistered
+> yet. They will be reviewed (weighting of FN vs FP, uncertain pricing,
+> per-event vs per-chunk aggregation) BEFORE the dataset is frozen; H1–H4
+> freeze together with the final metric.
 
 Event matching: predicted event matches a gold event if types match and hyp
 spans overlap ≥50%. Then:
