@@ -32,9 +32,10 @@
 \maketitle
 
 \begin{abstract}
-In an autoresearch loop, a coding agent is handed a frozen dataset and a
-target metric to produce an algorithm autonomously via a modify--verify--keep/discard cycle with no human in the loop. 
-What does the agent then actually optimize? We build
+In an autoresearch loop, a coding agent is handed a frozen dataset, a
+frozen metric, and a modify--verify--keep/discard cycle, and asked to
+improve an algorithm autonomously, with no human in the loop. What does
+the agent then actually optimize? We build
 such a loop around a production text-processing task -- detecting which
 Quranic verses a diacritics-free ASR transcript contains and segmenting
 the transcript by verse -- and compare two frontier coding agents, Claude
