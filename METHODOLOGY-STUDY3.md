@@ -69,6 +69,25 @@ two derivation routes exist: (a) CTC forced alignment of the stored transcript
 against the audio (`ctc_alignment_service.py` already in the worker), or
 (b) re-transcription with a timestamp-capable model. Out of scope for Phase 1.
 
+### Labeling — STATUS (2026-07-08)
+
+**A calibration batch of 20 recordings is labeled** (99 chunks, 87% clean; 17
+events: 11 substitution, 3 omission, 2 truncation, 1 full_repeat) and visible
+in the deployed dataset editor (Review tab). Labels are marked
+`labeled_by: claude+human-pending` — machine-proposed, awaiting human review.
+
+**The storage format below is PROVISIONAL, not signed off.** Events currently
+store verbatim `words` (hypothesis) + `ref` (expected) + `note`, attached to
+gold-split chunks by index, one JSONL line per recording
+(`fixtures/bot_review/bot_events.jsonl`). Known open questions from the
+calibration batch, to resolve before scaling to all 258:
+1. Final-letter drops (e.g. يغشى→يغش): policy for `uncertain` vs `mistake`?
+2. Truncation on the recording's last ayah: keep the benign exemption?
+3. Mistakes inside abandoned first attempts (within a `full_repeat`):
+   separate events or swallowed by the repeat?
+4. Format itself (verbatim words vs word indices; per-event vs per-chunk
+   confidence) — revisit after human review of the calibration batch.
+
 ### Labeling
 
 - **Schema per chunk:** `chunk_id, recording_id, ayah_id, chunk_text,
