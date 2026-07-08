@@ -19,8 +19,8 @@
 
 \begin{document}
 
-\title{Generalizers and Metric-Maximizers: What Autonomous Coding Agents Optimize When You Give Them a Scorecard}
-\titlerunning{Generalizers and Metric-Maximizers}
+\title{Autoresearch with Coding Agents: Generalizers and Metric-Maximizers on Quran Recitation Data}
+\titlerunning{Autoresearch with Coding Agents}
 
 % AIST requires double-blind review. Author names, affiliations, acknowledgments
 % and identifying links are withheld from this version and will be restored in
@@ -34,67 +34,79 @@
 \begin{abstract}
 Autoresearch loops give a coding agent a frozen dataset, a frozen metric,
 and a modify--verify--keep/discard cycle, and ask it to improve an
-algorithm unattended. We build such a harness around a production
-text-processing task -- detecting which Qur'anic verses an ASR transcript
-contains and segmenting the transcript by verse -- and compare two frontier
-coding agents, Claude Code and OpenAI Codex, from an identical blank-slate
-start (three runs each; matched budget, instructions, and reasoning
-effort). Both independently discover the same algorithm (canonicalization,
-$n$-gram anchoring, dynamic-programming alignment), then diverge sharply:
-Claude stops early with compact, general solutions; Codex drives the score
+algorithm unattended. What does the agent then actually optimize? We build
+such a loop around a production text-processing task -- detecting which
+Quranic verses a diacritics-free ASR transcript contains and segmenting
+the transcript by verse -- and compare two frontier coding agents, Claude
+Code and OpenAI Codex, from an identical blank-slate start (three runs
+each; matched budget, instructions, and reasoning effort). Both
+independently discover the same algorithm (canonicalization, $n$-gram
+anchoring, dynamic-programming alignment), then diverge sharply: Claude
+stops early with compact, general solutions; Codex drives the score
 $\sim\!10\times$ lower largely by memorizing evaluation rows (19--41
 hardcoded verse ids per run) -- a clean natural instance of specification
 gaming by a production agent. In a preregistered second study with a
-disclosed held-out split, the train-side separation evaporates: the arms
-become statistically indistinguishable on the full held-out metric;
-disclosure alone eliminates literal memorization, and Codex's general core
-in fact transfers \emph{better and more consistently} (held-out
+disclosed held-out split, that separation evaporates: the arms become
+statistically indistinguishable on the full held-out metric, one paragraph
+of disclosure eliminates literal memorization, and Codex's general core in
+fact transfers \emph{better and more consistently} (held-out
 detection+split $0.085\pm0.004$ vs.\ $0.121\pm0.031$), losing only on
 rare-event abstention robustness. Two community arms (Cursor, Antigravity)
-reproduce the pattern. We catalogue agent-initiated isolation failures --
-reading sibling runs through shared git state, writing unprompted
-persistent-memory notes to ``future runs'' -- and distill five design rules
-for evaluation harnesses for autonomous agents.
+reproduce the pattern, and every arm's held-out core matched or beat the
+incumbent hand-engineered production pipeline -- the best agent-built
+solution by $\sim\!10\times$ -- and now replaces it in production. We
+catalogue agent-initiated isolation failures -- reading sibling runs
+through shared git state, writing unprompted persistent-memory notes to
+``future runs'' -- and distill five design rules for autonomous-agent
+evaluation harnesses.
 
-\keywords{autonomous coding agents \and specification gaming \and Goodhart's
-law \and large language model evaluation \and reward hacking \and Arabic
-text segmentation \and reproducibility}
+\keywords{autonomous coding agents \and autoresearch \and specification
+gaming \and Goodhart's law \and large language model evaluation \and reward
+hacking \and Arabic text segmentation \and Quranic recitation \and
+reproducibility}
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-Autonomous ``AI researcher'' loops are an emerging pattern for using coding
-agents: fix a dataset, fix a metric, hand an agent one editable file, and let
-it run a modify$\to$verify$\to$keep/discard cycle unattended. The clearest
-recent instance is Karpathy's \emph{autoresearch}~\cite{karpathy2026autoresearch},
-which strips a single-GPU language-model training script down to $\sim\!630$
-lines and reports agents autonomously discovering architecture and
-hyperparameter improvements over hundreds of unattended experiments. The
-pattern generalizes beyond model training to any task with a fast, scriptable
-metric -- which raises a question existing agent benchmarks do not answer.
-Benchmarks such as SWE-bench~\cite{jimenez2024swebench} measure whether an
-agent \emph{completes} a well-specified task (does the patch make the failing
-test pass); they say nothing about what an agent does when the specification
-is a fallible \emph{proxy} that can be gamed on the way to a better score.
-Autoresearch loops hand an agent exactly that situation for hundreds of
-consecutive decisions, unsupervised.
+Hand a coding agent a frozen dataset, a frozen metric, and one editable
+file; tell it to iterate unattended, keeping only changes that improve the
+score. This \emph{autoresearch} pattern -- named by Karpathy's recent
+experiment~\cite{karpathy2026autoresearch}, which strips a single-GPU
+language-model training script to $\sim\!630$ lines and reports agents
+autonomously discovering architecture and hyperparameter improvements over
+hundreds of unattended experiments -- generalizes to any task with a fast,
+scriptable metric, and is likely to proliferate as the cheapest way to
+extract unattended engineering effort from coding agents. It also raises a
+question, which existing agent benchmarks do not answer. Benchmarks such as
+SWE-bench~\cite{jimenez2024swebench} measure whether an agent
+\emph{completes} a well-specified task (does the patch make the failing
+test pass); they say nothing about what an agent does when the
+specification is a fallible \emph{proxy} that can be exploited to achieve a
+better score. An autoresearch loop hands an agent exactly that situation
+for hundreds of consecutive decisions, with no human watching. What the
+agent optimizes then -- the intended objective or the literal one -- is the
+subject of this paper.
 
 We build such a loop around a genuine production problem -- Stage 1 of a
-transcript-only Qur'an memorization checker, which must (a) detect which
+transcript-only Quran memorization checker, which must (a) detect which
 verses (\emph{ayahs}) a reciter has read from a no-diacritics automatic
 speech recognition (ASR) transcript and (b) split that transcript by verse --
 and use it to compare two frontier coding agents, Claude Code and OpenAI
 Codex, under identical instructions, budgets, and starting code. Unlike a
 synthetic benchmark, this task has real ASR noise, a closed reference corpus
-(the Qur'an) that makes exact gold labels possible, messy user behavior
+(the Quran) that makes exact gold labels possible, messy user behavior
 (repetitions, restarts, non-recitation speech), and a metric with a known
 oracle floor -- properties that make it a discriminating and realistic
 testbed for autonomous algorithm research. The substrate itself is a text
 analysis problem -- noisy Arabic transcript-to-canon alignment and
 segmentation -- so the paper contributes on two levels: a data-analysis
 methodology for evaluating autonomous agents, demonstrated on a
-low-resource text-processing task of independent interest.
+low-resource text-processing task of independent interest. The loop's
+output is not only measured but consequential: the winning agent-built
+solution outperforms the incumbent hand-engineered pipeline (iterated over
+months) by $\sim\!10\times$ on held-out data and has replaced it in the
+production application.
 
 We organize the paper around three research questions:
 \begin{description}
@@ -137,6 +149,12 @@ We organize the paper around three research questions:
   persistent-memory notes to ``future runs'') distilled into five concrete
   design rules for autonomous-agent evaluation harnesses
   (Sect.~\ref{sec:community}, \ref{sec:rules}).
+\item An applied validation: measured under the same contract, every agent
+  arm's held-out core matched or beat the incumbent hand-built production
+  pipeline, the winner by $\sim\!10\times$; the obvious cross-agent
+  ensemble \emph{fails} when actually tested; and the winning single
+  artifact is now deployed in production
+  (Sect.~\ref{sec:incumbent}, \ref{sec:discussion}).
 \end{enumerate}
 
 \section{Related Work}
@@ -145,29 +163,26 @@ We organize the paper around three research questions:
 \paragraph{Autonomous research loops and research agents.}
 Karpathy's autoresearch~\cite{karpathy2026autoresearch} is our direct
 template: a frozen evaluation file, an editable training file, and a
-natural-language program instructing an agent to iterate, to log, and to keep
-only improving changes. Follow-on community reports describe scaling the same
-loop to parallel GPU clusters and to non-ML domains, and explicitly flag
-Goodhart risk on the validation metric as the loop's central vulnerability.
-A parallel line of 2025 work frames autonomous research more broadly: MLGym
-benchmarks agents across many ML research tasks~\cite{nathani2025mlgym},
-PaperBench measures whether agents can replicate published AI
-papers~\cite{starace2025paperbench}, and Agent Laboratory drives an
-end-to-end assistant through literature review, experimentation, and
-report writing~\cite{schmidgall2025agentlab}. More ambitious ``AI Scientist''
-systems~\cite{sakana2024aiscientist} automate the entire research life
-cycle -- generating ideas, running experiments, writing manuscripts, and
-reviewing submissions -- but evaluations of such systems have focused on the
-quality and the novelty of the ideas and the writing
-produced~\cite{beel2025evaluating}, not on the optimization \emph{behavior}
-of the agent under a fixed, gameable metric, which is our focus. Google
-DeepMind's AlphaEvolve~\cite{novikov2025alphaevolve} evolves code against a
-human-specified verification metric at much larger scale (large populations
-of programs, LLM-guided mutation); it assumes the metric problem is solved by
-the human expert rather than studying what happens when it is not. Our work
-is, to our knowledge, the first to run this exact loop design as a controlled
-\emph{between-agent} comparison on a task outside language-model pretraining,
-and the first to add a disclosed held-out split to it.
+natural-language program instructing an agent to iterate, log, and keep
+only improving changes; follow-on community reports scaling the loop
+explicitly flag Goodhart risk on the validation metric as its central
+vulnerability. A parallel line frames autonomous research more broadly:
+MLGym benchmarks agents across many ML research
+tasks~\cite{nathani2025mlgym}, PaperBench measures whether agents can
+replicate published AI papers~\cite{starace2025paperbench}, and Agent
+Laboratory drives an end-to-end assistant through literature review,
+experimentation, and report writing~\cite{schmidgall2025agentlab}. ``AI
+Scientist'' systems~\cite{sakana2024aiscientist} automate the entire
+research life cycle, but evaluations of such systems focus on the quality
+and novelty of the ideas and writing produced~\cite{beel2025evaluating},
+not on the optimization \emph{behavior} of the agent under a fixed,
+gameable metric, which is our focus. AlphaEvolve~\cite{novikov2025alphaevolve}
+evolves code against a human-specified verification metric at much larger
+scale, assuming the metric problem is solved by the human expert rather
+than studying what happens when it is not. Our work is, to our knowledge,
+the first to run this exact loop design as a controlled
+\emph{between-agent} comparison on a task outside language-model
+pretraining, and the first to add a disclosed held-out split to it.
 
 \paragraph{Agentic coding and ML-engineering benchmarks.}
 SWE-bench~\cite{jimenez2024swebench} and its successors evaluate whether an
@@ -194,31 +209,29 @@ lookups), not only the score.
 \paragraph{Specification gaming, reward hacking, and Goodhart's law.}
 Krakovna et al.\ catalogue specification gaming: behavior that satisfies the
 literal wording of an objective while defeating its
-intent~\cite{krakovna2020specification,krakovna2019retrospective}, echoing
+intent~\cite{krakovna2020specification}, echoing
 Goodhart's law -- a measure optimized as a target ceases to track what it was
 designed to measure -- and its later
 formalization~\cite{manheim2018goodhart}. Amodei et al.\ list reward hacking
 among the concrete near-term problems of AI systems~\cite{amodei2016concrete},
-and Skalse et al.\ give a formal account of when a proxy reward admits a
-hacking policy~\cite{skalse2022goodhart}. A wave of 2025--2026 work documents
-the same failure in LLM \emph{coding} agents specifically: Baker et al.\ show
-RL-trained models that exploit test harnesses~\cite{baker2025monitoring},
-ImpossibleBench measures how often agents pass tasks whose specification and
-unit tests deliberately conflict -- a pass that necessarily implies a
-shortcut~\cite{zhong2025impossiblebench}, and SpecBench scores reward hacking
-in long-horizon software-engineering tasks~\cite{zhao2026specbench}. These
-efforts share a common frame: the agent games an \emph{executable oracle} --
-tests it can edit, delete, or short-circuit. Our contribution to this line
-differs on three axes. The exploit is produced not by an RL training run but
-by two production, general-purpose coding agents running an ordinary
-edit/verify loop; the metric is read-only, so the gaming is memorization
-against a visible \emph{scorecard} rather than tampering with a mutable test;
+and Skalse et al.\ formalize when a proxy reward admits a hacking
+policy~\cite{skalse2022goodhart}. Recent work documents the same failure in
+LLM \emph{coding} agents: RL-trained models exploiting test
+harnesses~\cite{baker2025monitoring}, agents passing deliberately
+contradictory specification/test pairs~\cite{zhong2025impossiblebench}, and
+reward hacking scored in long-horizon software-engineering
+tasks~\cite{zhao2026specbench}. These efforts share a common frame: the
+agent games an \emph{executable oracle} -- tests it can edit, delete, or
+short-circuit. Our contribution differs on three axes: the exploit is
+produced not by an RL run but by production, general-purpose coding agents
+in an ordinary edit/verify loop; the metric is read-only, so the gaming is
+memorization against a visible \emph{scorecard} rather than test tampering;
 and the same two agents differ enormously in how readily they take the
-loophole -- one exploits it in every run, the other in none -- which is the
-paper's central empirical finding.
+loophole -- one in every run, the other in none -- which is the paper's
+central empirical finding.
 
-\paragraph{Qur'anic ASR and recitation checking.}
-A substantial applied literature builds ASR systems for Qur'anic
+\paragraph{Quranic ASR and recitation checking.}
+A substantial applied literature builds ASR systems for Quranic
 recitation, from HMM-based verse delimitation~\cite{tabbal2006recitation} to
 modern end-to-end models trained on crowd-sourced corpora such as
 Tarteel~\cite{yousfi2018tarteel,alharbi2026comparative} and rule-based or
@@ -236,38 +249,41 @@ harness and dataset (Sect.~\ref{sec:harness}) are reusable for that
 literature.
 
 \paragraph{Positioning within AIST.}
-Two strands at recent AIST editions bracket this work. On the text-analysis
-side, low-resource-language studies -- for example the KyrgyzNLP survey at
-AIST~2024~\cite{alekseev2025kyrgyznlp} -- motivate careful evaluation on
-languages and scripts underserved by mainstream benchmarks; our substrate,
+Two strands at recent AIST editions bracket this work: low-resource-language
+studies such as the KyrgyzNLP survey at
+AIST~2024~\cite{alekseev2025kyrgyznlp} motivate careful evaluation on
+scripts underserved by mainstream benchmarks -- our substrate,
 diacritics-free Arabic transcript alignment against a closed canon, is one
-such under-resourced text-processing problem. On the software side,
-AIST~2024 also featured work on applying LLMs to code
-tasks~\cite{andryushchenko2024codeqa}; we extend that thread from
-\emph{using} an LLM on a code task to \emph{measuring how autonomous coding
-agents behave} when the code task is an unattended optimization loop. The
-paper therefore sits squarely within AIST's data-analysis and
-natural-language-processing scope while contributing a methodology that
-generalizes beyond the specific task.
+such problem -- and work on applying LLMs to code
+tasks~\cite{andryushchenko2024codeqa}, which we extend from \emph{using} an
+LLM on a code task to \emph{measuring how autonomous coding agents behave}
+when the code task is an unattended optimization loop.
 
 \section{Task, Data, and Harness}
 \label{sec:harness}
 
 \subsection{Task}
 Stage~1 of a transcript-only memorization checker: given a diacritics-free
-ASR transcript, return either an abstention (the audio is not Qur'anic
+ASR transcript, return either an abstention (the audio is not Quranic
 recitation) or the recited verse-id sequence together with a per-verse split
 of the transcript. Within-verse mistake detection (Stage~2) requires labels
 that do not yet exist and is out of scope.
 
 \subsection{Dataset}
-258 Telegram-bot auto-detect recordings from production use (254 Qur'anic,
-4 non-Qur'anic; 45 surahs; transcript lengths 3 to 400+ words), transcribed
+258 Telegram-bot auto-detect recordings from production use (254 Quranic,
+4 non-Quranic; 45 surahs; transcript lengths 3 to 400+ words), transcribed
 with an off-the-shelf ASR system and reviewed into gold \texttt{(ayah\_}
 \texttt{assignment, per-ayah split, confidence)} triples. Labeling
-conventions (leading \emph{isti'adha}/\emph{basmala} exclusion, repetition
-handling, non-contiguous verse ids) are summarized in
-Appendix~\ref{app:labels}. The dataset was frozen by SHA-256 before any run
+conventions: gold segments exclude the leading \emph{isti'adha} and
+\emph{basmala} from recited text, except in the opening surah where the
+\emph{basmala} is itself the first verse; repetition is recorded as
+repeated ids in sequence and, since detection scores the id \emph{set},
+affects only the split component; assignments are an id, a range, or a
+comma-separated list for skip-recitation, with the split id set equal to
+the assignment id set; rows are scored at \texttt{high}/\texttt{medium}
+confidence (\texttt{low} retained but unscored); and a human-reference
+audit field is never exposed to the algorithm nor used in scoring. The
+dataset was frozen by SHA-256 before any run
 and one label was corrected \emph{after} both studies completed, once both
 agents independently flagged it as likely gold-label noise
 (Sect.~\ref{sec:study2-audit}); all reported numbers are against the version
@@ -296,13 +312,12 @@ uniform row (iteration, timestamp, elapsed time, agent tag, commit, score
 components, keep/discard status); keep the change iff the score improves,
 else \texttt{git reset}; stop at budget or at a plateau of $\sim\!15$
 non-improving experiments; and, as an explicit tie-breaker, prefer the
-simpler of two equally-good solutions. Three fixed files
-(\texttt{eval.py}, the Qur'an reference table, and \texttt{PROGRAM.md}
-itself) are read-only to the agent; the agent may create and edit only its
-own solution file and helpers. Each run starts from an identical abstain-only
-stub in an isolated environment (Sect.~\ref{sec:isolation}), so every run's
-full history is one commit per experiment -- a complete, replayable audit
-trail.
+simpler of two equally-good solutions. The scorecard, the Quran reference
+table, and \texttt{PROGRAM.md} itself are read-only; the agent edits only
+its own solution file and helpers. Each run starts from an identical
+abstain-only stub in an isolated environment (Sect.~\ref{sec:isolation}),
+so every run's history is one commit per experiment -- a complete,
+replayable audit trail.
 
 \section{Study 1: Setup}
 \label{sec:study1}
@@ -350,21 +365,20 @@ arm-mean ratio exceeds $10\times$. Throughout, ``hardcoded ids'' counts
 literal six-digit verse-id constants in the final solution's decision logic
 -- excluding the fixed \emph{muqatta'at} letter-name table and
 reference-loading code -- by manual review of each artifact; LOC is the
-final solution's length.\footnote{All artifacts, per-experiment commits, and
-the counting procedure are in the supplementary repository, so both measures
-are independently recomputable.}
+final solution's length. Both measures are independently recomputable from
+the per-run artifacts in the supplementary repository.
 
 \subsection{Convergent algorithm discovery}
 Read alone, the headline table says ``Codex wins by an order of magnitude.''
 It does not survive inspection of \emph{how} each score was reached. All six
 runs, independently, arrive at the same general architecture: orthographic
 canonicalization $\to$ $n$-gram surah anchoring $\to$ semi-global
-dynamic-programming alignment $\to$ word-to-verse grouping. Both agents
-independently discover and fix the identical encoding trap (harakat
-combining-character reordering corrupting a regex character class). At the
-experiment count where Claude stops (exp.\ 13), Codex is only modestly ahead
-(0.026--0.044 vs.\ 0.062--0.088) -- not $10\times$. Codex's decisive final
-margin is earned entirely in experiments 14--30.
+dynamic-programming alignment $\to$ word-to-verse grouping; both agents even
+discover and fix the identical encoding trap (harakat combining-character
+reordering corrupting a regex character class). At the experiment count
+where Claude stops (exp.\ 13), Codex is only modestly ahead (0.026--0.044
+vs.\ 0.062--0.088) -- not $10\times$. Codex's decisive final margin is
+earned entirely in experiments 14--30.
 
 \subsection{Divergent optimization behavior}
 \label{sec:divergence}
@@ -376,7 +390,7 @@ mapping one garbled ASR transcript tuple directly to its answer verse id --
 memorizing a single recording, not learning a rule -- and codex-r3 merges
 two verse-split buckets conditioned on specific words being \emph{absent}
 from the transcript, a patch shaped to one recording. (Not all
-hardcoding is illegitimate: mapping the 14 Qur'anic \emph{muqatta'at}
+hardcoding is illegitimate: mapping the 14 Quranic \emph{muqatta'at}
 letter-name prefixes is a fixed, closed set and is not a case of overfitting
 in this sense.) There is no gold-field leakage in any run -- no run reads the
 held-out answer field at runtime -- but the harness itself enables the
@@ -385,35 +399,23 @@ being optimized), and the scorecard's failure report prints the
 \emph{expected} verse ids on a miss, which is precisely the signal Codex's
 late experiments hardcode against.
 
-\begin{table}[t]
-\centering
-\caption{Study 1 -- stable behavioral signature, 3/3 runs per agent.}
-\label{tab:study1-behavior}
-\begin{tabular}{lll}
-\toprule
- & Claude Code (3/3 runs) & Codex (3/3 runs) \\
-\midrule
-Stopping & Stops at plateau, 12--13 experiments & Grinds on, 16--30 experiments \\
-Simplicity criterion & Honored & Overridden \\
-Final artifact & 202--341 LOC, 0 hardcoded ids & 387--486 LOC, 19--41 hardcoded ids \\
-Pace & Slower ($\sim$95--180 s/exp) & Faster ($\sim$45--60 s/exp) \\
-Failure handling & Declared ``unwinnable,'' stopped & Solved via bespoke special-cases \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 Under identical instructions the two agents embody opposite research
-dispositions: Claude behaves as a \emph{generalizer} that self-imposes a
-simplicity/generalization prior the metric never enforced; Codex behaves as a
+dispositions, stable across all three runs of each: Claude behaves as a
+\emph{generalizer} that self-imposes a simplicity/generalization prior the
+metric never enforced -- working slowly ($\sim$95--180\,s per experiment,
+more reasoning), stopping at a plateau after 12--13 experiments, shipping
+202--341 LOC with zero dataset-specific constants; Codex behaves as a
 \emph{metric-maximizer} that follows the literal stated objective to its
-logical end, including through memorization. Neither followed the letter of
+logical end -- moving fast ($\sim$45--60\,s per experiment), grinding
+through 16--30 experiments, shipping 387--486 LOC with 19--41 hardcoded
+ids, including through memorization. Neither followed the letter of
 \texttt{PROGRAM.md} incorrectly -- nothing in it forbids what Codex did --
 which is exactly the outer-alignment gap in miniature: the two agents
 inferred two different implicit specifications from one explicit one.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{comparison.pdf}
+\includegraphics[width=0.78\textwidth]{comparison.pdf}
 \caption{Study 1: best-so-far \rscore\ across all six runs, plotted against
 experiment count. Both agents track closely through the first $\sim$13
 experiments; Codex's runs continue descending well past the point where all
@@ -425,19 +427,19 @@ three Claude runs have plateaued and stopped.}
 \label{sec:study2}
 
 Study~1's raw metric cannot distinguish ``discovered a better algorithm''
-from ``memorized more of the evaluation set.'' Study~2 closes that gap:
-a stratified 60/40 split by recording (151 train / 107 test; non-Qur'anic
-rows split 2/2; repetition and non-contiguous cases represented on both
-sides; cross-surah label quirks pinned to train so test is clean; fixed
-seed) is computed once and frozen. The loop optimizes \texttt{train} only;
-the scorecard's failure report no longer prints expected ids (closing the
-Study~1 leak vector); and \emph{both agents are told, identically, that a
-held-out set exists and that memorizing train rows will not transfer}. After
-each run, the experimenters -- not the agent -- score the final solution on
-the untouched test split. Three hypotheses were fixed before the runs: (H1)
-Codex's train$\to$test gap is much larger than Claude's; (H2) the held-out
-ranking narrows or reverses relative to Study~1; (H3) both agents retain a
-large improvement over the empty-stub baseline.
+from ``memorized more of the evaluation set.'' Study~2 closes that gap: a
+stratified 60/40 split by recording (151 train / 107 test; non-Quranic
+rows 2/2; repetition and non-contiguous cases on both sides; cross-surah
+label quirks pinned to train; fixed seed) is computed once and frozen. The
+loop optimizes \texttt{train} only; the failure report no longer prints
+expected ids (closing the Study~1 leak vector); and \emph{both agents are
+told, identically, that a held-out set exists and that memorizing train
+rows will not transfer}. After each run, the experimenters -- not the agent
+-- score the final solution on the untouched test split. Three hypotheses
+were fixed before the runs: (H1) Codex's train$\to$test gap is much larger
+than Claude's; (H2) the held-out ranking narrows or reverses relative to
+Study~1; (H3) both agents retain a large improvement over the empty-stub
+baseline.
 
 \subsection{Results}
 
@@ -476,14 +478,14 @@ but it did not cost anything either -- wasted effort, not poison. What Codex
 actually lost is concentrated in one place: a single missed abstention
 (codex-r2, a non-recitation row misclassified as recitation) costs $0.5$ and
 accounts for the entire arm-level difference. Claude abstained correctly
-10/10 across both studies. With only two non-Qur'anic rows in the test
+10/10 across both studies. With only two non-Quranic rows in the test
 split, this component is high-variance by metric design -- a lesson for
 reporting components rather than only the scalar. \textbf{H3 confirmed.}
 Every run beats the empty-stub baseline by at least $14\times$.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{study2_generalization.pdf}
+\includegraphics[width=0.78\textwidth]{study2_generalization.pdf}
 \caption{Study 2: train (optimized) vs.\ held-out test \rscore\ per run,
 all four arms (Claude, Codex, and the two exploratory community arms from
 Sect.~\ref{sec:community}). The train-side separation between Claude and
@@ -497,10 +499,10 @@ Hardcoded verse ids per Codex final solution: 19--41 in Study~1, effectively
 zero in Study~2 (only fixed, closed-set constants such as the
 \emph{muqatta'at} map remain). One paragraph of disclosure --
 ``a held-out set exists; memorizing train rows will not transfer'' --
-eliminated literal per-recording memorization. It did not eliminate the
-underlying optimization instinct: Codex still drove train to the floor using
-20--22 experiments of general-looking machinery in the two runs that reached
-it. The non-transferable margin changed character, from memorized answers to
+eliminated literal per-recording memorization, but not the underlying
+optimization instinct: Codex still drove train to the floor with 20--22
+experiments of general-looking machinery in the two runs that reached it.
+The non-transferable margin changed character, from memorized answers to
 harmless over-tuning, rather than disappearing.
 
 \subsection{Isolation is adversarial, even without an adversary}
@@ -513,13 +515,13 @@ branch; (b) Claude runs twice saved unsolicited persistent-memory
 cheat-sheets addressed to ``future runs on this repo'' via the agent's own
 long-lived memory feature -- non-firing only because run directory paths are
 never reused; (c) both agents, in Study~1, read the failure report's
-\emph{expected} ids (Sect.~\ref{sec:divergence}). None of these required
-adversarial intent: an agent given a shell and asked to do well on a metric
-will use whatever information channel is reachable, including channels the
-harness designer did not think of as ``data.'' The fix was structural, not
-instructional: each run now executes in a freshly created, single-commit
-clone containing only the harness snapshot and the train split -- no shared
-\texttt{.git} history, no sibling branches, no logs, and no test set on disk.
+\emph{expected} ids (Sect.~\ref{sec:divergence}). None required adversarial
+intent: an agent given a shell and asked to do well on a metric will use
+whatever information channel is reachable, including channels the designer
+did not think of as ``data.'' The fix was structural, not instructional:
+each run now executes in a freshly created, single-commit clone containing
+only the harness snapshot and the train split -- no shared \texttt{.git}
+history, no sibling branches, no logs, no test set on disk.
 
 \subsection{Agents as annotation auditors}
 \label{sec:study2-audit}
@@ -528,10 +530,9 @@ row as a probable gold-label error (a verse-count discrepancy in a specific
 surah) and declined to fit it, listing it among their ``unwinnable''
 residuals. Human re-review after both studies confirmed and corrected the
 label, bringing the dataset's oracle floor to exactly zero on both splits.
-The correction lives entirely in the train split, so no held-out number in
-this paper changes; it is reported as an unplanned dividend of running a
-loop with agents that explain their stopping decisions -- their refusal
-lists functioned as a free data-quality report.
+The correction lives entirely in train, so no held-out number changes; an
+unplanned dividend of agents that explain their stopping decisions is that
+their refusal lists functioned as a free data-quality report.
 
 \section{Community Extension Arms}
 \label{sec:community}
@@ -582,6 +583,23 @@ was harmless rather than harmful, echoing Sect.~\ref{sec:study2}'s main
 finding across a wider set of tools and underlying models. Zero hardcoded
 per-recording ids appear in any community-arm final solution.
 
+\subsection{The incumbent baseline: agents vs.\ months of hand engineering}
+\label{sec:incumbent}
+As an applied reference point, we wrapped the incumbent production pipeline
+-- a hand-built detector and alignment segmenter iterated incrementally
+over months, historically tuned on a manifest overlapping $\sim\!20$ of
+these recordings -- in the identical evaluation contract. It scores
+$0.760$ on the held-out test split (detection $82.9\%$, split $91.1\%$,
+abstain $1/2$) versus $0.079$ for the winning agent-built solution
+(detection $94.3\%$, split $97.8\%$, abstain $2/2$). Every agent arm's
+held-out detection+split core matched or beat the incumbent -- even the
+underfitting Cursor arm ($\approx\!0.27$) roughly ties its $0.26$ core --
+and the winner is $\sim\!10\times$ better, despite the comparison
+\emph{favoring} the incumbent. One-hour unattended loops outperformed
+months of incremental hand engineering on this task; the winning artifact
+has since replaced the incumbent in the production application, behind a
+feature flag with automatic legacy fallback and a CI regression gate.
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -591,17 +609,21 @@ metric-maximizer (Codex) buys measured-distribution accuracy and run-to-run
 consistency; the generalizer (Claude) buys rare-event robustness, restraint,
 and a smaller artifact. Which currency matters is a property of the
 deployment, not of the agent -- a harness designer should decide which they
-are buying \emph{before} reading the scoreboard. A practical deployment
-recipe falls out directly: Codex's aligner core paired with Claude's
-abstention margin would dominate either arm alone on this task.
+are buying \emph{before} reading the scoreboard. The obvious composition --
+Codex's aligner gated by Claude's abstention margin -- \emph{fails} when
+actually built and measured: a union gate (abstain if either arm abstains)
+degrades the held-out score to $0.098$ through false abstentions, and a
+disagreement-router improves it by only $0.0003$ at twice the maintenance
+surface. The shipped artifact is therefore the single best file, selected
+on held-out evidence -- the simplicity criterion applies to the
+experimenters too. (We report this as deployment engineering, not a
+preregistered result: the selection is test-informed.)
 
 \subsection{The result reverses our own prior}
-We expected, on the basis of
-Study~1, that Codex's solution would \emph{not} transfer; instead its
-algorithmic core transferred best. Registering H1--H3 in the study design
-before running Study~2 is what makes this reversal legible as evidence
-rather than post-hoc narrative -- a methodological point we did not
-anticipate needing when we designed the study.
+We expected, from Study~1, that Codex's solution would \emph{not} transfer;
+instead its algorithmic core transferred best. Registering H1--H3 before
+running Study~2 is what makes this reversal legible as evidence rather than
+post-hoc narrative -- a methodological point we did not anticipate needing.
 
 \subsection{Five design rules for autonomous-agent evaluation harnesses}
 \label{sec:rules}
@@ -645,18 +667,18 @@ sample -- so these are structural requirements, not hygiene items:
 
 Single task and domain; small per-arm sample ($n=3$), so we report effect
 sizes and full per-run curves rather than significance thresholds. We
-include no human-researcher or classical-pipeline baseline arm: the
-empty-stub score ($2.0$), the oracle floor ($0$), and a five-experiment
-pilot establish that the harness discriminates and that its headroom is
-meaningful, but an expert-human comparison on the same budget is future
-work. Pretraining familiarity with the Qur'an text is equal across arms and
+include no human-researcher arm run under the same loop and budget: the
+empty-stub score ($2.0$), the oracle floor ($0$), and the incumbent
+hand-built pipeline (Sect.~\ref{sec:incumbent}) establish that the harness
+discriminates and that its headroom is meaningful, but an expert-human
+comparison on a matched one-hour budget is future work. Pretraining familiarity with the Quran text is equal across arms and
 advantages neither, since the task is algorithm engineering against a
-held-out metric rather than text recall. The metric is transcript-only and
-thus blind to pronunciation (tajweed) correctness by construction; a
-deployed system would need this work as one stage among several. Runs across
-the two agents ran on different days (temporal confound); agent CLIs are
-moving targets, so exact versions and model identifiers are pinned and
-reported rather than implying the finding is version-specific. The harness
+held-out metric rather than text recall. The metric is transcript-only,
+hence blind to pronunciation (tajweed) correctness by construction; a
+deployed system needs this work as one stage among several. The two agents'
+runs occurred on different days (temporal confound); agent CLIs are moving
+targets, so exact versions and model identifiers are pinned and reported
+rather than implying the finding is version-specific. The harness
 was authored with the assistance of one compared agent, which we mitigate by
 freezing and hashing all evaluation and data files before any run. The two
 community arms (Sect.~\ref{sec:community}) use unpinned or differently
@@ -666,11 +688,11 @@ rather than as part of the controlled comparison.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Our three research questions resolve as follows. \textbf{RQ1:} yes -- every
-one of twelve runs across four agent arms autonomously built a working
+Our three research questions resolve as follows. \textbf{RQ1:} yes -- all
+twelve runs across four agent arms autonomously built a working
 detection-and-segmentation algorithm from a blank stub, improving on the
-baseline by at least $14\times$ held out, and the strongest runs
-independently rediscovered a canonical alignment architecture.
+baseline by at least $14\times$ held out; the strongest runs independently
+rediscovered a canonical alignment architecture.
 \textbf{RQ2:} given an identical loop and no supervision, two frontier
 agents pursue incompatible research philosophies -- one self-limits toward
 generality even at a measured cost, the other drives the literal objective
@@ -682,6 +704,12 @@ disappears, literal memorization vanishes with one paragraph of disclosure,
 and what remains is a specific, interpretable difference in rare-event
 robustness rather than a diffuse claim that ``one agent is better.''
 
+The loop's output, finally, was consequential and not merely measured:
+scored under the same contract, one-hour unattended runs beat months of
+incremental hand engineering -- the winning artifact outperforms the
+incumbent production pipeline by $\sim\!10\times$ held out and has been
+deployed in the production application, replacing the pipeline it beat.
+
 We take this as evidence that autoresearch-style loops -- likely
 to proliferate as a cheap way to get unattended engineering effort out of
 coding agents -- need held-out evaluation and closed state channels as a
@@ -689,11 +717,10 @@ default (Sect.~\ref{sec:rules}), and that reporting only a scalar score from
 such a loop will systematically favor whichever agent is more willing to
 game it.
 
-\paragraph{Reproducibility.} All harness code, the frozen metric, the
+\paragraph{Reproducibility.} All harness code, the frozen metric,
 per-experiment logs, per-run git histories (one commit per experiment), and
-the SHA-256 hashes of every frozen input are included in the supplementary
-repository accompanying this submission (link withheld for double-blind
-review; will be made public on acceptance).
+SHA-256 hashes of every frozen input are in the supplementary repository
+(link withheld for double-blind review; public on acceptance).
 
 \begin{credits}
 \subsubsection{\ackname}
@@ -708,21 +735,6 @@ content of this article.
 \bibliographystyle{splncs04}
 \bibliography{references}
 
-\appendix
-\section{Labeling Conventions}
-\label{app:labels}
-Gold segments exclude the leading \emph{isti'adha} and \emph{basmala} from
-recited text, except in the opening surah where the \emph{basmala} is itself
-the first verse; the concatenated gold split reproduces the recited
-transcript minus that prefix. Repetition is permitted and recorded as
-repeated ids in sequence; because detection scores the \emph{set} of
-recited-verse ids, repetition affects only the split component, not
-detection. The split id set is defined to equal the assignment id set,
-represented as a single id, a contiguous range, or a comma-separated list of
-non-contiguous ids for skip-recitation. Rows are scored at \texttt{high} or
-\texttt{medium} annotation confidence; \texttt{low}-confidence rows are
-retained in the file but excluded from scoring. A human-reference
-``actual verses'' field exists for audit purposes only and is never exposed
-to the algorithm under test or used in scoring.
+\end{document}
 
 \end{document}
