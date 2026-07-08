@@ -39,9 +39,6 @@ Karpathy, A.: autoresearch: {AI} agents running research on single-{GPU} nanocha
 \bibitem{yousfi2018tarteel}
 Khan, H.I., Abid, A., Moussa, M.M., Abou-Allaban, A.: The tarteel dataset: crowd-sourced and labeled quranic recitation  (2021)
 
-\bibitem{krakovna2019retrospective}
-Krakovna, V.: Retrospective on the specification gaming examples list. Personal blog (2019), \url{https://vkrakovna.wordpress.com/2019/12/20/retrospective-on-the-specification-gaming-examples-list}
-
 \bibitem{krakovna2020specification}
 Krakovna, V., Uesato, J., Mikulik, V., Rahtz, M., Everitt, T., Kumar, R., Kenton, Z., Leike, J., Legg, S.: Specification gaming: the flip side of ai ingenuity. DeepMind Blog (2020), \url{https://deepmind.google/blog/specification-gaming-the-flip-side-of-ai-ingenuity}
 
