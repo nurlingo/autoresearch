@@ -32,9 +32,9 @@
 \maketitle
 
 \begin{abstract}
-Autoresearch loops give a coding agent a frozen dataset, a frozen metric,
-and a modify--verify--keep/discard cycle, and ask it to improve an
-algorithm unattended. What does the agent then actually optimize? We build
+In an autoresearch loop, a coding agent is handed a frozen dataset and a
+target metric to produce an algorithm autonomously via a modify--verify--keep/discard cycle with no human in the loop. 
+What does the agent then actually optimize? We build
 such a loop around a production text-processing task -- detecting which
 Quranic verses a diacritics-free ASR transcript contains and segmenting
 the transcript by verse -- and compare two frontier coding agents, Claude
@@ -47,14 +47,15 @@ $\sim\!10\times$ lower largely by memorizing evaluation rows (19--41
 hardcoded verse ids per run) -- a clean natural instance of specification
 gaming by a production agent. In a preregistered second study with a
 disclosed held-out split, that separation evaporates: the arms become
-statistically indistinguishable on the full held-out metric, one paragraph
-of disclosure eliminates literal memorization, and Codex's general core in
-fact transfers \emph{better and more consistently} (held-out
-detection+split $0.085\pm0.004$ vs.\ $0.121\pm0.031$), losing only on
-rare-event abstention robustness. Two community arms (Cursor, Antigravity)
-reproduce the pattern, and every arm's held-out core matched or beat the
-incumbent hand-engineered production pipeline -- the best agent-built
-solution by $\sim\!10\times$ -- and now replaces it in production. We
+statistically indistinguishable on the full held-out metric. One paragraph
+of disclosure eliminates literal memorization entirely. Codex's general
+core in fact transfers \emph{better and more consistently} (held-out
+detection+split $0.085\pm0.004$ vs.\ $0.121\pm0.031$), losing only on a
+single missed rejection of non-recitation input; two exploratory community
+arms (Cursor, Antigravity) are consistent with the pattern. Every arm's
+held-out core matched or beat the incumbent hand-engineered production
+pipeline -- the best by an order of magnitude -- and the winning solution
+now replaces that pipeline in production. We
 catalogue agent-initiated isolation failures -- reading sibling runs
 through shared git state, writing unprompted persistent-memory notes to
 ``future runs'' -- and distill five design rules for autonomous-agent
