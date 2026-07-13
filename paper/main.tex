@@ -71,9 +71,9 @@ Arabic text segmentation \and Quranic recitation}
 
 Hand a coding agent a frozen dataset, a frozen metric, and one editable
 file; tell it to iterate unattended, keeping only changes that improve the
-score. This \emph{autoresearch} pattern -- named by Karpathy's recent
-experiment~\cite{karpathy2026autoresearch} and colloquially known as the
-``Karpathy loop,'' which strips a single-GPU
+score. This \emph{autoresearch} pattern (colloquially, the ``Karpathy
+loop'') -- named by Karpathy's recent
+experiment~\cite{karpathy2026autoresearch}, which strips a single-GPU
 language-model training script to $\sim\!630$ lines and reports agents
 autonomously discovering architecture and hyperparameter improvements over
 hundreds of unattended experiments -- generalizes to any task with a fast,
@@ -143,8 +143,9 @@ We organize the paper around three research questions:
   train in Study~1 in fact transfers its algorithmic core \emph{better} --
   while losing on a single rare-event failure mode instead
   (Sect.~\ref{sec:study2}).
-\item An extension to two community-run arms (Cursor, Antigravity) that
-  reproduces the held-out ranking pattern under different models and tooling,
+\item An extension to two exploratory community-run arms (Cursor,
+  Antigravity) consistent with the held-out pattern under different models
+  and tooling,
   and a catalogue of agent-initiated harness-isolation failures (reading a
   sibling run's branch through shared git state; writing unsolicited
   persistent-memory notes to ``future runs'') distilled into five concrete
