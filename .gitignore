@@ -24,3 +24,12 @@ paper/main.blg
 paper/main.fls
 paper/main.fdb_latexmk
 paper/main.synctex.gz
+hf-dataset/
+
+# macOS
+.DS_Store
+
+# Built paper (regenerate with latexmk -pdf paper/main.tex)
+paper/main.pdf
+paper/autoresearch.pdf
+paper/aist2026-camera-ready.zip

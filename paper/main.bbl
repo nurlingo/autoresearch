@@ -45,6 +45,10 @@ Chan, J.S., Chowdhury, N., Jaffe, O., Aung, J., Sherburn, D., Mays, E.,
   International Conference on Learning Representations. vol.~2025, pp.
   50466--50494 (2025)
 
+\bibitem{gabor2026evilgenie}
+Gabor, J., Lynch, J., Rosenfeld, J.: Evilgenie: A reward hacking benchmark.
+  arXiv preprint arXiv:2511.21654  (2026)
+
 \bibitem{alharbi2026comparative}
 Hossain, N.M., Islam, R., Obaidellah, U.: A comparative study of pretrained
   transformer models for quranic asr: Speech representations, label formats,
