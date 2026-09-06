@@ -34,3 +34,13 @@ compare:
 archive:
 	@mkdir -p runs && cp results.tsv runs/$(AGENT)-$$(date +%y%m%d-%H%M).tsv && \
 	  echo "archived -> runs/$(AGENT)-$$(date +%y%m%d-%H%M).tsv"
+
+# ---- Stage 2 + competition release (delegates to stage2/Makefile) ----------
+# FMR_REPO must point at a follow_my_reading checkout for the incumbent baseline (B2).
+.PHONY: stage2-data stage2-baselines release
+stage2-data:
+	@$(MAKE) -C stage2 data
+stage2-baselines:
+	@$(MAKE) -C stage2 baselines
+release: stage2-data stage2-baselines
+	@$(PYTHON) tools/build_release.py
