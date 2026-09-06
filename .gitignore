@@ -33,3 +33,12 @@ hf-dataset/
 paper/main.pdf
 paper/autoresearch.pdf
 paper/aist2026-camera-ready.zip
+
+# Stage 2 (production-derived review labels; surrogate-id map)
+data/bot_events.jsonl
+release/ids.private.json
+stage2/results.tsv
+stage2/.ar_run_start
+stage2/run.log
+stage2/__pycache__/
+stage2/baselines/__pycache__/
