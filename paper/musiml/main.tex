@@ -7,15 +7,11 @@
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsmath,amsfonts}
-\usepackage{nicefrac}
 \usepackage{microtype}
-\usepackage{xcolor}
-\usepackage{enumitem}
-\setlist{nosep,leftmargin=1.2em}
 \newcommand{\taskA}{Task~A}
 \newcommand{\taskB}{Task~B}
 
-\title{Checking Quran Recitation from Noisy ASR Transcripts: a Two-Task Competition on Real Learner Data}
+\title{Checking Quran Recitation from Noisy ASR Transcripts: a Two-Task Competition}
 
 \author{Anonymous Author(s)}
 
@@ -23,29 +19,23 @@
 \maketitle
 
 \begin{abstract}
-We propose a competition on the checking problem behind every Quran-memorization app: given a noisy ASR transcript of a learner reciting from memory, decide \emph{which} ayahs were recited, \emph{where} each begins and ends, and \emph{whether} the learner should be corrected---without flagging the breath repeats, restarts and stutters that make up most real recitation. We release 258 human-reviewed transcripts of production recordings (1{,}267 gold ayah chunks) with two fixed scorecards, an oracle-checked recording-level held-out split, a 10\% review sample, checksums, and three evaluated baselines, including the deployed app's hand-built pipeline.
+Every Quran-memorization app that listens to a learner has to answer the same question from a noisy ASR transcript: which ayahs were recited, where each one starts and ends, and whether the learner should be corrected, all without flagging the breath repeats, restarts and stutters that make up most real recitation. We propose a competition on this checking problem and release 258 human-reviewed transcripts of production recordings (1{,}267 gold ayah chunks) with two fixed scorecards, a recording-level held-out split with a zero oracle floor, a 10\% review sample, checksums, and three evaluated baselines, one being a deployed app's hand-built pipeline.
 \end{abstract}
 
-\section{Social impact and task design}
-Hundreds of millions of Muslims memorize Quran, normally with a listener who corrects them. Apps that supplement that listener transcribe the recitation with commercial ASR and must then solve a \emph{checking} problem on noisy text: isti'adhah and basmala, ASR errors, breath-catching repeats, full restarts, stutters, self-corrections, skipped words, abandoned ayahs. A plain word-error diff calls all of that a mistake. In our production data 87\% of ayah chunks are clean, and over-flagging benign behaviour destroys a learner's trust faster than missing an occasional error. Public Quran speech resources target ASR of professional read recitation; to our knowledge none labels the learner-facing checking task on real memorization attempts.
+\section{Why this task, and how we frame it}
+Hundreds of millions of Muslims memorize Quran, almost always with a listener who corrects them. Apps that stand in for the listener transcribe the recitation with commercial ASR and then have to check noisy text: isti'adhah and basmala, ASR errors, repeats after catching a breath, full restarts, stutters, self-corrections, skipped words, abandoned ayahs. A plain word-error diff calls all of that a mistake. In our production data 87\% of ayah chunks are clean, and an app that keeps flagging benign behaviour loses a learner's trust faster than one that misses an occasional error. Public Quran speech resources target ASR of professional read recitation; as far as we know, none labels checking on real memorization attempts.
 
-\begin{itemize}
-\item \textbf{\taskA\ --- detect + split.} Input: one raw transcript. Output: the set of ayah ids recited and a segmentation of the words by ayah, or \emph{abstain} for non-Quranic input. Frozen (v1.1).
-\item \textbf{\taskB\ --- within-ayah mistake events.} Input: the transcript words of \emph{one} ayah (a gold \taskA\ chunk), the reference ayah text, and the chunk's position in the recording. Output: a list of events, each typed (restart\_repeat, full\_repeat, stutter, self\_correction, substitution, omission, insertion, word\_order, truncation, asr\_garble) with a verdict \emph{benign} / \emph{corrected} / \emph{mistake} / \emph{uncertain}---the last because text alone cannot always separate ASR error from recitation error. Released as a labeled pilot; full labels ship before launch (\S\ref{sec:plan}).
-\end{itemize}
+We frame it as two tasks on one dataset. In \textbf{\taskA\ (detect and split)} the input is one raw transcript and the output is the set of ayah ids recited plus a segmentation of the words by ayah, or \emph{abstain} when the input is not Quran; it is already frozen (v1.1). In \textbf{\taskB\ (within-ayah mistake events)} the input is the transcript words of one ayah (a gold \taskA\ chunk), the reference text, and the chunk's position in the recording. The output is a list of events, each with a type (restart\_repeat, full\_repeat, stutter, self\_correction, substitution, omission, insertion, word\_order, truncation, asr\_garble) and a verdict: \emph{benign}, \emph{corrected}, \emph{mistake}, or \emph{uncertain}. The last verdict exists because text alone cannot always tell ASR error from recitation error, and a system should be allowed to say so. \taskB\ ships as a labeled pilot now (Section~\ref{sec:plan}).
 
 \section{Dataset}
 \label{sec:data}
-\textbf{Source and consent.} 258 recordings by adult users of a Quran-memorization chat bot, under terms of service that disclose review for service improvement; commercial ASR; every row human-reviewed (ayah assignment, split, confidence) after LLM pre-labeling. 254 rows are Quranic (604 distinct ayahs from 45 surahs; 1--46 ayahs and 2--261 words per recording, median 40), 4 are non-Quranic negatives. Text only; learner and recording identifiers replaced by surrogate ids; negatives hand-checked for personal content. The Quran is a closed public canon, so transcripts carry essentially no personal information.
+\textbf{Source and consent.} The 258 recordings come from adult users of a Quran-memorization chat bot, under terms of service that disclose review for service improvement. A commercial ASR model produced the transcripts, and a human reviewed every row (ayah assignment, split, confidence) after LLM pre-labeling. 254 rows are Quranic, covering 604 distinct ayahs from 45 surahs, with 1--46 ayahs and 2--261 words (median 40) per recording; 4 are non-Quranic negatives. We release text only, replace learner and recording identifiers with surrogate ids, and checked the negatives by hand; as the Quran is a closed public canon, the transcripts carry essentially no personal information.
+\textbf{Split.} A deterministic stratified 60/40 split by recording (151/107 rows; 711/556 chunks), never by chunk, so one reciter's ASR quirks cannot leak. The negatives split 2/2, and known-ambiguous rows are pinned to train so the held-out oracle floor is exactly 0. \taskB\ uses the same split and ids.
 
-\textbf{Split.} Deterministic stratified 60/40 by \emph{recording} (151/107 rows; 711/556 chunks), never by chunk, so one reciter's ASR quirks cannot leak; negatives 2/2; known-ambiguous rows pinned to train so the held-out oracle floor is exactly~0. \taskB\ shares the split and id space.
-
-\textbf{\taskB\ labels.} Frozen schema: verbatim hypothesis/reference words, script-derived token spans, verdict, note. Reproducibility rules: word-final letter drops are \emph{uncertain}; a truncated \emph{last} ayah of a recording is benign (the learner stopped recording), elsewhere a mistake; a slip inside an abandoned first attempt is swallowed by the repeat. The pilot covers 99 chunks of 20 recordings (86 clean; 17 events: 11 substitutions, 3 omissions, 2 truncations, 1 full repeat), LLM-proposed and marked \texttt{human-pending} until sign-off. A naive diff flags only 21\% of all 1{,}267 chunks; the rest match the reference exactly after canonicalization, so completing the labels is a review of $\approx$270 chunks.
+\textbf{\taskB\ labels.} The schema is frozen: verbatim hypothesis and reference words, token spans derived by script, a verdict, and a note. Three rules keep labels reproducible: a dropped word-final letter is \emph{uncertain}; a truncated ayah is benign when it is the last in the recording (the learner simply stopped) and a mistake anywhere else; a slip inside an abandoned first attempt is absorbed by the repeat that follows. The pilot covers 99 chunks from 20 recordings, 86 of them clean, with 17 events (11 substitutions, 3 omissions, 2 truncations, 1 full repeat), proposed by an LLM and marked \texttt{human-pending} until reviewed. A naive diff flags only 21\% of all 1{,}267 chunks; the rest match the reference exactly after canonicalization, so finishing the labels means reviewing about 270 chunks.
 
 \section{Metrics and baselines}
-Fixed scripts; lower is better; components in $[0,1]$, always reported next to the scalar.
-\taskA: $\texttt{research\_score} = \text{detection err} + \text{split err} + \text{abstention err}$ (exact ayah-set match; word-assignment accuracy after metric-only orthographic canonicalization; abstention on negatives).
-\taskB: $\texttt{study3\_score} = 2\cdot\text{miss} + \text{false\_alarm} + \text{benign} + \text{clean}$. A prediction matches a gold event if their token spans overlap. \emph{miss}: gold mistakes not flagged (an \emph{uncertain} prediction on one costs a half); \emph{false\_alarm}: flags touching no gold mistake/uncertain event, over all flags; \emph{benign}: gold benign/corrected events flagged as mistakes; \emph{clean}: clean chunks with any flag---the product's false-flag rate, its own term because clean is the majority class. Adjacent same-type predictions are merged, so word- and phrase-level detectors score alike; type agreement and uncertain-rate are reported, not summed. Both scores: empty system 2.0, gold 0.
+Both scorecards are fixed scripts; lower is better; each component lies in $[0,1]$ and is printed next to the scalar, and an empty system scores 2.0. For \taskA, $\texttt{research\_score} = \text{detection err} + \text{split err} + \text{abstention err}$ (exact match on the set of ayah ids; word-assignment accuracy after a metric-only orthographic canonicalization; abstention on the negatives). For \taskB, $\texttt{study3\_score} = 2\cdot\text{miss} + \text{false\_alarm} + \text{benign} + \text{clean}$. A prediction matches a gold event when their token spans overlap. \emph{miss} is the share of gold mistakes not flagged (an \emph{uncertain} prediction on one costs half); \emph{false\_alarm} is the share of flags that touch no gold mistake or uncertain event; \emph{benign} is the share of gold benign or corrected events flagged as mistakes; \emph{clean} is the share of clean chunks that received any flag, which gets its own term because clean chunks are the majority class. Adjacent same-type predictions are merged so word- and phrase-level detectors score alike; type agreement and the uncertain rate are reported, not summed.
 
 \begin{table}[h]\vspace{-6pt}\centering\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{llrrll}\toprule
@@ -59,15 +49,15 @@ B & B1 naive diff (every edit is a mistake) & 1.358 & 1.111 & benign 1 & false\_
 B & B2 incumbent cleaner + DP alignment & 0.167 & 1.111 & benign 1 & false\_alarm 0.11 \\
 \bottomrule
 \end{tabular}\vspace{-2pt}
-\caption{Baselines. $^\dagger$full 258-row set. \taskB: pilot labels (47 train / 52 test chunks); both existing designs flag the held-out full repeat as a mistake (\emph{benign}\,=\,1).}
+\caption{Baselines. $^\dagger$Full 258-row set. \taskB\ is scored on the pilot labels (47 train / 52 test chunks); both existing designs flag the held-out full repeat as a mistake (\emph{benign}\,=\,1).}
 \end{table}
-On \taskA, six autonomous runs of two coding agents in a Karpathy-style fixed-metric loop all matched or beat the incumbent held-out, the best by $10\times$\footnotemark[1]; without a held-out split that loop memorized rows---hence the hidden final test below. The \taskB\ pilot is small by design: it fixes schema and metric and already separates the failure modes that matter.
+On \taskA, six autonomous runs of two coding agents in a Karpathy-style fixed-metric loop all matched or beat the incumbent held-out, the best by $10\times$\footnotemark[1]; without a held-out split the same loop memorized rows, which is why the competition ends on a hidden test set.
 
 \section{Competition plan, feasibility and ethics}
 \label{sec:plan}
-\textbf{Phases.} (1) Launch with \taskA\ frozen and \taskB\ fully human-reviewed on the 258 recordings ($\approx$270-chunk review; tooling exists). (2) Public leaderboard on the released test split. (3) Final ranking on a \emph{hidden} test set of new recordings drawn from $>$20k further production recordings of the same app, labeled with the same protocol, user-reported false flags over-sampled as adversarial gold; released afterwards. A submission is one Python file per contract; scoring takes under a second, so an \emph{agent track} (autonomous loops, logged per experiment) runs beside the human track under identical rules.
+The competition launches with \taskA\ frozen and \taskB\ fully human-reviewed on the 258 recordings (about 270 chunks), runs a public leaderboard on the released test split, and ranks on a hidden test set of new recordings drawn from more than 20k further production recordings of the same app, labeled with the same protocol, user-reported false flags over-sampled as adversarial gold, and released afterwards. A submission is one Python file per contract and scoring takes under a second, so an agent track (autonomous loops, logged per experiment) runs beside the human track.
 
-\textbf{Feasibility.} Harness, data, checksums and the 10\% sample (26 recordings, both tasks) are attached; baselines run offline. \textbf{Ethics.} Text only, de-identified, adult users, ToS-disclosed review, CC~BY~4.0; the task is corrective feedback, not surveillance, and \emph{uncertain} is a first-class output so systems are not pushed to over-claim. \textbf{Participation.} Pure text, tiny data, sub-second evaluation, a task every Quran-learning app faces; Arabic NLP, speech and coding-agent groups are natural entrants.
+Harness, data, checksums and the 10\% sample (26 recordings, both tasks) are attached, and the baselines run offline. The data is text only, de-identified, from adult users under ToS-disclosed review, and licensed CC~BY~4.0. The task is corrective feedback, not surveillance, and \emph{uncertain} is a first-class output so systems are not pushed to over-claim. Entry cost is low and every Quran-learning app faces this problem; we expect entrants from Arabic NLP, speech and agent groups.
 
-\footnotetext[1]{\emph{Autoresearch with coding agents: generalizers and metric-maximizers on Quran recitation data}, AIST 2026 / arXiv; citation withheld for double-blind review.}
+\footnotetext[1]{\emph{Autoresearch with coding agents: generalizers and metric-maximizers on Quran recitation data}, AIST 2026.}
 \end{document}
