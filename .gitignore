@@ -15,3 +15,21 @@ results.tsv
 /comparison.png
 data/train.csv
 data/test.csv
+
+# LaTeX build artifacts
+paper/main.aux
+paper/main.log
+paper/main.out
+paper/main.blg
+paper/main.fls
+paper/main.fdb_latexmk
+paper/main.synctex.gz
+hf-dataset/
+
+# macOS
+.DS_Store
+
+# Built paper (regenerate with latexmk -pdf paper/main.tex)
+paper/main.pdf
+paper/autoresearch.pdf
+paper/aist2026-camera-ready.zip
