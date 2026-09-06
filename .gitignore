@@ -42,3 +42,4 @@ stage2/.ar_run_start
 stage2/run.log
 stage2/__pycache__/
 stage2/baselines/__pycache__/
+data/hf/

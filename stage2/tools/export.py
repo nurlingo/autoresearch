@@ -7,7 +7,8 @@ Stage-1 gold split + the Review-tab event labels, with surrogate ids.
     python3 stage2/tools/export.py --check         # validate + print stats, write nothing
 
 Inputs (root of the repo, production-derived, gitignored):
-    data/train.csv, data/test.csv      Stage-1 frozen split (tools/split_dataset.py)
+    data/train.csv, data/test.csv      Stage-1 frozen split (tools/split_dataset.py) — join key only
+    data/hf/train.csv, data/hf/test.csv  the public v1.1 release (canonical content, surrogate ids)
     data/bot_events.jsonl              Review-tab labels, one line per recording
 
 Outputs (de-identified, committed):
@@ -144,11 +145,19 @@ def load_events() -> dict[str, dict]:
 
 
 def build(split: str, events: dict[str, dict], ids: dict[str, str]) -> tuple[list[dict], list[str]]:
-    rows = list(csv.DictReader(open(DATA / f"{split}.csv", encoding="utf-8")))
+    priv = list(csv.DictReader(open(DATA / f"{split}.csv", encoding="utf-8")))
+    # Canonical content = the public v1.1 release (data/hf/*.csv, surrogate ids), when present;
+    # the private split file supplies only the recording_id -> row_id join for the labels.
+    hf = DATA / "hf" / f"{split}.csv"
+    rows = list(csv.DictReader(open(hf, encoding="utf-8"))) if hf.exists() else priv
+    assert len(rows) == len(priv), f"{split}: public/private row count differs"
     chunks, problems = [], []
-    for n, r in enumerate(rows, 1):
-        rid = r["recording_id"]
-        row_id = f"{split}-{n:03d}"
+    for n, (r, pr) in enumerate(zip(rows, priv), 1):
+        rid = pr["recording_id"]
+        row_id = r.get("id") or f"{split}-{n:03d}"
+        assert row_id == f"{split}-{n:03d}"
+        if r.get("transcript") != pr.get("transcript"):
+            problems.append(f"{row_id}: transcript differs between public and private split files")
         ids[rid] = row_id
         segs = json.loads(r["transcript_split_by_ayahs"] or "[]")
         if not segs:  # non-Quran rows have no chunks
