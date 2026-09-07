@@ -3,7 +3,7 @@
 Karpathy-style autoresearch loop for the **Follow My Reading** recitation
 algorithm. Goal: a transcript-only memorization checker for Quran reciters that
 (1) detects which ayahs were recited, (2) splits the transcript by ayah, and
-(later) (3) finds genuine recitation mistakes.
+(3) labels transcript/reference differences under a human-reviewed rubric (Study 3, in preparation).
 
 This repo is the **fixed harness**: a frozen dataset + a frozen scorecard, plus a
 blank-slate algorithm an agent rewrites from scratch. It is deliberately isolated
@@ -16,12 +16,15 @@ each agent at the same loop, compare the `research_score` they reach.
 | Stage | Input | Output | Status |
 | --- | --- | --- | --- |
 | **1. Detect + split** | full transcript | ayahs recited + per-ayah split | **active** (this harness) |
-| **2. Mistake detection** | one gold ayah chunk + reference | recitation mistakes | future, separate harness |
+| **2. Event annotation** | transcript + Quran reference; final contract pending | combined event labels and spans | Study 3: 40/100 recordings approved; no runs |
 
 The stages are separate because Stage 2 consumes Stage 1's output. Evaluating
 Stage 2 on the *gold* split keeps split errors from polluting the mistake score.
-Mistakes are still to be defined; Stage 2 needs a gold `mistakes` label that does
-not exist yet.
+Study 3 now has a working annotation rubric and 40 approved recordings. The
+new experiment asks the agent to annotate its own unlabelled development pool
+and build an algorithm, with final code evaluated privately. The old pilot
+harness is not the new contract. See [methodology](METHODOLOGY-STUDY3.md) and
+[annotation findings](docs/STUDY3-ANNOTATION.md).
 
 ## Layout
 
@@ -51,7 +54,7 @@ make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"   # -> comparison.png
 - **PROGRAM.md** — the loop and the rules on what may/may not change.
 - **METHODOLOGY.md** — how to run the Claude-vs-Codex comparison for the paper.
 - **METHODOLOGY-STUDY3.md** — Stage 2 (within-ayah mistake detection): dataset
-  and experiment design (planned; on branch `study3`).
+  and experiment design (40/100 recordings approved; current protocol, no runs).
 
 ## Launching an agent
 
