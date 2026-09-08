@@ -10,54 +10,43 @@
 \usepackage{microtype}
 \newcommand{\taskA}{Task~A}
 \newcommand{\taskB}{Task~B}
-
-\title{Checking Quran Recitation from Noisy ASR Transcripts: a Two-Task Competition}
-
+\title{Checking Quran Recitation from Noisy ASR Transcripts:\\A Competition with Agent-Assisted Annotation}
 \author{Anonymous Author(s)}
-
 \begin{document}
 \maketitle
-
 \begin{abstract}
-Every Quran-memorization app that listens to a learner has to answer the same question from a noisy ASR transcript: which ayahs were recited, where each one starts and ends, and whether the learner should be corrected, all without flagging the breath repeats, restarts and stutters that make up most real recitation. We propose a competition on this checking problem and release 258 human-reviewed transcripts of production recordings (1{,}267 gold ayah chunks) with two fixed scorecards, a recording-level held-out split with a zero oracle floor, a 10\% review sample, checksums, and three evaluated baselines, one being a deployed app's hand-built pipeline.
+We propose two tasks for checking Quran recitation from ASR: detecting and splitting ayahs, and labeling localized transcript/reference events. Task A has a public 258-recording benchmark. For Task B, we completed a private annotation set of 100 human-approved recording cases comprising 314 ayah chunks. Algorithms receive reviewed splits and references. An agent track will annotate a separate unlabelled development pool and build an algorithm for private evaluation. We report annotation findings, distinguish the legacy machine-labeled pilot from the completed gold review, and document input exposure that prevents claiming an unseen-input test.
 \end{abstract}
 
-\section{Why this task, and how we frame it}
-Hundreds of millions of Muslims memorize Quran, almost always with a listener who corrects them. Apps that stand in for the listener transcribe the recitation with commercial ASR and then have to check noisy text: isti'adhah and basmala, ASR errors, repeats after catching a breath, full restarts, stutters, self-corrections, skipped words, abandoned ayahs. A plain word-error diff calls all of that a mistake. In our production data 87\% of ayah chunks are clean, and an app that keeps flagging benign behaviour loses a learner's trust faster than one that misses an occasional error. Public Quran speech resources target ASR of professional read recitation; as far as we know, none labels checking on real memorization attempts.
+\section{Task and motivation}
+Quran memorization involves a listener checking recitation. An ASR-based application must handle opening formulas, repeats, restarts, repairs, and missing or substituted words. Edit distance alone does not distinguish these cases. Our labels assess transcript/reference differences, not whether the speaker or ASR caused them; unwritten vowel and tajweed errors are outside scope.
 
-We frame it as two tasks on one dataset. In \textbf{\taskA\ (detect and split)} the input is one raw transcript and the output is the set of ayah ids recited plus a segmentation of the words by ayah, or \emph{abstain} when the input is not Quran; it is already frozen (v1.1). In \textbf{\taskB\ (within-ayah mistake events)} the input is the transcript words of one ayah (a gold \taskA\ chunk), the reference text, and the chunk's position in the recording. The output is a list of events, each with a type (restart\_repeat, full\_repeat, stutter, self\_correction, substitution, omission, insertion, word\_order, truncation, asr\_garble) and a verdict: \emph{benign}, \emph{corrected}, \emph{mistake}, or \emph{uncertain}. The last verdict exists because text alone cannot always tell ASR error from recitation error, and a system should be allowed to say so. \taskB\ ships as a labeled pilot now (Section~\ref{sec:plan}).
+In \textbf{\taskA\ (detect and split)}, a full transcript maps to ayah IDs and word assignments, or abstention on non-Quran input. The public v1.1 benchmark exists. In \textbf{\taskB\ (event annotation)}, outputs have combined labels such as \texttt{substitution\_mistake} and \texttt{repetition\_benign}, with hypothesis/reference spans. Review covers whole recordings and opening formulas. Algorithms receive reviewed chunks, ayah IDs and exact references; scoring excludes detection errors.
 
-\section{Dataset}
-\label{sec:data}
-\textbf{Source and consent.} The 258 recordings come from adult users of a Quran-memorization chat bot, under terms of service that disclose review for service improvement. A commercial ASR model produced the transcripts, and a human reviewed every row (ayah assignment, split, confidence) after LLM pre-labeling. 254 rows are Quranic, covering 604 distinct ayahs from 45 surahs, with 1--46 ayahs and 2--261 words (median 40) per recording; 4 are non-Quranic negatives. We release text only, replace learner and recording identifiers with surrogate ids, and checked the negatives by hand; as the Quran is a closed public canon, the transcripts carry essentially no personal information.
-\textbf{Split.} A deterministic stratified 60/40 split by recording (151/107 rows; 711/556 chunks), never by chunk, so one reciter's ASR quirks cannot leak. The negatives split 2/2, and known-ambiguous rows are pinned to train so the held-out oracle floor is exactly 0. \taskB\ uses the same split and ids.
+The agent track supplies unlabelled development transcripts, the Quran reference, definitions and disjoint examples. Entrants create annotations and an algorithm; final code is scored. Agreement with self-generated labels is not independent annotation accuracy. Gold performance assesses the combined process, not every development annotation or annotation's causal contribution.
 
-\textbf{\taskB\ labels.} The schema is frozen: verbatim hypothesis and reference words, token spans derived by script, a verdict, and a note. Three rules keep labels reproducible: a dropped word-final letter is \emph{uncertain}; a truncated ayah is benign when it is the last in the recording (the learner simply stopped) and a mistake anywhere else; a slip inside an abandoned first attempt is absorbed by the repeat that follows. The pilot covers 99 chunks from 20 recordings, 86 of them clean, with 17 events (11 substitutions, 3 omissions, 2 truncations, 1 full repeat), proposed by an LLM and marked \texttt{human-pending} until reviewed. A naive diff flags only 21\% of all 1{,}267 chunks; the rest match the reference exactly after canonicalization, so finishing the labels means reviewing about 270 chunks.
+\section{Data and findings from human review}
+The public \taskA\ release has 258 transcripts: 254 Quranic recordings, four non-Quran negatives and 1{,}267 reviewed chunks covering 604 ayahs from 45 surahs. Its train/test split has 151/107 recordings and 711/556 chunks. This is a public benchmark; duplicates and related inputs must stay in one partition.
 
-\section{Metrics and baselines}
-Both scorecards are fixed scripts; lower is better; each component lies in $[0,1]$ and is printed next to the scalar, and an empty system scores 2.0. For \taskA, $\texttt{research\_score} = \text{detection err} + \text{split err} + \text{abstention err}$ (exact match on the set of ayah ids; word-assignment accuracy after a metric-only orthographic canonicalization; abstention on the negatives). For \taskB, $\texttt{study3\_score} = 2\cdot\text{miss} + \text{false\_alarm} + \text{benign} + \text{clean}$. A prediction matches a gold event when their token spans overlap. \emph{miss} is the share of gold mistakes not flagged (an \emph{uncertain} prediction on one costs half); \emph{false\_alarm} is the share of flags that touch no gold mistake or uncertain event; \emph{benign} is the share of gold benign or corrected events flagged as mistakes; \emph{clean} is the share of clean chunks that received any flag, which gets its own term because clean chunks are the majority class. Adjacent same-type predictions are merged so word- and phrase-level detectors score alike; type agreement and the uncertain rate are reported, not summed.
+\textbf{Completed \taskB\ review.} As of 8 September 2026, all \textbf{100 selected recording cases} are human-approved: 314 chunks, 233 no-event chunks, 115 within-ayah events, and 47 opening-formula annotations. Three approved reserves are outside the scored set. The selection covers 274 ayahs in 38 surahs and ten learner IDs; one learner contributes 46 recordings. These purposive counts do not estimate prevalence or imply unseen-reciter generalization. The rubric is v0.19; the evaluator and metric are not frozen.
 
-\begin{table}[h]\vspace{-6pt}\centering\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llrrll}\toprule
-Task & Baseline & train & test & \multicolumn{2}{c}{test components}\\\midrule
-A & empty stub & 2.000 & 2.000 & det 1, split 1 & abstain 0 \\
-A & incumbent production pipeline (hand-built) & 0.785$^\dagger$ & 0.760 & det 0.17, split 0.09 & abstain 0.50 \\
-A & coding-agent loop, best of 6 runs\footnotemark[1] & 0.008$^\dagger$ & 0.079 & det 0.06, split 0.02 & abstain 0 \\
-\midrule
-B & B0 empty stub & 2.000 & 2.000 & miss 1 & \\
-B & B1 naive diff (every edit is a mistake) & 1.358 & 1.111 & benign 1 & false\_alarm 0.11 \\
-B & B2 incumbent cleaner + DP alignment & 0.167 & 1.111 & benign 1 & false\_alarm 0.11 \\
-\bottomrule
-\end{tabular}\vspace{-2pt}
-\caption{Baselines. $^\dagger$Full 258-row set. \taskB\ is scored on the pilot labels (47 train / 52 test chunks); both existing designs flag the held-out full repeat as a mistake (\emph{benign}\,=\,1).}
-\end{table}
-On \taskA, six autonomous runs of two coding agents in a Karpathy-style fixed-metric loop all matched or beat the incumbent held-out, the best by $10\times$\footnotemark[1]; without a held-out split the same loop memorized rows, which is why the competition ends on a hidden test set.
+We verified recording IDs and transcripts against both source exports. Punctuation-normalized duplicates and redundant clean subpassages are excluded. Shared passages remain only for documented differences in event pattern or clean/error contrasts. Distinct IDs and paths do not establish different audio takes.
 
-\section{Competition plan, feasibility and ethics}
-\label{sec:plan}
-The competition launches with \taskA\ frozen and \taskB\ fully human-reviewed on the 258 recordings (about 270 chunks), runs a public leaderboard on the released test split, and ranks on a hidden test set of new recordings drawn from more than 20k further production recordings of the same app, labeled with the same protocol, user-reported false flags over-sampled as adversarial gold, and released afterwards. A submission is one Python file per contract and scoring takes under a second, so an agent track (autonomous loops, logged per experiment) runs beside the human track.
+The review settled four rules. \textbf{Omissions} include missing beginnings and endings, with no benign exemption for a final ayah. Whole-ayah omissions require a reviewed continuous-passage interpretation; a completed final ayah does not imply future omissions. \textbf{Repeats} span the original phrase and its extra copy against one reference copy. Wrong-then-correct attempts remain corrected events; a correct-then-incorrect restatement is \texttt{substitution\_mistake} spanning both attempts. \textbf{Spelling} differences handled by agreed normalization receive no event; contextual residual forms use \texttt{spelling\_benign}, with wasl explained in the note. This permits no blanket final-letter deletion. \textbf{Localization} uses verbatim words and half-open spans in original token arrays, including empty hypothesis spans for omissions. Merge continuous replacements, but preserve separate events across matching text or attempt boundaries.
 
-Harness, data, checksums and the 10\% sample (26 recordings, both tasks) are attached, and the baselines run offline. The data is text only, de-identified, from adult users under ToS-disclosed review, and licensed CC~BY~4.0. The task is corrective feedback, not surveillance, and \emph{uncertain} is a first-class output so systems are not pushed to over-claim. Entry cost is low and every Quran-learning app faces this problem; we expect entrants from Arabic NLP, speech and agent groups.
+Opening formulas and complete letter-name representations receive benign labels. Possible ASR origin does not create an uncertain verdict.
 
-\footnotetext[1]{\emph{Autoresearch with coding agents: generalizers and metric-maximizers on Quran recitation data}, AIST 2026.}
+\section{Evaluation and feasibility evidence}
+The existing \taskA\ scalar sums detection, split, and abstention errors. Earlier work reported held-out scores of 0.760 for the incumbent and 0.079 for the best of six coding-agent runs.\footnote{\emph{Autoresearch with coding agents: generalizers and metric-maximizers on Quran recitation data}, AIST 2026. These are earlier Task A results, not Task B experiments.}
+
+The legacy \taskB\ pilot has 99 machine-labeled chunks from 20 recordings, pending human review under its old schema. Its public-test scores were 2.000 for an empty baseline and 1.111 for naive diff and the incumbent. Its separate type/verdict fields, uncertainty category and superseded rules do not validate the new gold. The documented export mismatch---1{,}268 Task B records versus 1{,}267 Task A chunks---is preserved in the historical release.
+
+For the new protocol, freeze matching, scalar weights, the supplied-split interface, budgets, and hypotheses before runs. Report label and localization quality, missed mistakes, false flags on clean/benign/corrected cases, and per-label results. Matching must handle omission anchors and both-attempt spans, and prevent one broad prediction from earning credit for several distinct gold events. Re-run baselines under the frozen contract; no new Task B algorithm results are claimed.
+
+\section{Competition plan and exposure controls}
+Protect the completed gold snapshot and prepare a separate unlabelled development bundle, excluding selected inputs and duplicate-equivalent material. Supply disjoint or synthetic examples and a fixed clarification exercise before measured runs. Agents receive no gold answers or gold-score feedback; final code is evaluated privately. Exclude reviewer files, source repositories, answer-bearing history, and annotation-session memory from agent runtimes.
+
+\textbf{Exposure limitation.} All 100 selected transcripts match public Task A inputs; twelve also match transcripts represented in the public legacy Task B labelled pilot. New adjudications and selected membership remain private, but the inputs are not unpublished. Runtime isolation must exclude public-release retrieval and cannot itself establish absence of prior exposure. An unseen-input final competition ranking requires a separate collection of previously unreleased recordings, with reuse permission and de-identification verified before launch. That collection is planned, not already available.
+
+Shared docs contain aggregate findings and synthetic examples; gold answers stay in a separate private reviewer bundle. Verify privacy and reuse scope before new publication.
 \end{document}

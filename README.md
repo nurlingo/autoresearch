@@ -3,25 +3,28 @@
 Karpathy-style autoresearch loop for the **Follow My Reading** recitation
 algorithm. Goal: a transcript-only memorization checker for Quran reciters that
 (1) detects which ayahs were recited, (2) splits the transcript by ayah, and
-(later) (3) finds genuine recitation mistakes.
+(3) labels transcript/reference differences under a human-reviewed rubric (Study 3; gold review complete).
 
-This repo is the **fixed harness**: a frozen dataset + a frozen scorecard, plus a
-blank-slate algorithm an agent rewrites from scratch. It is deliberately isolated
-from the production app so the algorithm cannot lean on existing code — which also
-makes it a clean arena for comparing agents (e.g. **Claude Code vs Codex**): point
-each agent at the same loop, compare the `research_score` they reach.
+The root directory contains the **Stage 1 fixed harness**: a frozen dataset
+and scorecard plus an editable algorithm. Study 3 adds an annotation protocol
+and legacy pilot artifacts alongside it. This authoring checkout is not an
+isolated agent runtime; prepare a separate allowed-data bundle for each run.
+The new Study 3 evaluator has not yet been frozen or implemented.
 
 ## Two stages
 
 | Stage | Input | Output | Status |
 | --- | --- | --- | --- |
 | **1. Detect + split** | full transcript | ayahs recited + per-ayah split | **active** (this harness) |
-| **2. Mistake detection** | one gold ayah chunk + reference | recitation mistakes | future, separate harness |
+| **2. Event annotation** | reviewed ayah chunks + IDs + Quran reference | combined event labels and spans | Study 3: 100/100 recordings approved; no runs |
 
-The stages are separate because Stage 2 consumes Stage 1's output. Evaluating
-Stage 2 on the *gold* split keeps split errors from polluting the mistake score.
-Mistakes are still to be defined; Stage 2 needs a gold `mistakes` label that does
-not exist yet.
+In production, Stage 2 consumes Stage 1's output. The Study 3 evaluation
+supplies reviewed splits to isolate event annotation from detection errors.
+Study 3 now has a completed v0.19 rubric and 100 approved recordings (314 chunks). The
+new experiment asks the agent to annotate its own unlabelled development pool
+and build an algorithm, with final code evaluated privately. The old pilot
+harness is not the new contract. See [methodology](METHODOLOGY-STUDY3.md) and
+[annotation findings](docs/STUDY3-ANNOTATION.md).
 
 ## Layout
 
@@ -51,7 +54,7 @@ make compare RUNS="runs/claude-*.tsv runs/codex-*.tsv"   # -> comparison.png
 - **PROGRAM.md** — the loop and the rules on what may/may not change.
 - **METHODOLOGY.md** — how to run the Claude-vs-Codex comparison for the paper.
 - **METHODOLOGY-STUDY3.md** — Stage 2 (within-ayah mistake detection): dataset
-  and experiment design (planned; on branch `study3`).
+  and experiment design (100/100 recordings approved; current protocol, no runs).
 
 ## Launching an agent
 
@@ -80,3 +83,10 @@ recitations use comma-separated ayah ids in `ayah_assignment`.
 baseline (empty stub):   research_score 2.00
 oracle (gold fed back):  research_score 0.00
 ```
+
+## Study 3 preparation
+
+The [preparation guide](study3/README.md) links the draft annotation instructions,
+20 constructed Arabic teaching examples, and the latest aggregate recording
+inventory. Teaching annotations await review; gold answers and production
+exports remain private.

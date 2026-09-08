@@ -1,76 +1,84 @@
-# Quran Recitation Checking from ASR Transcripts — competition dataset (v1.1 + Stage-2 pilot)
+# Quran transcript checking — Task A v1.1 and legacy Task B pilot
 
-Anonymized release accompanying a Track-3 competition proposal (Muslims in ML @
-NeurIPS 2026). License: CC BY 4.0. No audio, no user identifiers.
+**Documentation updated 2026-09-08.** The data files are unchanged. This
+release accompanied the earlier MusIML Track 3 proposal. It is not the new
+100-recording human-reviewed annotation set and does not implement taxonomy
+v0.19. See [current methodology](../METHODOLOGY-STUDY3.md) and
+[annotation findings](../docs/STUDY3-ANNOTATION.md).
 
-Two tasks on one set of 258 real, human-reviewed ASR transcripts of Quran
-recitation (254 Quranic, 4 non-Quran negatives; 1,267 gold ayah chunks; 604
-distinct ayahs from 37+ surahs; 10 reciters):
+## What is in the published files
 
-| | Task A — detect + split | Task B — within-ayah mistake events |
+| | Task A | Legacy Task B |
 |---|---|---|
-| input | one raw transcript | one gold ayah chunk + reference ayah text |
-| output | ayah ids recited + per-ayah split of the words, or *abstain* | list of events, each `benign` / `corrected` / `mistake` / `uncertain` |
-| files | `taskA/train.csv`, `taskA/test.csv` | `taskB/train.jsonl`, `taskB/test.jsonl` |
-| metric | `research_score` = detection + split + abstain error (lower is better) | `study3_score` = 2·miss + false-alarm + benign + clean error |
-| status | **frozen v1.1**, fully labeled, public | pilot: 99 chunks / 20 recordings labeled (LLM-proposed, human review pending); 1,168 chunks awaiting labels |
+| Input | Full transcript | One assigned ayah chunk and reference |
+| Output | Ayah ids and splits, or abstain | Events with separate type/verdict fields |
+| Rows | 258 recordings: 151 train / 107 test | 1,268 chunks: 712 train / 556 test |
+| Annotation | Reviewed assignments/splits: 1,267 chunks (711/556) | 99 machine-labeled chunks from 20 recordings; 1,169 unlabelled |
+| Metric | Existing `research_score` | Historical `study3_score`; incompatible with the new rubric |
+| Exposure | Already public | Already public, including machine-pilot answers |
 
-Both tasks share one recording-level 60/40 train/test split (151/107 rows) and
-one id space: Task-B chunk `train-004-c00` is chunk 0 of Task-A row `train-004`.
+Task A covers 254 Quranic recordings and four non-Quran negatives, 604 ayahs,
+and 45 surahs. Task B's 99 labeled chunks contain 86 no-event chunks and 17
+machine-labeled events (11 substitutions, three omissions, two truncations,
+one full repeat), not new human-reviewed ground truth.
 
-## Files
+The legacy pipeline uses the same recording partition and surrogate row ids.
+**Export discrepancy:** Task A row `train-008` has seven chunks, but the Task B
+export has eight. This accounts for 1,268 versus 1,267. The public files are
+preserved so existing checksums and historical results remain reproducible;
+resolve the discrepancy in a separately versioned dataset before new scoring.
+Do not claim a one-to-one split match until it has been reconciled.
 
-```
-taskA/train.csv, test.csv      id, transcript, ayah_assignment, confidence, transcript_split_by_ayahs, actual_ayahs
-taskA/quran_ref.json           {surah: [{id, ar, clean}]} — Uthmani text + harakat-free canonical form
-taskB/train.jsonl, test.jsonl  one JSON object per gold chunk (schema below)
-sample/                        the 10% review sample: 26 recordings (both tasks), IDS.txt
-SHA256SUMS
-```
+## Files and historical contract
 
-### Task A row
-`ayah_assignment` is an ayah id (`SSSAAA`), a contiguous range (`002001-002005`), a
-comma-separated list for non-contiguous recitations, or `non_quran`.
-`transcript_split_by_ayahs` is a JSON list of `{id, transcript}` — the gold
-assignment of transcript words to ayahs (repeated ids = the ayah was recited
-twice). `confidence` is the reviewer's confidence (high/medium; medium rows are
-scored, low would not be).
+- `taskA/train.csv`, `taskA/test.csv`: surrogate id, transcript, assignment,
+  confidence, serialized ayah split, and reference metadata.
+- `taskA/quran_ref.json`: public Quran reference.
+- `taskB/train.jsonl`, `taskB/test.jsonl`: old per-chunk events and label status.
+- `sample/`: the historical 26-recording review sample; it is public.
+- `SHA256SUMS`: checksums for data and documentation in this release directory.
 
-### Task B chunk
-```json
-{"chunk_id": "train-004-c00", "row_id": "train-004", "chunk_idx": 0, "n_chunks": 11,
- "is_last_chunk": false, "ayah_id": "044019",
- "chunk_text": "…", "reference_text": "…", "confidence": "high",
- "label_status": "machine" | "reviewed" | "unlabeled", "labeled_by": "…",
- "events": [{"type": "substitution", "verdict": "mistake",
-             "hyp_words": "أعيدكم", "ref_words": "اتيكم",
-             "hyp_span": [1, 2], "ref_span": [6, 7], "note": "…"}] | null}
-```
-`events == []` is a reviewed **clean** chunk; `null` = not yet labeled (never
-scored). Event types: `restart_repeat`, `full_repeat`, `stutter`,
-`self_correction`, `substitution`, `omission`, `insertion`, `word_order`,
-`truncation`, `asr_garble`. Spans are `[start, end)` indices into the
-whitespace tokens of the canonicalized text (NFKC; fold أ/إ/آ/ٱ→ا, ى→ي, ؤ/ئ→ء;
-harakat removed); a zero-length span is an insertion point.
+Task A assignments can be individual ayahs, ranges, comma-separated lists,
+or `non_quran`. Repeated ids may represent repeated ayahs. Task B events use
+`type`, `verdict`, selected words, and spans under the **legacy** canonicalizer.
+See [legacy schema](../stage2/SCHEMA.md) for exact details. An empty events list
+alone does not establish human review: inspect `label_status`. All 99 labeled
+pilot chunks currently have `label_status: machine`; null events are unlabelled.
+The old uncertainty, final-ayah exemption, and repeat-absorption rules are
+superseded for the new protocol but retained in historical data and code.
 
-## Provenance, consent, privacy
+## New review and exposure
 
-Recordings are production interactions of adult users with a
-Quran-memorization chat bot, contributed under the application's terms of
-service, which disclose that recitations may be reviewed to improve the
-service. Audio was transcribed by a commercial ASR model; only the
-**transcript text** is released. Learner and recording identifiers are removed
-and replaced by sequential surrogate ids. The four non-Quran transcripts were
-checked by hand and contain no personal content. Quranic text is a closed
-public canon, so transcripts carry essentially no personal information.
+The completed separate review has **100/100 selected recordings approved**,
+with 314 chunks and a combined-label rubric. Three approved reserves are
+outside the scored set. Gold answers are not added to this release. All 100
+selected transcripts match published Task A inputs; twelve also match inputs
+represented in the public legacy Task B labelled pilot. Keep new
+adjudications and selection membership private, exclude public-release access
+from experimental agents, and disclose this exposure. An unseen-input final
+test requires a separately collected, previously unreleased corpus.
 
-Gold labels for Task A were produced by LLM-assisted pre-labeling followed by
-human review of every row. Task-B pilot labels were proposed by an LLM from
-the transcript and reference text and are marked `labeled_by:
-claude+human-pending` until a human reviewer signs them off; a competition
-release will contain only `reviewed` chunks.
+The new development agent will annotate an unlabelled pool and build an
+algorithm. Final code receives reviewed ayah splits, IDs and exact references
+and is scored privately for event labels and localization. No new metric is frozen and no
+algorithm has been evaluated on the new gold set. Do not score the new format
+with the legacy executable or treat legacy scores as new results.
+
+## Provenance and reuse
+
+The original release documents adult-user bot recordings, commercial ASR,
+terms-of-service disclosure of review, text-only release with surrogate ids,
+and a CC BY 4.0 license. These are the existing release's provenance statements,
+not a new consent audit. Verify the permitted scope before new redistribution
+or collection; scan free text independently of its expected Quran content.
+No production user identifiers or new gold annotations are added here.
 
 ## Integrity
 
-`SHA256SUMS` pins every file. Task-A files are byte-identical to the public
-v1.1 release used in the accompanying paper (hashes `fa2cb114…` / `deef397e…`).
+The existing data bytes are preserved. Documentation changes are reflected in
+`SHA256SUMS`. Its full file hashes, rather than historical abbreviated hash
+claims, are authoritative for this checkout. From this directory run:
+
+```sh
+shasum -a 256 -c SHA256SUMS
+```

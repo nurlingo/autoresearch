@@ -1,0 +1,353 @@
+{
+  "purpose": "Synthetic schema illustrations for colleagues, not gold data or an agent-ready calibration exercise. Letter and spelling placeholders teach structure only; prepare disjoint Quran-context examples before a measured run. Opening formulas are generic examples with no recording association.",
+  "taxonomy_version": "0.19",
+  "span_convention": "Zero-based half-open spans into the displayed original token arrays.",
+  "examples": [
+    {
+      "name": "matching text",
+      "transcript": "A B",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "B"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [],
+      "label": "clean"
+    },
+    {
+      "name": "unresolved replacement",
+      "transcript": "A X",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "X"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "substitution_mistake",
+          "hyp_words": "X",
+          "ref_words": "B",
+          "hyp_span": [
+            1,
+            2
+          ],
+          "ref_span": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "missing ending",
+      "transcript": "A",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "omission_mistake",
+          "hyp_words": "",
+          "ref_words": "B",
+          "hyp_span": [
+            1,
+            1
+          ],
+          "ref_span": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "extra unrelated material",
+      "transcript": "A B X",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "B",
+        "X"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "insertion_mistake",
+          "hyp_words": "X",
+          "ref_words": "",
+          "hyp_span": [
+            2,
+            3
+          ],
+          "ref_span": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "original and repeated phrase",
+      "transcript": "A B A B",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "B",
+        "A",
+        "B"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "repetition_benign",
+          "hyp_words": "A B A B",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            4
+          ],
+          "ref_span": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wrong then correct",
+      "transcript": "X B A B",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "X",
+        "B",
+        "A",
+        "B"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "substitution_corrected",
+          "hyp_words": "X B A B",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            4
+          ],
+          "ref_span": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "correct then incorrect",
+      "transcript": "A B X B",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "B",
+        "X",
+        "B"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "substitution_mistake",
+          "hyp_words": "A B X B",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            4
+          ],
+          "ref_span": [
+            0,
+            2
+          ],
+          "note": "First attempt matches; second changes A to X and remains uncorrected."
+        }
+      ]
+    },
+    {
+      "name": "omission repaired by restart",
+      "transcript": "A A B",
+      "reference_text": "A B",
+      "transcript_tokens": [
+        "A",
+        "A",
+        "B"
+      ],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "omission_corrected",
+          "hyp_words": "A A B",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            3
+          ],
+          "ref_span": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "name": "letter names",
+      "transcript": "letterA letterB",
+      "reference_text": "AB",
+      "transcript_tokens": [
+        "letterA",
+        "letterB"
+      ],
+      "reference_tokens": [
+        "AB"
+      ],
+      "events": [
+        {
+          "label": "letters_benign",
+          "hyp_words": "letterA letterB",
+          "ref_words": "AB",
+          "hyp_span": [
+            0,
+            2
+          ],
+          "ref_span": [
+            0,
+            1
+          ],
+          "note": "Invented notation: letterA and letterB name exactly A and B."
+        }
+      ]
+    },
+    {
+      "name": "contextually accepted spelling",
+      "transcript": "accepted_variant B",
+      "reference_text": "canonical_form B",
+      "transcript_tokens": [
+        "accepted_variant",
+        "B"
+      ],
+      "reference_tokens": [
+        "canonical_form",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "spelling_benign",
+          "hyp_words": "accepted_variant",
+          "ref_words": "canonical_form",
+          "hyp_span": [
+            0,
+            1
+          ],
+          "ref_span": [
+            0,
+            1
+          ],
+          "note": "Placeholder for a separately adjudicated contextual equivalence; this is not an actual normalization rule."
+        }
+      ]
+    },
+    {
+      "name": "isti3adha_benign as opening outside assigned ayahs",
+      "preamble": {
+        "text": "أعوذ بالله من الشيطان الرجيم",
+        "label": "isti3adha_benign"
+      }
+    },
+    {
+      "name": "basmala_benign as opening outside assigned ayahs",
+      "preamble": {
+        "text": "بسم الله الرحمن الرحيم",
+        "label": "basmala_benign"
+      }
+    },
+    {
+      "name": "entire missing supplied ayah",
+      "transcript": "",
+      "reference_text": "A B",
+      "transcript_tokens": [],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "omission_mistake",
+          "hyp_words": "",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            0
+          ],
+          "ref_span": [
+            0,
+            2
+          ],
+          "note": "Use only after human adjudication establishes a missing ayah inside the intended passage."
+        }
+      ]
+    },
+    {
+      "name": "contextually accepted word boundary",
+      "transcript": "AB C",
+      "reference_text": "A B C",
+      "transcript_tokens": [
+        "AB",
+        "C"
+      ],
+      "reference_tokens": [
+        "A",
+        "B",
+        "C"
+      ],
+      "events": [
+        {
+          "label": "spelling_benign",
+          "hyp_words": "AB",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            1
+          ],
+          "ref_span": [
+            0,
+            2
+          ],
+          "note": "Invented accepted-boundary example, not a general instruction to join arbitrary words."
+        }
+      ]
+    }
+  ]
+}

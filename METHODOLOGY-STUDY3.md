@@ -1,206 +1,190 @@
-# Study 3 — Within-Ayah Mistake Detection (Stage 2)
+# Study 3 — annotation-assisted transcript checking
 
-Design document: dataset and experiment methodology. Status: **planned** —
-labeling not yet started; no runs. This document is written *before* any data
-or code so that the harness is preregistered, per rule R5 of Studies 1–2.
+Status as of **2026-09-08**: **100/100 selected recording cases are human-approved**,
+covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additional
+approved recordings are reserves outside the scored set. Taxonomy v0.19 and
+recording format v0.6 describe the completed annotation snapshot. The input
+choice is settled: supply reviewed ayah chunks and references. The executable
+interface, event matcher and experiment design still need to be frozen.
+No agent run or algorithm evaluation under this protocol has begun.
 
-## 1. Task
+This document supersedes the earlier Study 3 plan. The old 20-recording,
+99-chunk machine-labeled pilot is a separate artifact, not these 100 approved
+recordings. The MusIML branch retains that pilot and its original executable
+harness for historical reproducibility; neither implements this protocol.
 
-Stage 2 of the transcript-only memorization checker. Input: **one ayah chunk**
-(the transcript words Stage 1 assigned to a single ayah) plus the reference
-ayah text. Output: a list of **events**, each classified:
+## 1. Question and scope
 
-```
-{"type": <event-type>, "verdict": "benign" | "corrected" | "mistake" | "uncertain",
- "hyp_span": [i, j], "ref_words": [...], "hyp_words": [...]}
-```
+Can an agent annotate an unlabelled development pool under a supplied rubric,
+then develop an algorithm that generalizes to independently reviewed data?
+The agent is responsible for both development annotations and algorithm
+construction. The final executable algorithm is the scored deliverable.
 
-The product question is: *should this reciter be flagged, and for what?* A raw
-diff cannot answer it — recitation is full of benign phenomena that a diff
-reports as errors. The canonical example: a reciter stops to breathe, repeats
-the last few words, and continues; a naive diff calls that an insertion.
+The annotation unit is the **whole recording**, including opening formulas
+and all human-reviewed ayah splits. Review preserves the ASR transcript exactly
+and compares each chunk against `backend/quran.json` → `titles.clean` from
+the source application. Quran reference text and event reference words remain
+verbatim; normalization is only a comparison operation.
 
-### Event taxonomy (v1 — frozen before labeling)
+The labels describe observable **transcript/reference differences**. They do
+not establish whether the speaker or ASR caused a difference. Audio intent,
+unwritten vowel errors, and tajweed are outside this text-only review. An
+ASR-origin explanation does not turn an unresolved substitution into an
+`uncertain` event. Review uncertainty is handled by withholding approval,
+not by adding a second event verdict.
 
-| type | description | default verdict |
-|---|---|---|
-| `restart_repeat` | stops, re-recites last 1–5 words, continues | benign |
-| `full_repeat` | entire ayah (or long span) recited again | benign |
-| `stutter` | same word repeated adjacently 2–3× | benign |
-| `self_correction` | wrong word immediately followed by its correction | corrected |
-| `substitution` | wrong word in place of a reference word | mistake |
-| `omission` | reference word(s) skipped | mistake |
-| `insertion` | word(s) not in the reference, not explained above | mistake |
-| `word_order` | reference words recited out of order | mistake |
-| `truncation` | ayah abandoned partway (last ayah of recording exempt) | mistake |
-| `asr_garble` | diff without recitation-plausible structure | uncertain |
+The final algorithm receives **human-reviewed ayah splits, ayah IDs, and exact
+reference texts**, with opening text retained without its gold labels. Score
+event labels and localization conditional on these supplied inputs; ayah
+identification and splitting are outside this score. Source split history,
+reviewer notes, events and verdicts are private answer-side data. Corrections
+to source assignments are explicit and preserve the raw transcript.
 
-`uncertain` is a first-class output, not a failure: transcript-only input
-cannot always separate ASR error from recitation error (accepted ceiling since
-Stage 1; also invisible: vowel/tajweed mistakes). The metric treats `uncertain`
-separately — an algorithm that says "uncertain" is not rewarded as correct nor
-punished as wrong on those events (see §4).
+## 2. Corpus construction and current evidence
 
-## 2. Dataset
+The local source export contains 258 recordings: 220 distinct exact full
+transcripts, 218 normalized full transcripts, and 214 normalized recitation
+text groups when existing ayah chunks are concatenated without preambles.
+Inventory keys guide selection, but existing splits can omit text; always
+check full-recording coverage as well. Exact and normalized duplicates must
+stay in one partition. Review near-duplicates and record shared ayah coverage.
 
-### Sources
+Select 100 unique recordings for coverage of clean cases, omissions,
+substitutions, additions, repeats, repairs, spelling variants, lengths, and
+ayahs. Retain clean controls; do not require an error in every recording.
+Selection is purposive, not a prevalence sample. Learner balance and repeated
+ayah contexts must be audited before freezing; recording-level separation
+alone does not guarantee unseen-reciter generalization.
 
-**Phase 1 (current scope): bot-split chunks only.** The 258 gold-split rows
-(v1.1) explode into per-ayah `(chunk, reference)` pairs — ~1,000+ chunks with
-real ASR noise and real recitation behavior. Ayah-level repeats are already
-encoded (repeated ids in the split); within-ayah events are what Phase-1
-labeling adds. One dataset, one review pass, both stages verifiable per
-recording.
+The completed selected set contains **100 recordings / 314 chunks**: 233
+chunks without within-ayah events, 115 within-ayah events, and 47 opening-formula
+annotations. Three approved reserves are excluded from these counts. No
+selected annotation decisions remain open. These are coverage counts, not
+performance results or population proportions. Historical pilot labels are
+not imported as gold. See [annotation findings](docs/STUDY3-ANNOTATION.md).
 
-Deferred to later phases (documented so they are not forgotten):
-- **Single-ayah app recordings (scale):** 21,053 production recordings with
-  `payload.ayah_id` — stratified sampling once Phase 1 saturates.
-- **User feedback events (adversarial gold):** app approve/report stream —
-  enriched for benign-flagged-as-mistake cases; label all reported cases,
-  analyze as `source=user_report` subgroup.
+The source-attribution audit checked all selected recording IDs and exact
+transcripts against both the CSV and original recording export. No IDs or
+stored audio paths are reused. Selection normalization also ignores punctuation;
+this catches duplicates missed by the earlier inventory keys. Complete
+normalized duplicates and redundant clean subpassages are excluded. Shared
+passages are retained only for an explicit difference in the whole-recording
+event pattern, such as a repaired versus unresolved error or a complete versus
+partial ayah. Containment, token similarity and shared event signatures are
+review flags, not proof of identical audio; audio bytes were not compared.
 
-### Timestamps (known gap)
+The selected records come from ten learner IDs; one accounts for 46 records.
+Do not describe this purposive set as learner-balanced, statistically
+independent, or evidence of unseen-reciter generalization.
 
-The gold dataset has **no time alignments** — splits are word-level text only,
-and the production STT configuration (gpt-4o-mini-transcribe / Tarteel) does
-not return word timestamps. Consequence: review is full-recording audio +
-highlighted text, not per-chunk seeking. If per-ayah audio becomes necessary,
-two derivation routes exist: (a) CTC forced alignment of the stored transcript
-against the audio (`ctc_alignment_service.py` already in the worker), or
-(b) re-transcription with a timestamp-capable model. Out of scope for Phase 1.
+Existing Stage-1 assignments are inspected before any correction. Preserve
+source splits and record an agreed correction explicitly. A missing beginning,
+interior span, or ending of an assigned ayah is an omission, including at the
+recording boundary. This convention records missing reference material; it
+does not infer why the recording started or stopped there. A wholly missing
+intervening ayah can be an explicit empty chunk only after human adjudication
+of a continuous passage; an ayah-ID gap alone does not establish an omission.
+A recording ending after a complete ayah does not imply omitted future ayahs.
 
-### Labeling — STATUS (2026-07-08)
+## 3. Annotation contract
 
-**A calibration batch of 20 recordings is labeled** (99 chunks, 87% clean; 17
-events: 11 substitution, 3 omission, 2 truncation, 1 full_repeat) and visible
-in the deployed dataset editor (Review tab). Labels are marked
-`labeled_by: claude+human-pending` — machine-proposed, awaiting human review.
+Each recording stores its exact transcript, source metadata and hash,
+preamble, ordered ayah chunks, and review status. Each chunk stores exact
+transcript/reference text, reproducible token arrays, and an `events` list.
+A reviewed no-event chunk has `label: clean` and `events: []`; an unexamined
+chunk can have `events: null`. Only human-approved whole recordings count
+against the target.
 
-**The storage format below is PROVISIONAL, not signed off.** Events currently
-store verbatim `words` (hypothesis) + `ref` (expected) + `note`, attached to
-gold-split chunks by index, one JSONL line per recording
-(`fixtures/bot_review/bot_events.jsonl`). Known open questions from the
-calibration batch, to resolve before scaling to all 258:
-1. Final-letter drops (e.g. يغشى→يغش): policy for `uncertain` vs `mistake`?
-2. Truncation on the recording's last ayah: keep the benign exemption?
-3. Mistakes inside abandoned first attempts (within a `full_repeat`):
-   separate events or swallowed by the repeat?
-4. Format itself (verbatim words vs word indices; per-event vs per-chunk
-   confidence) — revisit after human review of the calibration batch.
+Each event has one combined `event_verdict` label, `hyp_words`, `ref_words`,
+and zero-based half-open `hyp_span` / `ref_span` into the chunk's stored token
+arrays. Notes explain contextual judgments. A missing word uses an empty
+hypothesis span at the gap; an unrelated addition uses an empty reference
+span. A record may contain several events. Ordinary annotation review status
+is separate from this single semantic label.
 
-### Labeling
+Use whitespace tokens retaining original spelling, excluding standalone
+punctuation tokens that contain no letters or digits where present. Do not
+compute locations from a normalized string that changes token boundaries.
+Preambles with one formula have `text` and `label`; multiple formulas use
+full `text` plus ordered `segments`, each with its own text and combined label.
 
-- **Schema per chunk:** `chunk_id, recording_id, ayah_id, chunk_text,
-  reference_text, events[] (taxonomy above), confidence (high/medium/low),
-  notes`. Chunks with no events are labeled `clean` — the majority class and
-  the most important one to protect (false-flag rate).
-- **Workflow:** LLM-assisted pre-labeling → human review, the same pipeline
-  that produced the 258 Stage-1 splits.
-- **Review tooling (built):** the dataset editor's **Review tab**
-  (`follow_my_reading/backend/tests/dataset_editor.py`, tab "Review") shows,
-  per recording: audio (production proxy), full transcript, each gold chunk
-  against its reference (words absent from the reference underlined), a
-  split correct/wrong verdict (Stage-1 verification), and per-chunk event
-  labeling with this taxonomy (Stage-2). Labels persist to
-  `fixtures/bot_review/bot_events.jsonl` (gitignored, production-derived).
-- **Conventions (frozen with the taxonomy):** events are anchored to the
-  *hypothesis* word indices; a self-correction consumes both the wrong word
-  and its correction; a restart_repeat span must re-match ≥1 reference word
-  already consumed; when two readings are defensible, label `uncertain` and
-  set confidence=medium. `low`-confidence chunks are kept but not scored.
-- **Versioning:** dataset frozen by SHA-256 before any run (`make freeze`
-  pattern); labels never change mid-study; corrections happen between studies
-  with a version bump (v1 → v1.1 precedent from Study 2).
+Repetition spans include the **original phrase and its extra copy or copies**;
+the reference span contains the phrase once. Correction spans likewise include
+both attempts. A recognizable correct-to-incorrect restatement is an unresolved
+`substitution_mistake` spanning both attempts, with their order in the note.
+Keep a repaired mistake explicit instead of swallowing it inside a benign
+repeat. Reference-native repetition is clean.
 
-### Split (R1 — held out from day one)
+Merge adjacent same-label substitutions into a phrase event when they are
+continuous on both sides without matching text or a distinct attempt boundary
+between them. Whitespace need not give equal-length spans: a changed attached
+connective may map to a separate reference word. Notes identify unchanged
+context inside a selected word span; avoid double-counting it as another error.
 
-Stratified 60/40 **by recording** (never by chunk — chunks from one recording
-share ASR quirks and reciter behavior; splitting them would leak). Strata:
-event-type presence, clean/non-clean, source (bot / app / user_report),
-chunk length. Test oracle floor must be exactly 0 before freezing. The loop
-optimizes train only; experimenters score held-out.
+## 4. Development annotations and evaluation
 
-## 3. Harness (applying the five rules from Studies 1–2)
+Supply the agent with a separate unlabelled development pool, the public Quran
+reference, the label definitions, a frozen output schema, and worked examples
+that do not disclose evaluation answers. Use synthetic or separately reserved
+examples. A disjoint practice exercise and a fixed clarification phase can
+check rubric understanding before the measured run.
 
-- **R1 Held-out:** as above; train↔test gap reported per arm.
-- **R2 Leak-free feedback:** the scorecard's failure report shows chunk ids
-  and the *predicted* events only — never gold events or verdicts.
-- **R3 Isolation by construction:** fresh single-commit clone per run
-  (`tools/new_run.sh` pattern); clone contains harness + train.csv only.
-- **R4 Agent-tooling state channels:** unique run paths, post-run audit of
-  persistent memory and global config (both agents; procedure in
-  METHODOLOGY.md).
-- **R5 Components + preregistration:** hypotheses in §6 below, fixed before
-  labeling completes; the scalar score always reported with its components.
+The agent may annotate its development pool, train or optimize against those
+annotations, and revise its algorithm. Archive annotations, code, and run
+history for process analysis. Agreement with self-generated labels is **not**
+an independent accuracy measurement. Good final gold performance provides
+indirect evidence for the usefulness of the overall process; it does not prove
+every development annotation was correct or establish annotation as the cause
+of any gain. A causal annotation-benefit claim would require a controlled arm.
 
-Editable surface: `solution3.py` implementing
-`Solution.detect_events(chunk_text, reference_text) -> [events]`. Fixed:
-`eval3.py`, `data/`, `PROGRAM3.md`. Reference (`quran_ref.json`) available as
-in Stages 1–2.
+Freeze the gold set, rubric, input interface, scoring/matching rules, models,
+run budgets, and hypotheses before executing the study. The supplied-split
+input choice is approved; remaining executable and scoring details stay open.
+Earlier named models, budgets, H1–H4, and uncertain-credit weights were
+planning suggestions, not this protocol's preregistration.
 
-## 4. Metric (DRAFT — schema under review)
+Evaluate the frozen final algorithm privately after the run. Report event-label
+and localization quality, missed mistakes, false flags on clean/benign/corrected
+cases, and per-label results. Matching must prevent one broad prediction from
+claiming multiple distinct gold events, and must explicitly handle zero-length
+omission anchors and both-attempt spans. Scalar weights and matching tolerances
+are not yet chosen. Do not reuse or report the legacy pilot score as a result
+on this set. Re-evaluate baselines only after the new contract is frozen.
 
-> The reward/penalty weights below are a starting proposal, not preregistered
-> yet. They will be reviewed (weighting of FN vs FP, uncertain pricing,
-> per-event vs per-chunk aggregation) BEFORE the dataset is frozen; H1–H4
-> freeze together with the final metric.
+## 5. Isolation and public-input exposure
 
-Event matching: predicted event matches a gold event if types match and hyp
-spans overlap ≥50%. Then:
+Keep both evaluation transcripts and answers out of the development bundle.
+Remove duplicate-equivalent transcripts from development. Do not give agents
+this authoring checkout, review files, internal codebook examples, inventory
+hints, earlier annotation sessions, private tools, or git history containing
+answers. Use a fresh runtime with only allowed inputs mounted and no access to
+private answer sources. A gitignored folder or a prompt prohibition is not
+an isolation boundary. Return no gold feedback during the run.
 
-```
-flag_error    = (FP_mistake + 2·FN_mistake) / gold_mistake_opportunities
-benign_error  = fraction of benign/corrected gold events predicted as mistake
-clean_error   = fraction of clean chunks with ≥1 predicted mistake   # false-flag rate
-study3_score  = flag_error + benign_error + clean_error              # lower is better
-```
+**Exposure audit, 2026-09-08:** all 100 selected transcripts exactly match
+published Task A inputs. Twelve also exactly match at least one recording
+represented in the public legacy Task B labelled pilot. This is a transcript
+exposure check, not proof of the same production recording ID. New adjudicated
+answers and selected membership remain private, but inputs are not unpublished.
+Exclude public-release retrieval from agent runtimes and report this exposure;
+runtime isolation cannot establish absence of prior model or agent exposure.
 
-- FN weighted 2× (missing a real mistake is worse than an extra review —
-  carried over from the Stage-1 harness design).
-- `uncertain` predictions: excluded from FP counts, but a gold *mistake*
-  predicted `uncertain` counts 1 (half-credit vs FN=2). This prices timidity
-  without making "uncertain everywhere" viable.
-- `clean_error` is the user's headline case (breath-repeat flagged) as its own
-  component; with the majority of chunks clean, it is deliberately hard to
-  game.
-- Components reported always; scalar exists only for the loop.
+For a competition claiming unseen-input final ranking, acquire and review a
+separate set of previously unreleased recordings before launch. Production
+availability, permitted reuse, de-identification, and the actual number of
+usable new submissions must be checked; historic volume figures are not a
+verified new test set. The completed 100-recording set is the current private
+annotation benchmark, not evidence that such a new collection already exists.
 
-## 5. Arms, budget, protocol
+## 6. Next steps
 
-Same design as Study 2 unless noted: Claude Code (Opus, `high`) vs Codex
-(GPT-5.5, `high`), 3 runs each, 30 experiments or 1 h per run, identical
-verbatim launch prompt, uniform `make exp` logging, collection with automatic
-held-out scoring + git bundle. Community arms welcome after the core matrix
-(exploratory, separate hardware/confounds table, per Study 2 §7 precedent).
-
-**Incumbent baseline on day one:** the production stack — `repetition_handler`
-+ `transcript_cleaner` + `asr_compare` ops — wrapped in the Stage-2 contract
-and scored on the frozen test split *before* any agent run. (Study 1–2 lesson:
-the incumbent comparison is the applied headline, not an afterthought.)
-
-## 6. Preregistered hypotheses
-
-- **H1:** Every agent arm beats the incumbent heuristic stack on held-out
-  `study3_score`, driven primarily by `clean_error` (the destructive
-  normalize-then-diff design over-flags benign events).
-- **H2:** The behavioral signatures of Studies 1–2 persist: Codex uses more
-  experiments and reaches lower train scores; train↔test gap larger for
-  Codex; disposition stable across runs.
-- **H3:** With the held-out split disclosed (as in Study 2), no arm hardcodes
-  per-chunk answers (≤ fixed-closed-set constants only, muqatta'at-style).
-- **H4:** `uncertain` usage differs by arm — the generalizer profile uses it
-  more; over-use is bounded by the half-credit pricing (§4).
-
-## 7. Deliverables & sequencing
-
-1. Labeling tooling extension (`bot_review.py` event mode) + chunk export.
-2. Labeled dataset v1 (target: all bot chunks + 300–500 app chunks + all
-   user-report cases), frozen split, oracle-floor check.
-3. `eval3.py` + `PROGRAM3.md` + stub `solution3.py`; incumbent baseline run.
-4. 3×2 core matrix; collection; analysis vs H1–H4.
-5. Paper 2 candidate: "Stage 2: agents vs the heuristic stack, with
-   user-reported ground truth."
-
-Timing: starts after the AIST submission (paper deadline 2026-07-10). Step 1
-can run in the background before that (labeling is human-time-bound, not
-compute-bound).
+1. Version and protect the completed gold snapshot and approved reserves;
+   preserve adjudication history if later corrections change membership.
+2. Enforce the audited duplicate/related-case groups when preparing development
+   data, and verify permission for intended reuse or a new collection.
+3. Implement and freeze the supplied-split interface, matching rules and study design;
+   publish a sanitized rubric with disjoint examples.
+4. Build the new evaluator and isolated development bundle. Verify baseline
+   behavior and oracle cases under that contract, then freeze artifacts.
+5. Run the annotation-and-development experiments and score final code
+   privately. Keep feasibility/pilot observations separate from new results.
