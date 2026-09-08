@@ -83,3 +83,10 @@ recitations use comma-separated ayah ids in `ayah_assignment`.
 baseline (empty stub):   research_score 2.00
 oracle (gold fed back):  research_score 0.00
 ```
+
+## Study 3 preparation
+
+The [preparation guide](study3/README.md) links the draft annotation instructions,
+20 constructed Arabic teaching examples, and the latest aggregate recording
+inventory. Teaching annotations await review; gold answers and production
+exports remain private.
