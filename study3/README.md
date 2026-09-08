@@ -9,9 +9,12 @@ harness yet. The historical `stage2/` harness uses a different contract.
 2. Approve/revise the teaching answers, then assemble a separate practice batch
    without answers in its input file. Test comprehension and revise the guide
    before a measured run. Do not use gold cases for this exercise.
-3. Freeze an executable input/output schema and evaluator: one-to-one event
-   matching, label metrics, span metrics, omission anchors, both-attempt spans,
-   and false flags on clean/benign material. Validate with synthetic oracle cases.
+3. The executable evaluator is frozen: `eval19.py` with one-to-one event
+   matching, omission anchors, both-attempt spans and false flags on
+   clean/benign material, validated by oracle tests. See
+   [EVALUATOR.md](EVALUATOR.md) and the baseline results in
+   [BASELINES-v19.md](BASELINES-v19.md). Still to freeze: model and tool
+   budgets, comparison conditions and permitted feedback.
 4. Prepare a separate unlabelled development pool; freeze model/tool budgets,
    comparison conditions, permitted feedback and final evaluation procedure.
 

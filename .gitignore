@@ -43,3 +43,9 @@ stage2/run.log
 stage2/__pycache__/
 stage2/baselines/__pycache__/
 data/hf/
+
+# Study 3 private material (gold answers, stripped inputs, reviewer samples)
+study3/private/
+study3/**/gold*.json*
+study3/**/inputs.jsonl
+study3/**/*_sample.jsonl
