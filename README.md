@@ -5,11 +5,11 @@ algorithm. Goal: a transcript-only memorization checker for Quran reciters that
 (1) detects which ayahs were recited, (2) splits the transcript by ayah, and
 (3) labels transcript/reference differences under a human-reviewed rubric (Study 3, in preparation).
 
-This repo is the **fixed harness**: a frozen dataset + a frozen scorecard, plus a
-blank-slate algorithm an agent rewrites from scratch. It is deliberately isolated
-from the production app so the algorithm cannot lean on existing code — which also
-makes it a clean arena for comparing agents (e.g. **Claude Code vs Codex**): point
-each agent at the same loop, compare the `research_score` they reach.
+The root directory contains the **Stage 1 fixed harness**: a frozen dataset
+and scorecard plus an editable algorithm. Study 3 adds an annotation protocol
+and legacy pilot artifacts alongside it. This authoring checkout is not an
+isolated agent runtime; prepare a separate allowed-data bundle for each run.
+The new Study 3 evaluator has not yet been frozen or implemented.
 
 ## Two stages
 

@@ -102,3 +102,18 @@ The old pilot executable, old type/verdict schema, and old baseline scores
 remain historical artifacts, not validation of this rubric.
 
 See [the methodology](../METHODOLOGY-STUDY3.md) for the full protocol.
+
+## Colleague access and examples
+
+[Illustrative JSON examples](STUDY3-LABEL-EXAMPLES.json) cover each label,
+including both-attempt spans and an incorrect restatement. Non-Quran tokens
+are deliberately invented; spelling and letter-name placeholders illustrate
+structure, not linguistic allowances. Generic opening formulas have no
+recording association. Prepare disjoint Quran-context teaching examples before
+agent calibration.
+
+Actual approved data points are in a separate owner-held reviewer bundle
+(`index.html`, `gold.json`, `gold.jsonl`, `rubric.md`, `SHA256SUMS`). Human
+colleagues can inspect the full transcript, every ayah reference, and event
+spans offline. The bundle is not committed or publicly hosted; share it via a
+private reviewer channel and exclude it from agent environments.

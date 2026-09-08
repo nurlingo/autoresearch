@@ -1,3 +1,13 @@
+# Legacy pilot schema — superseded for the new Study 3 protocol
+
+**Status, 2026-09-08:** the content below documents the earlier machine-labeled
+pilot and its executable contract. It does not implement the current
+`event_verdict` rubric or evaluate the 40 newly approved recordings. Do not
+launch the new annotation-and-development study using this pilot contract.
+See [current methodology](../METHODOLOGY-STUDY3.md) and [annotation findings](../docs/STUDY3-ANNOTATION.md).
+
+---
+
 # Stage 2 — Within-ayah mistake events: data schema v1 (proposed freeze)
 
 Status: **v1-proposed (2026-09-06)** — defaults for the four open questions of
