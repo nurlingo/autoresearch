@@ -72,8 +72,7 @@ incremental human engineering on this task.
 ### 3.1 Task
 Stage 1 of a transcript-only memorization checker: given a no-harakat ASR
 transcript, return either `abstain` (non-Quran) or the recited ayah sequence
-with the transcript split per ayah. (Stage 2 — within-ayah event annotation — is a separate ongoing review
-effort; no Stage 2 results are reported in this paper.)
+with the transcript split per ayah. (Stage 2 — within-ayah event annotation — has a separate completed 100-recording gold set; no Stage 2 results are reported in this paper.)
 
 ### 3.2 Dataset
 258 Telegram-bot recordings from production (254 Quran, 4 non-Quran; 45 surahs;

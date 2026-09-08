@@ -1,6 +1,6 @@
 # Stage 2 — legacy within-ayah pilot harness
 
-**Current Study 3 status (2026-09-08): 40/100 recordings approved, 71 chunks.**
+**Current Study 3 status (2026-09-08): 100/100 recordings approved, 314 chunks; taxonomy v0.19.**
 The new rubric uses one combined label and different event conventions. This
 directory retains the old type/verdict schema, machine labels, scorecard,
 and baselines for reproducibility. The commands below run that legacy pilot,

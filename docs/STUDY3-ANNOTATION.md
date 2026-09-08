@@ -1,28 +1,32 @@
 # Annotation findings and decisions — 2026-09-08
 
-Current review: **40/100 unique recordings approved**, 71 ayah chunks.
-Taxonomy **v0.16**, recording format **v0.6**. This is a methods/status report;
-no Study 3 agent results are available. The remaining 60 recordings have not
-been approved. This document deliberately contains no selected recording ids,
-user ids, gold transcripts, gold spans, or private codebook examples.
+**Completed review: 100/100 selected recording cases approved**, 314 ayah
+chunks and 274 ayahs across 38 surahs. Taxonomy **v0.19**, recording format
+**v0.6**. Three additional approved recordings are held as reserves outside
+the scored set. No selected annotation decisions remain unresolved. These are
+annotation findings; no new Study 3 algorithm results are available.
+
+Shared documentation contains aggregate results and synthetic examples.
+Selected recording identities, transcripts, answer spans, reviewer notes and
+dismissed interpretations remain in the separate private review workspace.
 
 ## Approved labels and counts
 
 | Label | Meaning | Approved count |
 |---|---|---:|
-| `clean` | Chunk with no event after agreed comparison normalization | 36 chunks |
-| `substitution_mistake` | Unresolved word/phrase replacement, including an incorrect final restatement | 28 events |
-| `omission_mistake` | Missing reference material, including partial first/final ayahs | 14 events |
+| `clean` | Chunk with no event after agreed comparison normalization | 233 chunks |
+| `substitution_mistake` | Unresolved word/phrase replacement, including an incorrect final restatement | 62 events |
+| `omission_mistake` | Missing reference material, including partial first/final ayahs | 26 events |
 | `insertion_mistake` | Extra words not explained by a repeat or recognizable restatement | 1 event |
-| `repetition_benign` | Reference-matching phrase repeated; span includes original and repeat | 4 events |
-| `substitution_corrected` | Wrong attempt followed by a matching repair; span both | 3 events |
+| `repetition_benign` | Reference-matching phrase repeated; span includes original and repeat | 5 events |
+| `substitution_corrected` | Wrong attempt followed by a matching repair; span both | 4 events |
 | `omission_corrected` | Missing material restored on a restart; span both attempts | 1 event |
-| `letters_benign` | Spoken letter names faithfully represent the reference letter sequence | 2 events |
-| `spelling_benign` | Specifically accepted spelling difference remaining after normalization | 3 events |
-| `isti3adha_benign` | Istiadhah outside the assigned ayah | 11 formulas |
-| `basmala_benign` | Basmala outside the assigned ayah | 5 formulas |
+| `letters_benign` | Spoken letter names faithfully represent the reference letter sequence | 4 events |
+| `spelling_benign` | Specifically accepted spelling difference remaining after normalization | 12 events |
+| `isti3adha_benign` | Istiadhah outside the assigned ayah | 29 formulas |
+| `basmala_benign` | Basmala outside the assigned ayah | 18 formulas |
 
-There are 56 within-ayah events and 16 opening formulas. Counts use different
+There are 115 within-ayah events and 47 opening formulas. Counts use different
 units as indicated and must not be summed as independent recordings. Multiple
 events can occur in one chunk. Coverage selection is deliberate; these counts
 do not estimate real-world error prevalence.
@@ -39,12 +43,19 @@ do not estimate real-world error prevalence.
 - **Partial ayahs are omissions.** Missing initial, interior, and final
   reference material is localized explicitly. A final recording position
   does not grant a benign exemption. This does not establish intent to err.
+- **Whole-ayah omissions require adjudication.** Under a reviewed continuous
+  passage, an entirely absent intervening ayah can be represented by an empty
+  chunk. Preserve the original source split and the explicit correction. Do
+  not infer omissions from every gap or beyond a completed final ayah.
 - **Normalization and spelling events differ.** Agreed hamza/diacritic and
   representation normalization receives no event. A residual spelling form
   that needs contextual acceptance receives `spelling_benign`. Wasl is a
   rationale in the note, not the label name. Approved contexts also include
   a standard-spelling/Quranic-orthography equivalence; neither category
   permits blanket final-letter deletion or arbitrary letter substitution.
+  Accepted contextual categories include hamza-seat variants, word boundaries,
+  and joined/assimilated written forms. Punctuation remains in raw tokens but
+  is ignored for lexical comparison.
   Exact accepted contexts remain in the private rubric until disjoint public
   teaching examples are prepared.
 - **Repetitions include both copies.** The previous extra-copy-only convention
@@ -89,17 +100,28 @@ Only final algorithm outputs have independent gold comparison. Development
 annotations remain unscored directly; successful final code is indirect
 process evidence, not proof that every self-generated annotation was correct.
 
-All 40 current inputs match the public Task A corpus; five approved recordings
-overlap the published machine-labeled Task B pilot. Protect new adjudications
-and membership, enforce runtime isolation, and report exposure honestly. A
-claim of an unseen-input competition test requires a separate unreleased
-collection. No record-level overlap list is published here.
+All 100 selected transcripts exactly match public Task A inputs; twelve also
+match transcripts represented in the public machine-labelled Task B pilot.
+Protect new adjudications and membership, enforce runtime isolation, and
+report this exposure. A claim of unseen-input competition ranking requires a
+separate previously unreleased collection.
 
-Review findings settle the rules above but not the final algorithm input
-contract, event matcher, scalar weights, run budgets, learner-disjointness
-claim, or new-data availability. Those must be frozen before experiments.
-The old pilot executable, old type/verdict schema, and old baseline scores
-remain historical artifacts, not validation of this rubric.
+The final algorithm receives **reviewed ayah splits, IDs and exact reference
+texts**, with opening text but without gold labels. Ayah detection is outside
+this event-annotation score. The executable interface, event matcher, scalar
+weights and run design still need to be frozen. Legacy pilot code and scores
+do not validate the completed set.
+
+## Identity and distinct-case selection
+
+All selected IDs and transcripts agree with both local source exports. There
+are no reused recording IDs or audio paths and no full recitation duplicates
+after punctuation-aware normalization. This does not prove distinct audio
+bytes. Redundant clean subpassages are excluded; other overlaps are retained
+only for a documented different event pattern or explicit clean/error contrast.
+Token similarity and shared event signatures guide this review, not automatic
+annotation. The set covers ten learner IDs, with 46 records from one learner;
+no learner-balanced or independent-sample claim is made.
 
 See [the methodology](../METHODOLOGY-STUDY3.md) for the full protocol.
 
@@ -112,8 +134,14 @@ structure, not linguistic allowances. Generic opening formulas have no
 recording association. Prepare disjoint Quran-context teaching examples before
 agent calibration.
 
-Actual approved data points are in a separate owner-held reviewer bundle
+The completed 100-recording answer set is in a separate owner-held reviewer bundle
 (`index.html`, `gold.json`, `gold.jsonl`, `rubric.md`, `SHA256SUMS`). Human
 colleagues can inspect the full transcript, every ayah reference, and event
 spans offline. The bundle is not committed or publicly hosted; share it via a
 private reviewer channel and exclude it from agent environments.
+
+The bundle includes an offline searchable viewer, JSON/JSONL, the private rubric
+and checksums. It excludes production identifiers and audio paths; the owner
+retains a private attribution manifest. Approved reserves are separate. Ask
+the dataset owner for the private human-review copy; it is not hosted in this
+repository. A completed annotation set does not mean the evaluator has run.

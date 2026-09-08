@@ -1,7 +1,7 @@
 # MusIML @ NeurIPS 2026 — Track 3 competition proposal
 
-Updated **2026-09-08** after the human review reached **40/100 unique
-recordings (71 chunks)**. The proposal distinguishes public Task A, the legacy
+Updated **2026-09-08** after the human review completed **100/100 selected
+recording cases (314 chunks)**. The proposal distinguishes public Task A, the legacy
 machine-labeled Task B pilot, and the new annotation-assisted development
 protocol. New Task B scores, a frozen metric, and a new unreleased final test
 set are not claimed.
@@ -32,13 +32,20 @@ recording identifiers. The earlier AIST study is cited without authors.
 - [Legacy baseline results](../../stage2/baselines/RESULTS.md): machine-pilot
   results only. New-rubric baseline evaluation remains future work.
 
-All 40 reviewed inputs match public Task A transcripts; five overlap the old
-machine-labeled pilot. New answers and selection membership are withheld.
+All 100 selected transcripts match public Task A inputs; twelve also match
+transcripts represented in the old machine-labeled pilot. New answers and selection membership are withheld.
 A private label set is not the same as unpublished inputs. The proposed final
 competition needs a separate previously unreleased collection before it can
 claim unseen-input ranking.
 
 Gold review access is separate from this repository: the owner has a local
-reviewer bundle containing the 40 approved data points, an HTML view, and
+reviewer bundle containing all 100 approved data points, an HTML view, and
 checksums. Share that bundle with human reviewers through a private channel;
 do not mount it in an experimental agent environment.
+
+The rubric is v0.19. Three additional approved recordings are reserves outside
+the scored set. Event evaluation uses reviewed ayah chunks, IDs and references;
+its executable interface, matching and weights still need to be finalized.
+The selection spans 274 ayahs and 38 surahs, with ten learner IDs and 46 records
+from the most represented learner. Related cases have explicit coverage reasons;
+distinct IDs are not a claim of independent audio takes.

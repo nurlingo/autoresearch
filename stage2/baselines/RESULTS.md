@@ -2,7 +2,7 @@
 
 **Status, 2026-09-08:** the content below documents the earlier machine-labeled
 pilot and its executable contract. It does not implement the current
-`event_verdict` rubric or evaluate the 40 newly approved recordings. Do not
+`event_verdict` rubric or evaluate the 100 human-approved recordings (314 chunks, taxonomy v0.19). Do not
 launch the new annotation-and-development study using this pilot contract.
 See [current methodology](../../METHODOLOGY-STUDY3.md) and [annotation findings](../../docs/STUDY3-ANNOTATION.md).
 

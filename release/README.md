@@ -2,8 +2,8 @@
 
 **Documentation updated 2026-09-08.** The data files are unchanged. This
 release accompanied the earlier MusIML Track 3 proposal. It is not the new
-40-recording human-reviewed annotation set and does not implement taxonomy
-v0.16. See [current methodology](../METHODOLOGY-STUDY3.md) and
+100-recording human-reviewed annotation set and does not implement taxonomy
+v0.19. See [current methodology](../METHODOLOGY-STUDY3.md) and
 [annotation findings](../docs/STUDY3-ANNOTATION.md).
 
 ## What is in the published files
@@ -49,16 +49,18 @@ superseded for the new protocol but retained in historical data and code.
 
 ## New review and exposure
 
-The separate current review has **40/100 unique recordings approved**, with
-71 chunks and a new combined-label rubric. Its gold answers are not added to
-this release. All 40 inputs already match published Task A transcripts, and
-five overlap recordings carrying public legacy Task B labels. Keep new
+The completed separate review has **100/100 selected recordings approved**,
+with 314 chunks and a combined-label rubric. Three approved reserves are
+outside the scored set. Gold answers are not added to this release. All 100
+selected transcripts match published Task A inputs; twelve also match inputs
+represented in the public legacy Task B labelled pilot. Keep new
 adjudications and selection membership private, exclude public-release access
 from experimental agents, and disclose this exposure. An unseen-input final
 test requires a separately collected, previously unreleased corpus.
 
 The new development agent will annotate an unlabelled pool and build an
-algorithm. Final code is scored privately. No new metric is frozen and no
+algorithm. Final code receives reviewed ayah splits, IDs and exact references
+and is scored privately for event labels and localization. No new metric is frozen and no
 algorithm has been evaluated on the new gold set. Do not score the new format
 with the legacy executable or treat legacy scores as new results.
 

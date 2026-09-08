@@ -1,13 +1,15 @@
 # Study 3 — annotation-assisted transcript checking
 
-Status as of **2026-09-08**: human review is in progress. **40 of the target
-100 unique recordings are approved**, covering 71 ayah chunks. Taxonomy v0.16
-and recording format v0.6 reflect the current adjudication decisions. They
-are versioned working specifications, not a frozen competition contract.
+Status as of **2026-09-08**: **100/100 selected recording cases are human-approved**,
+covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additional
+approved recordings are reserves outside the scored set. Taxonomy v0.19 and
+recording format v0.6 describe the completed annotation snapshot. The input
+choice is settled: supply reviewed ayah chunks and references. The executable
+interface, event matcher and experiment design still need to be frozen.
 No agent run or algorithm evaluation under this protocol has begun.
 
 This document supersedes the earlier Study 3 plan. The old 20-recording,
-99-chunk machine-labeled pilot is a separate artifact, not these 40 approved
+99-chunk machine-labeled pilot is a separate artifact, not these 100 approved
 recordings. The MusIML branch retains that pilot and its original executable
 harness for historical reproducibility; neither implements this protocol.
 
@@ -19,7 +21,7 @@ The agent is responsible for both development annotations and algorithm
 construction. The final executable algorithm is the scored deliverable.
 
 The annotation unit is the **whole recording**, including opening formulas
-and all existing ayah splits. Review preserves the ASR transcript exactly
+and all human-reviewed ayah splits. Review preserves the ASR transcript exactly
 and compares each chunk against `backend/quran.json` → `titles.clean` from
 the source application. Quran reference text and event reference words remain
 verbatim; normalization is only a comparison operation.
@@ -31,11 +33,12 @@ ASR-origin explanation does not turn an unresolved substitution into an
 `uncertain` event. Review uncertainty is handled by withholding approval,
 not by adding a second event verdict.
 
-The final algorithm input contract remains to be frozen: full transcripts
-with detection/splitting, or supplied ayah chunks for an isolated event task.
-If full transcripts are used, report split/detection quality separately from
-event quality. Do not assume the legacy one-chunk interface has settled this
-choice.
+The final algorithm receives **human-reviewed ayah splits, ayah IDs, and exact
+reference texts**, with opening text retained without its gold labels. Score
+event labels and localization conditional on these supplied inputs; ayah
+identification and splitting are outside this score. Source split history,
+reviewer notes, events and verdicts are private answer-side data. Corrections
+to source assignments are explicit and preserve the raw transcript.
 
 ## 2. Corpus construction and current evidence
 
@@ -53,18 +56,35 @@ Selection is purposive, not a prevalence sample. Learner balance and repeated
 ayah contexts must be audited before freezing; recording-level separation
 alone does not guarantee unseen-reciter generalization.
 
-The current approved set has 40 recordings / 71 chunks: 36 chunks without
-within-ayah events, 56 within-ayah events, and 16 opening-formula annotations.
-These are review counts, not performance results or population proportions.
-The remaining 60 recordings still require review. Historical pilot labels
-are not imported as gold. See [annotation findings](docs/STUDY3-ANNOTATION.md)
-for the definitions, counts, and resolved questions.
+The completed selected set contains **100 recordings / 314 chunks**: 233
+chunks without within-ayah events, 115 within-ayah events, and 47 opening-formula
+annotations. Three approved reserves are excluded from these counts. No
+selected annotation decisions remain open. These are coverage counts, not
+performance results or population proportions. Historical pilot labels are
+not imported as gold. See [annotation findings](docs/STUDY3-ANNOTATION.md).
+
+The source-attribution audit checked all selected recording IDs and exact
+transcripts against both the CSV and original recording export. No IDs or
+stored audio paths are reused. Selection normalization also ignores punctuation;
+this catches duplicates missed by the earlier inventory keys. Complete
+normalized duplicates and redundant clean subpassages are excluded. Shared
+passages are retained only for an explicit difference in the whole-recording
+event pattern, such as a repaired versus unresolved error or a complete versus
+partial ayah. Containment, token similarity and shared event signatures are
+review flags, not proof of identical audio; audio bytes were not compared.
+
+The selected records come from ten learner IDs; one accounts for 46 records.
+Do not describe this purposive set as learner-balanced, statistically
+independent, or evidence of unseen-reciter generalization.
 
 Existing Stage-1 assignments are inspected before any correction. Preserve
 source splits and record an agreed correction explicitly. A missing beginning,
 interior span, or ending of an assigned ayah is an omission, including at the
 recording boundary. This convention records missing reference material; it
-does not infer why the recording started or stopped there.
+does not infer why the recording started or stopped there. A wholly missing
+intervening ayah can be an explicit empty chunk only after human adjudication
+of a continuous passage; an ayah-ID gap alone does not establish an omission.
+A recording ending after a complete ayah does not imply omitted future ayahs.
 
 ## 3. Annotation contract
 
@@ -118,8 +138,9 @@ every development annotation was correct or establish annotation as the cause
 of any gain. A causal annotation-benefit claim would require a controlled arm.
 
 Freeze the gold set, rubric, input interface, scoring/matching rules, models,
-run budgets, and hypotheses before executing the study. These choices remain
-open; earlier named models, budgets, H1–H4, and uncertain-credit weights were
+run budgets, and hypotheses before executing the study. The supplied-split
+input choice is approved; remaining executable and scoring details stay open.
+Earlier named models, budgets, H1–H4, and uncertain-credit weights were
 planning suggestions, not this protocol's preregistration.
 
 Evaluate the frozen final algorithm privately after the run. Report event-label
@@ -140,28 +161,28 @@ answers. Use a fresh runtime with only allowed inputs mounted and no access to
 private answer sources. A gitignored folder or a prompt prohibition is not
 an isolation boundary. Return no gold feedback during the run.
 
-**Exposure audit, 2026-09-08:** all 40 approved recording transcripts already
-occur in the published Task A release. Five overlap recordings with public
-legacy Task B pilot annotations. The new adjudicated labels and selected
-recording identities remain private, but the inputs cannot be described as
-unpublished. Public-release retrieval must be excluded from agent runtimes;
-report this exposure, and do not claim publication-level input secrecy or an
-uncontaminated hidden test from runtime isolation alone.
+**Exposure audit, 2026-09-08:** all 100 selected transcripts exactly match
+published Task A inputs. Twelve also exactly match at least one recording
+represented in the public legacy Task B labelled pilot. This is a transcript
+exposure check, not proof of the same production recording ID. New adjudicated
+answers and selected membership remain private, but inputs are not unpublished.
+Exclude public-release retrieval from agent runtimes and report this exposure;
+runtime isolation cannot establish absence of prior model or agent exposure.
 
 For a competition claiming unseen-input final ranking, acquire and review a
 separate set of previously unreleased recordings before launch. Production
 availability, permitted reuse, de-identification, and the actual number of
 usable new submissions must be checked; historic volume figures are not a
-verified new test set. The present 100-recording target is the current private
+verified new test set. The completed 100-recording set is the current private
 annotation benchmark, not evidence that such a new collection already exists.
 
 ## 6. Next steps
 
-1. Complete the remaining 60 recordings; revisit affected cases whenever a
-   taxonomy rule changes and preserve the adjudication history.
-2. Audit duplicate groups, split coverage, reference consistency, learner
-   concentration, public pilot overlap, and permission for intended reuse.
-3. Freeze the input contract, taxonomy, matching rules, and study design;
+1. Version and protect the completed gold snapshot and approved reserves;
+   preserve adjudication history if later corrections change membership.
+2. Enforce the audited duplicate/related-case groups when preparing development
+   data, and verify permission for intended reuse or a new collection.
+3. Implement and freeze the supplied-split interface, matching rules and study design;
    publish a sanitized rubric with disjoint examples.
 4. Build the new evaluator and isolated development bundle. Verify baseline
    behavior and oracle cases under that contract, then freeze artifacts.

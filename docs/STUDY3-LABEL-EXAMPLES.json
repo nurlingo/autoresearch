@@ -1,6 +1,6 @@
 {
   "purpose": "Synthetic schema illustrations for colleagues, not gold data or an agent-ready calibration exercise. Letter and spelling placeholders teach structure only; prepare disjoint Quran-context examples before a measured run. Opening formulas are generic examples with no recording association.",
-  "taxonomy_version": "0.16",
+  "taxonomy_version": "0.19",
   "span_convention": "Zero-based half-open spans into the displayed original token arrays.",
   "examples": [
     {
@@ -292,6 +292,62 @@
         "text": "بسم الله الرحمن الرحيم",
         "label": "basmala_benign"
       }
+    },
+    {
+      "name": "entire missing supplied ayah",
+      "transcript": "",
+      "reference_text": "A B",
+      "transcript_tokens": [],
+      "reference_tokens": [
+        "A",
+        "B"
+      ],
+      "events": [
+        {
+          "label": "omission_mistake",
+          "hyp_words": "",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            0
+          ],
+          "ref_span": [
+            0,
+            2
+          ],
+          "note": "Use only after human adjudication establishes a missing ayah inside the intended passage."
+        }
+      ]
+    },
+    {
+      "name": "contextually accepted word boundary",
+      "transcript": "AB C",
+      "reference_text": "A B C",
+      "transcript_tokens": [
+        "AB",
+        "C"
+      ],
+      "reference_tokens": [
+        "A",
+        "B",
+        "C"
+      ],
+      "events": [
+        {
+          "label": "spelling_benign",
+          "hyp_words": "AB",
+          "ref_words": "A B",
+          "hyp_span": [
+            0,
+            1
+          ],
+          "ref_span": [
+            0,
+            2
+          ],
+          "note": "Invented accepted-boundary example, not a general instruction to join arbitrary words."
+        }
+      ]
     }
   ]
 }

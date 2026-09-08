@@ -258,7 +258,7 @@ At best (exp 4): detection 84%, split 96%, abstain 2/3.
 
 **Stage 2 — mistake detection.** Operates on a *single* gold ayah chunk +
 reference, detecting substitution/deletion/insertion. Scored separately so split
-errors do not pollute it. The separate Study 3 review now has 40/100 recordings approved (2026-09-08);
+errors do not pollute it. The separate Study 3 review now has 100/100 recordings approved, covering 314 chunks (2026-09-08);
 see METHODOLOGY-STUDY3.md for the current rubric and pending contract. Transcript-only → cannot catch
 vowel/tajweed errors.
 

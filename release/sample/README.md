@@ -1,5 +1,5 @@
 > Historical public pilot sample. These are not the new human-approved
-> gold recordings. Machine annotations remain human-pending under the old
+> gold100 recordings (314 reviewed chunks). Machine annotations remain human-pending under the old
 > schema; see [release status](../README.md).
 
 # 10% review sample — 26 of 258 recordings
