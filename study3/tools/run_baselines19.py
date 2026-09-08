@@ -28,9 +28,9 @@ BASELINES = [
     ("B1 naive diff", "naive_diff19"),
     ("B2 incumbent application pipeline", "incumbent19"),
 ]
-COLS = [("study3_v19_score", "score"), ("miss", "miss"), ("false_alarm", "false alarm"),
-        ("benign", "benign"), ("clean", "clean"), ("label_error", "label err"),
-        ("span_iou", "span IoU")]
+COLS = [("micro_f1", "micro F1"), ("macro_f1", "macro F1"), ("precision", "P"),
+        ("recall", "R"), ("loc_f1", "loc F1"), ("span_iou", "span IoU"),
+        ("review_cost", "review cost"), ("clean_flag_rate", "clean flags")]
 
 
 def predict(module: str | None, inputs: Path, out: Path) -> str:
@@ -86,14 +86,14 @@ def main() -> int:
     if first is None:
         print("every baseline failed", file=sys.stderr)
         return 1
-    c = first["summary"]["counts"]
+    c = first["counts"]
     md = [
         "# Task B baselines under taxonomy v0.19",
         "",
-        f"Scored with `study3/eval19.py` (evaluator v{first['summary']['evaluator_version']}) "
-        f"against the private gold set: {c['chunks']} chunks, {c['clean_chunks']} clean, "
-        f"{c['gold_mistakes']} mistake events, {c['gold_benign_corrected']} benign or corrected events. "
-        "Lower is better. Baselines read stripped inputs only; no answers are in this repository.",
+        f"Scored with `study3/eval19.py` (evaluator v{first['evaluator_version']}) "
+        f"against the private gold set: {c['chunks']} scored units "
+        f"({c['clean_chunks']} with no event), {c['gold_events']} gold events including opening formulas. "
+        "Baselines read stripped inputs only; no answers are in this repository.",
         "",
         "| baseline | " + " | ".join(t for _, t in COLS) + " |",
         "|---|" + "---:|" * len(COLS),
@@ -102,17 +102,20 @@ def main() -> int:
         if not d:
             md.append(f"| {name} | " + " | ".join(["n/a"] * len(COLS)) + " |")
             continue
-        s = d["summary"]
-        md.append(f"| {name} | " + " | ".join(f"{s[k]:.3f}" for k, _ in COLS) + " |")
-    md += ["", "`score = 2*miss + false_alarm + benign + clean`. `label_error` and `span_iou` "
-               "describe matched pairs and are reported, not summed. Predicting nothing scores "
-               "2.000; returning the gold annotation scores 0.000.", ""]
-    last = next((d for _, d in reversed(rows) if d), None)
-    if last and last["per_label"]:
-        md += ["Localization recall per gold label, strongest baseline:", "",
-               "| label | matched / gold |", "|---|---:|"]
-        for lab, dd in last["per_label"].items():
-            md.append(f"| `{lab}` | {dd['matched']}/{dd['gold']} |")
+        md.append(f"| {name} | " + " | ".join(f"{d[k]:.3f}" for k, _ in COLS) + " |")
+    md += ["", "Primary measure is label-aware event F1: a paired prediction counts only when its "
+               "label also matches. `loc F1` runs the same matching with labels ignored, so the gap "
+               "between the two columns is naming rather than finding. `review cost` is "
+               "(2 x missed mistakes + false flags) per 100 chunks. Predicting nothing gives micro "
+               "F1 0.000; the gold annotation gives 1.000.", ""]
+    best = max((d for _, d in rows if d), key=lambda d: d["micro_f1"], default=None)
+    if best:
+        name = next(n for n, d in rows if d is best)
+        md += [f"Per-label F1, strongest baseline ({name}):", "",
+               "| label | gold | predicted | P | R | F1 |", "|---|---:|---:|---:|---:|---:|"]
+        for lab, dd in best["per_label"].items():
+            md.append(f"| `{lab}` | {dd['tp'] + dd['fn']} | {dd['tp'] + dd['fp']} | "
+                      f"{dd['precision']:.2f} | {dd['recall']:.2f} | {dd['f1']:.2f} |")
         md.append("")
     if notes:
         md += ["Notes:", ""] + [f"- {n}" for n in notes] + [""]

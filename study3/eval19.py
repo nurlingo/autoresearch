@@ -1,73 +1,94 @@
 #!/usr/bin/env python3
 """
-eval19.py - executable scorecard for Study 3 Task B, taxonomy v0.19.
+eval19.py - scorecard for Study 3 Task B, taxonomy v0.19. Evaluator v2.0.
 
     python3 study3/eval19.py --gold <private gold.jsonl> --pred <predictions.jsonl>
-    python3 study3/eval19.py --gold <gold.jsonl> --pred <pred.jsonl> --json
     python3 study3/eval19.py --gold <gold.jsonl> --self-test
 
 This file contains NO gold data. It reads a private gold file by path; the
 reviewer bundle stays outside this repository and outside agent runtimes.
 
 --------------------------------------------------------------------------
+Why v2.0 replaces v1.0
+--------------------------------------------------------------------------
+v1.0 scored only mistake-flagging, so three separate faults were free: giving a
+mistake the wrong mistake label, omitting benign and corrected annotations
+entirely, and inventing benign annotations on clean chunks. All three, together,
+still scored a perfect 0. Its match test also averaged the two span
+similarities, so an exact reference span carried a match on its own and a
+completely wrong hypothesis span cost nothing.
+
+v2.0 makes label-aware event F1 the primary measure, requires BOTH spans to
+overlap before a pair can match, and prices the application cost in raw event
+counts so the stated exchange rate is the one actually implemented.
+
+--------------------------------------------------------------------------
 Contract
 --------------------------------------------------------------------------
-A system is given, per chunk: `transcript_tokens`, `reference_tokens`,
-`ayah_id`, `chunk_idx`, `n_chunks`. Ayah detection and splitting are supplied,
-not scored (rubric v0.19, "Input and selection").
+Per chunk the system receives `transcript_tokens`, `reference_tokens`,
+`ayah_id`, `chunk_idx`, `n_chunks`, and returns events:
 
-It returns, per chunk, a list of events:
+    {"label": <one of the v0.19 labels>, "hyp_span": [i, j], "ref_span": [a, b]}
 
-    {"label": "<one of the v0.19 combined labels>",
-     "hyp_span": [i, j],      # half-open, into transcript_tokens
-     "ref_span": [a, b]}      # half-open, into reference_tokens
+Spans are half-open indices into those token arrays. An empty hypothesis span
+is an omission anchor; an empty reference span is an insertion point. A chunk
+with no events is clean. Reviewed ayah splits, IDs and references are supplied,
+so ayah detection is not scored.
 
-An empty hypothesis span [i, i] is an omission anchor; an empty reference span
-[a, a] is an insertion point. A chunk with no events is `clean`.
+Opening formulas ARE scored: each record's isti'adhah or basmala is presented
+as a chunk with `chunk_idx = -1`, its text as the transcript and an empty
+reference, carrying one gold event. Deciding that an opening formula is benign
+rather than an insertion is part of the task.
 
 Predictions file: one JSON object per line,
     {"review_id": ..., "chunk_idx": ..., "events": [...]}
-Chunks present in gold but absent from predictions count as predicted-clean.
+Chunks in gold but absent from predictions count as predicted-clean.
 
 --------------------------------------------------------------------------
 Matching
 --------------------------------------------------------------------------
-Within a chunk, predicted and gold events are matched ONE-TO-ONE by maximum
-total similarity. One broad prediction therefore cannot take credit for several
-distinct gold events: it can be matched to at most one, and the rest count as
-misses. Similarity is the mean of the hypothesis-span and reference-span
-similarities; a pair below MIN_SIM is never matched.
+Within a chunk, predictions and gold events are paired one-to-one by maximum
+total similarity, so one broad prediction can be credited with at most one gold
+event. A pair is eligible only when BOTH spans overlap:
 
-Span similarity handles the empty spans the rubric requires:
-  - two empty spans: 1.0 when their anchors are within ANCHOR_SLACK tokens,
-    decaying to 0 beyond that;
-  - one empty span against a real one: 0.5 when the anchor falls inside the
-    other span (widened by ANCHOR_SLACK), else 0.0;
-  - two real spans: intersection over union.
-Both-attempt spans (corrected and repetition events cover all attempts) are
-scored by this same IoU, so a prediction that covers only one attempt loses
-span credit but can still match.
+    sim(pred, gold) = min(span_sim(hyp), span_sim(ref)) >= MIN_SPAN
+
+span_sim treats an empty span as an anchor: two anchors score 1.0 when they
+coincide and 0.5 within ANCHOR_SLACK tokens; an anchor against a real span
+scores 0.5 when it falls inside that span widened by ANCHOR_SLACK; two real
+spans use intersection over union. Corrected and repetition events span all
+attempts, so a prediction covering one attempt loses IoU but can still match.
+
+Pairing itself ignores labels, which lets localization be reported separately
+from naming.
 
 --------------------------------------------------------------------------
-Score (lower is better; each component in [0, 1])
+Scores
 --------------------------------------------------------------------------
-    miss         = gold mistake events with no matched mistake prediction
-                   / gold mistake events
-    false_alarm  = predicted mistake events matched to no gold event
-                   / predicted mistake events
-    benign       = gold benign/corrected events matched by a *mistake*
-                   prediction / gold benign+corrected events
-    clean        = reviewed clean chunks carrying any predicted mistake
-                   / reviewed clean chunks
+PRIMARY - label-aware event F1. A paired prediction is a true positive only if
+its label also matches. A pair with the wrong label counts once as a false
+positive and once as a false negative, as does an unpaired prediction or gold
+event.
 
-    study3_v19_score = 2*miss + false_alarm + benign + clean
+    micro_f1     over all events               -> headline
+    macro_f1     mean of per-label F1          -> protects rare labels
+    event_error  = 1 - micro_f1                -> lower-is-better loop scalar
+    loc_f1       same matching, labels ignored -> localization on its own
+    span_iou     mean IoU over matched pairs
 
-`miss` is doubled: a missed mistake fails the learner, while an extra flag
-costs a moment of review. Reported alongside but NOT summed: label_error
-(matched pairs whose label differs), span_iou (localization quality of matched
-pairs), and a per-label table.
+SECONDARY - application cost, in raw event counts so the exchange rate is real:
 
-Reference points: predicting nothing scores 2.0; returning gold scores 0.0.
+    missed       gold mistake events no mistake prediction matched
+    false_flags  predicted mistake events matching no gold mistake
+    review_cost  = (2*missed + false_flags) / chunks * 100
+
+One missed mistake is priced at two unnecessary flags. Both terms are event
+counts in the same unit, so that ratio is what the formula implements.
+Reported beside it: `clean_flag_rate`, the share of no-event chunks carrying
+any predicted mistake.
+
+Reference points: predicting nothing gives micro_f1 0.0 and event_error 1.0;
+returning the gold annotation gives micro_f1 1.0 and event_error 0.0.
 """
 from __future__ import annotations
 
@@ -79,8 +100,9 @@ from itertools import permutations
 from pathlib import Path
 from typing import Any
 
-MIN_SIM = 0.30       # below this, a predicted/gold pair is never matched
+MIN_SPAN = 0.30      # BOTH spans must reach this before a pair can match
 ANCHOR_SLACK = 1     # tokens of tolerance for omission/insertion anchors
+FORMULA_IDX = -1     # chunk index used for a record's opening formula
 
 LABELS = (
     "substitution_mistake", "omission_mistake", "insertion_mistake",
@@ -89,16 +111,17 @@ LABELS = (
     "basmala_benign", "isti3adha_benign",
 )
 MISTAKE = {l for l in LABELS if l.endswith("_mistake")}
-FORGIVEN = {l for l in LABELS if l.endswith(("_benign", "_corrected"))}
 
 
 # ---------------------------------------------------------------- similarity
 def span_sim(a: list[int] | None, b: list[int] | None) -> float:
-    """Similarity of two half-open spans, empty spans being anchors."""
+    """Similarity of two half-open spans; an empty span is an anchor."""
     if a is None or b is None or len(a) != 2 or len(b) != 2:
         return 0.0
-    a0, a1 = int(a[0]), int(a[1])
-    b0, b1 = int(b[0]), int(b[1])
+    try:
+        a0, a1, b0, b1 = int(a[0]), int(a[1]), int(b[0]), int(b[1])
+    except (TypeError, ValueError):
+        return 0.0
     if a1 < a0 or b1 < b0:
         return 0.0
     a_empty, b_empty = a0 == a1, b0 == b1
@@ -114,38 +137,37 @@ def span_sim(a: list[int] | None, b: list[int] | None) -> float:
 
 
 def event_sim(pred: dict, gold: dict) -> float:
-    return 0.5 * span_sim(pred.get("hyp_span"), gold.get("hyp_span")) \
-         + 0.5 * span_sim(pred.get("ref_span"), gold.get("ref_span"))
+    """Both spans must overlap: the weaker of the two decides."""
+    return min(span_sim(pred.get("hyp_span"), gold.get("hyp_span")),
+               span_sim(pred.get("ref_span"), gold.get("ref_span")))
 
 
 def match_events(pred: list[dict], gold: list[dict]) -> list[tuple[int, int, float]]:
-    """One-to-one maximum-similarity matching. Returns (pred_i, gold_j, sim)."""
+    """One-to-one maximum-similarity pairing, labels ignored."""
     if not pred or not gold:
         return []
     sim = [[event_sim(p, g) for g in gold] for p in pred]
     n, m = len(pred), len(gold)
-    idx_p, idx_g = range(n), range(m)
-    best: tuple[float, list[tuple[int, int, float]]] = (-1.0, [])
-    if n <= 7 and m <= 7:                       # exact: chunks hold few events
-        rows, cols = (idx_p, idx_g) if n <= m else (idx_g, idx_p)
+    if n <= 7 and m <= 7:                       # exact; chunks hold few events
+        rows = range(n) if n <= m else range(m)
+        cols = range(m) if n <= m else range(n)
+        best: tuple[float, list[tuple[int, int, float]]] = (-1.0, [])
         for perm in permutations(cols, len(list(rows))):
             pairs, total = [], 0.0
             for r, c in zip(rows, perm):
                 i, j = (r, c) if n <= m else (c, r)
-                s = sim[i][j]
-                if s >= MIN_SIM:
-                    pairs.append((i, j, s))
-                    total += s
+                if sim[i][j] >= MIN_SPAN:
+                    pairs.append((i, j, sim[i][j]))
+                    total += sim[i][j]
             if total > best[0]:
                 best = (total, pairs)
         return sorted(best[1])
-    # fallback for pathological outputs: greedy, deterministic
-    order = sorted(((sim[i][j], i, j) for i in idx_p for j in idx_g), reverse=True)
+    order = sorted(((sim[i][j], i, j) for i in range(n) for j in range(m)), reverse=True)
     used_p: set[int] = set()
     used_g: set[int] = set()
     pairs = []
     for s, i, j in order:
-        if s < MIN_SIM or i in used_p or j in used_g:
+        if s < MIN_SPAN or i in used_p or j in used_g:
             continue
         used_p.add(i); used_g.add(j); pairs.append((i, j, s))
     return sorted(pairs)
@@ -156,107 +178,112 @@ def match_events(pred: list[dict], gold: list[dict]) -> list[tuple[int, int, flo
 class ChunkResult:
     key: str
     is_clean: bool = False
-    gold_mistakes: int = 0
-    gold_forgiven: int = 0
-    pred_mistakes: int = 0
-    miss: int = 0
-    false_alarm: int = 0
-    benign_flagged: int = 0
-    clean_flagged: bool = False
-    label_wrong: int = 0
-    matched: int = 0
+    tp: list[str] = field(default_factory=list)          # gold labels correctly named
+    fp: list[str] = field(default_factory=list)          # predicted labels that are wrong
+    fn: list[str] = field(default_factory=list)          # gold labels not correctly named
+    loc_hit: int = 0                                     # gold events paired at all
+    n_gold: int = 0
+    n_pred: int = 0
     sim_sum: float = 0.0
-    error: str | None = None
-    pred: list[dict] = field(default_factory=list)
+    missed: int = 0
+    false_flags: int = 0
+    clean_flagged: bool = False
 
 
 def score_chunk(gold_chunk: dict, pred_events: list[dict], key: str) -> ChunkResult:
     r = ChunkResult(key)
     gold = list(gold_chunk.get("events") or [])
     pred = [p for p in pred_events if isinstance(p, dict)]
-    r.pred = pred
-    r.is_clean = not gold
-    r.gold_mistakes = sum(1 for g in gold if g.get("label") in MISTAKE)
-    r.gold_forgiven = sum(1 for g in gold if g.get("label") in FORGIVEN)
-    p_mist = [p for p in pred if p.get("label") in MISTAKE]
-    r.pred_mistakes = len(p_mist)
+    r.is_clean, r.n_gold, r.n_pred = not gold, len(gold), len(pred)
 
     pairs = match_events(pred, gold)
-    matched_p = {i for i, _, _ in pairs}
-    matched_g = {j for _, j, _ in pairs}
-    r.matched = len(pairs)
+    r.loc_hit = len(pairs)
     r.sim_sum = sum(s for _, _, s in pairs)
-    for i, j, _ in pairs:
-        if pred[i].get("label") != gold[j].get("label"):
-            r.label_wrong += 1
+    paired_p = {i: j for i, j, _ in pairs}
+    paired_g = {j: i for i, j, _ in pairs}
 
-    # a gold mistake is caught only by a prediction that also calls it a mistake
     for j, g in enumerate(gold):
-        if g.get("label") not in MISTAKE:
-            continue
-        hit = any(gj == j and pred[pi].get("label") in MISTAKE for pi, gj, _ in pairs)
-        if not hit:
-            r.miss += 1
-    # a predicted mistake matched to nothing is a false alarm
+        i = paired_g.get(j)
+        if i is not None and pred[i].get("label") == g.get("label"):
+            r.tp.append(g.get("label"))
+        else:
+            r.fn.append(g.get("label"))          # unpaired, or paired but misnamed
     for i, p in enumerate(pred):
-        if p.get("label") in MISTAKE and i not in matched_p:
-            r.false_alarm += 1
-    # a benign/corrected gold event called a mistake
-    for j, g in enumerate(gold):
-        if g.get("label") in FORGIVEN and any(
-                gj == j and pred[pi].get("label") in MISTAKE for pi, gj, _ in pairs):
-            r.benign_flagged += 1
-    r.clean_flagged = r.is_clean and bool(p_mist)
+        j = paired_p.get(i)
+        if j is None or gold[j].get("label") != p.get("label"):
+            r.fp.append(p.get("label"))
+
+    # application cost, mistake events only
+    gold_mist = [j for j, g in enumerate(gold) if g.get("label") in MISTAKE]
+    for j in gold_mist:
+        i = paired_g.get(j)
+        if i is None or pred[i].get("label") not in MISTAKE:
+            r.missed += 1
+    for i, p in enumerate(pred):
+        if p.get("label") not in MISTAKE:
+            continue
+        j = paired_p.get(i)
+        if j is None or gold[j].get("label") not in MISTAKE:
+            r.false_flags += 1
+    r.clean_flagged = r.is_clean and any(p.get("label") in MISTAKE for p in pred)
     return r
 
 
+def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
+    p = tp / (tp + fp) if tp + fp else 0.0
+    rc = tp / (tp + fn) if tp + fn else 0.0
+    f = 2 * p * rc / (p + rc) if p + rc else 0.0
+    return p, rc, f
+
+
 def summarize(results: list[ChunkResult]) -> dict[str, Any]:
-    gm = sum(r.gold_mistakes for r in results)
-    gf = sum(r.gold_forgiven for r in results)
-    pm = sum(r.pred_mistakes for r in results)
+    TP = sum(len(r.tp) for r in results)
+    FP = sum(len(r.fp) for r in results)
+    FN = sum(len(r.fn) for r in results)
+    p, rc, micro = _prf(TP, FP, FN)
+
+    per: dict[str, dict[str, int]] = {}
+    for r in results:
+        for lab in r.tp:
+            per.setdefault(lab, {"tp": 0, "fp": 0, "fn": 0})["tp"] += 1
+        for lab in r.fp:
+            per.setdefault(lab, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
+        for lab in r.fn:
+            per.setdefault(lab, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
+    gold_labels = {lab for d in per.values() for lab in ()} or {
+        lab for lab, d in per.items() if d["tp"] + d["fn"] > 0}
+    for lab, d in per.items():
+        d["precision"], d["recall"], d["f1"] = (round(x, 4) for x in _prf(d["tp"], d["fp"], d["fn"]))
+    macro = sum(per[l]["f1"] for l in gold_labels) / len(gold_labels) if gold_labels else 0.0
+
+    loc_tp = sum(r.loc_hit for r in results)
+    n_gold = sum(r.n_gold for r in results)
+    n_pred = sum(r.n_pred for r in results)
+    _, _, loc_f1 = _prf(loc_tp, n_pred - loc_tp, n_gold - loc_tp)
+
+    chunks = len(results) or 1
+    missed = sum(r.missed for r in results)
+    flags = sum(r.false_flags for r in results)
     clean = [r for r in results if r.is_clean]
-    miss = sum(r.miss for r in results) / gm if gm else 0.0
-    fa = sum(r.false_alarm for r in results) / pm if pm else 0.0
-    benign = sum(r.benign_flagged for r in results) / gf if gf else 0.0
-    clean_err = sum(1 for r in clean if r.clean_flagged) / len(clean) if clean else 0.0
-    matched = sum(r.matched for r in results)
     return {
-        "study3_v19_score": round(2 * miss + fa + benign + clean_err, 6),
+        "event_error": round(1 - micro, 6),
         "score_direction": "lower_is_better",
         "taxonomy_version": "0.19",
-        "evaluator_version": "1.0",
-        "miss": round(miss, 4),
-        "false_alarm": round(fa, 4),
-        "benign": round(benign, 4),
-        "clean": round(clean_err, 4),
-        "label_error": round(sum(r.label_wrong for r in results) / matched, 4) if matched else 0.0,
-        "span_iou": round(sum(r.sim_sum for r in results) / matched, 4) if matched else 0.0,
+        "evaluator_version": "2.0",
+        "micro_f1": round(micro, 4), "precision": round(p, 4), "recall": round(rc, 4),
+        "macro_f1": round(macro, 4),
+        "loc_f1": round(loc_f1, 4),
+        "span_iou": round(sum(r.sim_sum for r in results) / loc_tp, 4) if loc_tp else 0.0,
+        "review_cost": round((2 * missed + flags) / chunks * 100, 2),
+        "clean_flag_rate": round(sum(1 for r in clean if r.clean_flagged) / len(clean), 4) if clean else 0.0,
         "counts": {
             "chunks": len(results), "clean_chunks": len(clean),
-            "gold_mistakes": gm, "gold_benign_corrected": gf,
-            "predicted_mistakes": pm, "matched_pairs": matched,
-            "missed": sum(r.miss for r in results),
-            "false_alarms": sum(r.false_alarm for r in results),
-            "benign_flagged": sum(r.benign_flagged for r in results),
-            "clean_flagged": sum(1 for r in clean if r.clean_flagged),
+            "gold_events": n_gold, "predicted_events": n_pred,
+            "tp": TP, "fp": FP, "fn": FN, "located": loc_tp,
+            "missed_mistakes": missed, "false_flags": flags,
         },
+        "per_label": dict(sorted(per.items())),
     }
-
-
-def per_label(gold_chunks: list[dict], results: list[ChunkResult]) -> dict[str, dict]:
-    """Recall per gold label: how often an event of this label was matched at all."""
-    out: dict[str, dict] = {}
-    for gc, r in zip(gold_chunks, results):
-        pairs = match_events(r.pred, list(gc.get("events") or []))
-        hit = {j for _, j, _ in pairs}
-        for j, g in enumerate(gc.get("events") or []):
-            lab = g.get("label", "?")
-            d = out.setdefault(lab, {"gold": 0, "matched": 0})
-            d["gold"] += 1
-            d["matched"] += 1 if j in hit else 0
-    for d in out.values():
-        d["recall"] = round(d["matched"] / d["gold"], 3) if d["gold"] else 0.0
-    return dict(sorted(out.items()))
 
 
 # ---------------------------------------------------------------- io
@@ -269,6 +296,24 @@ def load_gold(path: Path) -> list[tuple[str, dict]]:
     out = []
     for r in recs:
         rid = r.get("review_id")
+        pre = r.get("preamble") or {}
+        segs = [s for s in (pre.get("segments") or []) if s.get("label")]
+        if not segs and pre.get("label"):
+            segs = [{"text": pre.get("text", ""), "label": pre["label"]}]
+        if segs:
+            toks = (pre.get("text") or "").split()
+            events, cur = [], 0
+            for seg in segs:                       # segments follow the text in order
+                n = len(str(seg.get("text") or "").split())
+                events.append({"label": seg["label"],
+                               "hyp_span": [cur, min(cur + n, len(toks))], "ref_span": [0, 0]})
+                cur += n
+            out.append((f"{rid}:{FORMULA_IDX}", {
+                "chunk_idx": FORMULA_IDX, "ayah_id": None,
+                "transcript": pre.get("text", ""), "transcript_tokens": toks,
+                "reference_text": "", "reference_tokens": [],
+                "events": events,
+            }))
         for c in r.get("chunks", []):
             out.append((f"{rid}:{c.get('chunk_idx')}", c))
     return out
@@ -277,77 +322,89 @@ def load_gold(path: Path) -> list[tuple[str, dict]]:
 def load_pred(path: Path) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        d = json.loads(line)
-        out[f"{d.get('review_id')}:{d.get('chunk_idx')}"] = d.get("events") or []
+        if line.strip():
+            d = json.loads(line)
+            out[f"{d.get('review_id')}:{d.get('chunk_idx')}"] = d.get("events") or []
     return out
 
 
-def print_report(s: dict, labels: dict, results: list[ChunkResult]) -> None:
+def print_report(s: dict) -> None:
     c = s["counts"]
     print("---")
-    print(f"study3_v19_score: {s['study3_v19_score']:.6f}")
+    print(f"event_error:      {s['event_error']:.6f}")
     print(f"score_direction:  {s['score_direction']}")
     print()
     print(f"Task B scorecard, taxonomy v{s['taxonomy_version']}, evaluator v{s['evaluator_version']}")
-    print(f"  Chunks: {c['chunks']} (clean {c['clean_chunks']}; gold mistakes {c['gold_mistakes']}, "
-          f"gold benign/corrected {c['gold_benign_corrected']})")
-    print(f"  miss:        {s['miss']:.3f}  ({c['missed']}/{c['gold_mistakes']})   x2 in score")
-    print(f"  false_alarm: {s['false_alarm']:.3f}  ({c['false_alarms']}/{c['predicted_mistakes']} flags)")
-    print(f"  benign:      {s['benign']:.3f}  ({c['benign_flagged']}/{c['gold_benign_corrected']})")
-    print(f"  clean:       {s['clean']:.3f}  ({c['clean_flagged']}/{c['clean_chunks']})")
-    print(f"  label_error: {s['label_error']:.3f}   span_iou: {s['span_iou']:.3f}   "
-          f"matched pairs: {c['matched_pairs']}")
-    print("  per gold label (recall of localization, any label):")
-    for lab, d in labels.items():
-        print(f"    {lab:<24} {d['matched']:>3}/{d['gold']:<3} {d['recall']:.2f}")
-    crashes = [r for r in results if r.error]
-    if crashes:
-        print(f"  chunks with malformed predictions: {len(crashes)}")
+    print(f"  Chunks: {c['chunks']} ({c['clean_chunks']} clean); gold events {c['gold_events']}, "
+          f"predicted {c['predicted_events']}")
+    print(f"  micro F1:   {s['micro_f1']:.3f}   (P {s['precision']:.3f} / R {s['recall']:.3f}; "
+          f"tp {c['tp']}, fp {c['fp']}, fn {c['fn']})")
+    print(f"  macro F1:   {s['macro_f1']:.3f}   over the labels present in gold")
+    print(f"  loc F1:     {s['loc_f1']:.3f}   labels ignored; span IoU {s['span_iou']:.3f}")
+    print(f"  review_cost {s['review_cost']:.2f} per 100 chunks "
+          f"({c['missed_mistakes']} missed x2 + {c['false_flags']} false flags)")
+    print(f"  clean_flag_rate {s['clean_flag_rate']:.3f}")
+    print("  per label   gold  pred    P     R    F1")
+    for lab, d in s["per_label"].items():
+        print(f"    {lab:<24} {d['tp'] + d['fn']:>4}  {d['tp'] + d['fp']:>4}  "
+              f"{d['precision']:.2f}  {d['recall']:.2f}  {d['f1']:.2f}")
 
 
 def self_test(gold_path: Path) -> int:
-    """Oracle checks: gold scores 0, empty scores 2, one broad flag cannot cover
-    several gold events."""
+    """Every case the v1.0 evaluator let through must now cost something."""
     gold = load_gold(gold_path)
     ok = True
+    WRONG = {"substitution_mistake": "omission_mistake",
+             "omission_mistake": "insertion_mistake",
+             "insertion_mistake": "substitution_mistake",
+             "repetition_benign": "spelling_benign",
+             "spelling_benign": "repetition_benign"}
 
-    res = [score_chunk(c, list(c.get("events") or []), k) for k, c in gold]
-    s = summarize(res)
-    print(f"gold-in            -> {s['study3_v19_score']:.4f} (expect 0.0), "
-          f"label_error {s['label_error']:.3f}, span_iou {s['span_iou']:.3f}")
-    ok &= abs(s["study3_v19_score"]) < 1e-9 and s["span_iou"] == 1.0
+    def run(mut) -> dict:
+        return summarize([score_chunk(c, mut(c), k) for k, c in gold])
 
-    res = [score_chunk(c, [], k) for k, c in gold]
-    s = summarize(res)
-    print(f"empty-in           -> {s['study3_v19_score']:.4f} (expect 2.0)")
-    ok &= abs(s["study3_v19_score"] - 2.0) < 1e-9
+    def check(name, s, want, cond):
+        nonlocal ok
+        good = cond(s)
+        ok &= good
+        print(f"  {'ok ' if good else 'FAIL'} {name:<46} micro_f1 {s['micro_f1']:.3f}  "
+              f"error {s['event_error']:.3f}   (expect {want})")
 
-    # flag the whole chunk once: must not collect credit for every gold event
+    print("evaluator v2.0 oracle tests")
+    check("gold in", run(lambda c: list(c.get("events") or [])), "f1 1.0",
+          lambda s: abs(s["micro_f1"] - 1.0) < 1e-9 and abs(s["span_iou"] - 1.0) < 1e-9)
+    check("empty in", run(lambda c: []), "f1 0.0",
+          lambda s: s["micro_f1"] == 0.0 and s["event_error"] == 1.0)
+    print("  regressions the v1.0 evaluator scored as perfect:")
+    check("wrong mistake label everywhere",
+          run(lambda c: [{**e, "label": WRONG.get(e["label"], e["label"])} for e in (c.get("events") or [])]),
+          "f1 < 1", lambda s: s["micro_f1"] < 1.0)
+    check("benign and corrected annotations omitted",
+          run(lambda c: [e for e in (c.get("events") or []) if e["label"].endswith("_mistake")]),
+          "f1 < 1", lambda s: s["micro_f1"] < 1.0)
+    check("fabricated benign event on every clean chunk",
+          run(lambda c: (c.get("events") or []) or [{"label": "repetition_benign",
+                                                     "hyp_span": [0, 1], "ref_span": [0, 1]}]),
+          "f1 < 1", lambda s: s["micro_f1"] < 1.0)
+    check("exact ref span, hypothesis span misplaced",
+          run(lambda c: [{**e, "hyp_span": [max(0, len(c["transcript_tokens"]) - 1),
+                                           len(c["transcript_tokens"])]}
+                         for e in (c.get("events") or [])]),
+          "f1 < 1", lambda s: s["micro_f1"] < 1.0)
+
+    # one broad flag must not harvest several gold events
     res = []
     for k, c in gold:
         n, m = len(c["transcript_tokens"]), len(c["reference_tokens"])
         res.append(score_chunk(c, [{"label": "substitution_mistake",
                                     "hyp_span": [0, n], "ref_span": [0, m]}], k))
+    multi = [r for r in res if r.n_gold > 1]
+    left = sum(len(r.fn) for r in multi)
     s = summarize(res)
-    multi = [r for r in res if r.gold_mistakes > 1]
-    leftover = sum(r.miss for r in multi)
-    print(f"one-broad-flag     -> {s['study3_v19_score']:.4f} (expect > 1.0); "
-          f"in multi-mistake chunks {leftover} of {sum(r.gold_mistakes for r in multi)} "
-          f"gold mistakes still missed (expect > 0)")
-    ok &= s["study3_v19_score"] > 1.0 and leftover > 0
-
-    # a benign gold event called a mistake must be penalised
-    res = []
-    for k, c in gold:
-        p = [{"label": "substitution_mistake", "hyp_span": g["hyp_span"], "ref_span": g["ref_span"]}
-             for g in (c.get("events") or [])]
-        res.append(score_chunk(c, p, k))
-    s = summarize(res)
-    print(f"all-called-mistake -> {s['study3_v19_score']:.4f}; benign {s['benign']:.3f} "
-          f"(expect 1.0), miss {s['miss']:.3f} (expect 0.0)")
-    ok &= abs(s["benign"] - 1.0) < 1e-9 and abs(s["miss"]) < 1e-9
+    good = s["micro_f1"] < 0.2 and left > 0
+    ok &= good
+    print(f"  {'ok ' if good else 'FAIL'} {'one chunk-wide flag':<46} micro_f1 {s['micro_f1']:.3f}  "
+          f"({left} gold events in multi-event chunks unrecovered)")
 
     print("SELF-TEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
@@ -355,8 +412,8 @@ def self_test(gold_path: Path) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Study 3 Task B scorecard (taxonomy v0.19).")
-    ap.add_argument("--gold", type=Path, required=True, help="private gold .jsonl/.json")
-    ap.add_argument("--pred", type=Path, help="predictions .jsonl")
+    ap.add_argument("--gold", type=Path, required=True)
+    ap.add_argument("--pred", type=Path)
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
@@ -366,13 +423,10 @@ def main() -> int:
         ap.error("--pred is required unless --self-test")
     gold = load_gold(a.gold)
     pred = load_pred(a.pred)
-    results = [score_chunk(c, pred.get(k, []), k) for k, c in gold]
-    s = summarize(results)
-    labels = per_label([c for _, c in gold], results)
-    if a.json:
-        print(json.dumps({"summary": s, "per_label": labels}, ensure_ascii=False, indent=1))
-    else:
-        print_report(s, labels, results)
+    s = summarize([score_chunk(c, pred.get(k, []), k) for k, c in gold])
+    print(json.dumps(s, ensure_ascii=False, indent=1) if a.json else "", end="")
+    if not a.json:
+        print_report(s)
     return 0
 
 

@@ -6,7 +6,8 @@ to see, so a baseline or an agent can never read the answers.
     python3 study3/tools/make_inputs.py --gold <private gold.jsonl> --out inputs.jsonl
 
 Kept per chunk: review_id, chunk_idx, n_chunks, ayah_id, transcript,
-transcript_tokens, reference_text, reference_tokens.
+transcript_tokens, reference_text, reference_tokens. A record's opening formula
+is emitted as chunk_idx -1 with an empty reference, matching the evaluator.
 Dropped: events, chunk labels, review_status, reviewed_by, preamble labels,
 transcript hashes, and every other annotation field.
 
@@ -35,6 +36,15 @@ def main() -> int:
     with a.out.open("w", encoding="utf-8") as f:
         for r in recs:
             chunks = r.get("chunks", [])
+            pre = r.get("preamble") or {}
+            if pre.get("text") and (pre.get("label") or pre.get("segments")):
+                toks = pre["text"].split()
+                f.write(json.dumps({"review_id": r.get("review_id"), "chunk_idx": -1,
+                                    "n_chunks": len(chunks), "ayah_id": None,
+                                    "transcript": pre["text"], "transcript_tokens": toks,
+                                    "reference_text": "", "reference_tokens": []},
+                                   ensure_ascii=False) + "\n")
+                n += 1
             for c in chunks:
                 row = {"review_id": r.get("review_id"), "chunk_idx": c.get("chunk_idx"),
                        "n_chunks": len(chunks), **{k: c.get(k) for k in KEEP}}
