@@ -36,8 +36,10 @@ See the [recording inventory](RECORDING-INVENTORY.md) for the read-only producti
 check: 63 additional bot submissions, with 62 stored transcripts and preliminary
 duplicate screening. Private production exports are not included here.
 
-[EXPERIMENT.md](EXPERIMENT.md) explains gold isolation and the current candidate
-counts: 221 transcripts outside gold100 (including three former reserves and
-one new local ASR transcript), and 170 distinct text groups after exact gold
-equivalents are removed. The new local transcript needs non-Quran review. Related-case
-review and a practice/development/future-test partition remain pending.
+[EXPERIMENT.md](EXPERIMENT.md) explains the agent comparison and gold isolation.
+The [training release](release/README.md) contains 127 recording cases / 888 input
+units; its train-only review sample contains 23 cases / 394 units. Shared clean
+ayahs and different error variants are allowed; complete gold copies and copies of
+event-bearing gold chunks are excluded. The [submission checklist](SUBMISSION-TODO.md)
+tracks remaining approvals and execution work. [Teaching examples](calibration/teaching-review.html)
+are constructed drafts awaiting owner approval.

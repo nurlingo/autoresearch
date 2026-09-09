@@ -1,0 +1,992 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teaching examples — owner review</title><style>body{font:16px/1.5 system-ui;max-width:1000px;margin:30px auto;padding:0 20px;color:#172033}article{border:1px solid #d5dbe5;border-radius:10px;padding:20px;margin:24px 0} .arabic{font:25px/1.8 serif;direction:rtl;background:#f5f7fb;padding:12px;white-space:pre-wrap}.label{font-family:monospace;color:#174b85}code{white-space:pre-wrap}summary{cursor:pointer}h2{margin-top:0}.note{color:#555}</style><h1>20 constructed teaching examples — awaiting approval</h1><p>These are deliberate transcript variants, not recordings. “Reference” always means the actual ayah text from quran.json titles.clean. Transcripts retain their spelling. Event spans use zero-based, half-open whitespace indices. No gold cases are shown.</p><p>t16 needs explicit contextual-spelling approval. The JSON beneath each example contains the full data point.</p>
+<article id="t01"><h2>t01 — Clean after ordinary hamza normalization</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:1</h3><b>Transcript</b><div class="arabic" lang="ar">لا أقسم بهذا البلد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لا اقسم بهذا البلد</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t01&quot;,
+  &quot;name&quot;: &quot;Clean after ordinary hamza normalization&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090001&quot;,
+      &quot;transcript&quot;: &quot;لا أقسم بهذا البلد&quot;,
+      &quot;reference_text&quot;: &quot;لا اقسم بهذا البلد&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;لا&quot;,
+        &quot;أقسم&quot;,
+        &quot;بهذا&quot;,
+        &quot;البلد&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;لا&quot;,
+        &quot;اقسم&quot;,
+        &quot;بهذا&quot;,
+        &quot;البلد&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+<article id="t02"><h2>t02 — Missing beginning</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:4</h3><b>Transcript</b><div class="arabic" lang="ar">الانسان في كبد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لقد خلقنا الانسان في كبد</div>
+<p class="label">omission_mistake</p><p>Transcript span [0, 0]: <span lang="ar" dir="rtl">∅</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">لقد خلقنا</span></p><p>The two initial reference words are absent.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t02&quot;,
+  &quot;name&quot;: &quot;Missing beginning&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090004&quot;,
+      &quot;transcript&quot;: &quot;الانسان في كبد&quot;,
+      &quot;reference_text&quot;: &quot;لقد خلقنا الانسان في كبد&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;الانسان&quot;,
+        &quot;في&quot;,
+        &quot;كبد&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;لقد&quot;,
+        &quot;خلقنا&quot;,
+        &quot;الانسان&quot;,
+        &quot;في&quot;,
+        &quot;كبد&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;&quot;,
+          &quot;ref_words&quot;: &quot;لقد خلقنا&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            0
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            2
+          ],
+          &quot;note&quot;: &quot;The two initial reference words are absent.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t03"><h2>t03 — Missing interior word</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
+<p class="label">omission_mistake</p><p>Transcript span [4, 4]: <span lang="ar" dir="rtl">∅</span><br>Reference span [4, 5]: <span lang="ar" dir="rtl">ذي</span></p><p>ذي is missing between يوم and مسغبة.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t03&quot;,
+  &quot;name&quot;: &quot;Missing interior word&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090014&quot;,
+      &quot;transcript&quot;: &quot;او اطعام في يوم مسغبة&quot;,
+      &quot;reference_text&quot;: &quot;او اطعام في يوم ذي مسغبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;ذي&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;&quot;,
+          &quot;ref_words&quot;: &quot;ذي&quot;,
+          &quot;hyp_span&quot;: [
+            4,
+            4
+          ],
+          &quot;ref_span&quot;: [
+            4,
+            5
+          ],
+          &quot;note&quot;: &quot;ذي is missing between يوم and مسغبة.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t04"><h2>t04 — Missing ending</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div>
+<p class="label">omission_mistake</p><p>Transcript span [7, 7]: <span lang="ar" dir="rtl">∅</span><br>Reference span [7, 9]: <span lang="ar" dir="rtl">وتواصوا بالمرحمة</span></p><p>The last two reference words are absent, even if the recording stops here.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t04&quot;,
+  &quot;name&quot;: &quot;Missing ending&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090017&quot;,
+      &quot;transcript&quot;: &quot;ثم كان من الذين امنوا وتواصوا بالصبر&quot;,
+      &quot;reference_text&quot;: &quot;ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;من&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;من&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالمرحمة&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;&quot;,
+          &quot;ref_words&quot;: &quot;وتواصوا بالمرحمة&quot;,
+          &quot;hyp_span&quot;: [
+            7,
+            7
+          ],
+          &quot;ref_span&quot;: [
+            7,
+            9
+          ],
+          &quot;note&quot;: &quot;The last two reference words are absent, even if the recording stops here.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t05"><h2>t05 — One unresolved replacement</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت ذهبا لبدا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div>
+<p class="label">substitution_mistake</p><p>Transcript span [2, 3]: <span lang="ar" dir="rtl">ذهبا</span><br>Reference span [2, 3]: <span lang="ar" dir="rtl">مالا</span></p><p>ذهبا replaces مالا.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t05&quot;,
+  &quot;name&quot;: &quot;One unresolved replacement&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090006&quot;,
+      &quot;transcript&quot;: &quot;يقول اهلكت ذهبا لبدا&quot;,
+      &quot;reference_text&quot;: &quot;يقول اهلكت مالا لبدا&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;يقول&quot;,
+        &quot;اهلكت&quot;,
+        &quot;ذهبا&quot;,
+        &quot;لبدا&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;يقول&quot;,
+        &quot;اهلكت&quot;,
+        &quot;مالا&quot;,
+        &quot;لبدا&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;ذهبا&quot;,
+          &quot;ref_words&quot;: &quot;مالا&quot;,
+          &quot;hyp_span&quot;: [
+            2,
+            3
+          ],
+          &quot;ref_span&quot;: [
+            2,
+            3
+          ],
+          &quot;note&quot;: &quot;ذهبا replaces مالا.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t06"><h2>t06 — Adjacent replacements grouped</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت كنزا كثيرا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div>
+<p class="label">substitution_mistake</p><p>Transcript span [2, 4]: <span lang="ar" dir="rtl">كنزا كثيرا</span><br>Reference span [2, 4]: <span lang="ar" dir="rtl">مالا لبدا</span></p><p>Two continuous replaced words form one event.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t06&quot;,
+  &quot;name&quot;: &quot;Adjacent replacements grouped&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090006&quot;,
+      &quot;transcript&quot;: &quot;يقول اهلكت كنزا كثيرا&quot;,
+      &quot;reference_text&quot;: &quot;يقول اهلكت مالا لبدا&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;يقول&quot;,
+        &quot;اهلكت&quot;,
+        &quot;كنزا&quot;,
+        &quot;كثيرا&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;يقول&quot;,
+        &quot;اهلكت&quot;,
+        &quot;مالا&quot;,
+        &quot;لبدا&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;كنزا كثيرا&quot;,
+          &quot;ref_words&quot;: &quot;مالا لبدا&quot;,
+          &quot;hyp_span&quot;: [
+            2,
+            4
+          ],
+          &quot;ref_span&quot;: [
+            2,
+            4
+          ],
+          &quot;note&quot;: &quot;Two continuous replaced words form one event.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t07"><h2>t07 — Two mistakes separated by correct words</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:8</h3><b>Transcript</b><div class="arabic" lang="ar">هل نجعل له اذنين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">الم نجعل له عينين</div>
+<p class="label">substitution_mistake</p><p>Transcript span [0, 1]: <span lang="ar" dir="rtl">هل</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">الم</span></p><p>هل replaces الم.</p>
+<p class="label">substitution_mistake</p><p>Transcript span [3, 4]: <span lang="ar" dir="rtl">اذنين</span><br>Reference span [3, 4]: <span lang="ar" dir="rtl">عينين</span></p><p>اذنين replaces عينين. The correct words between the changes separate the events.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t07&quot;,
+  &quot;name&quot;: &quot;Two mistakes separated by correct words&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090008&quot;,
+      &quot;transcript&quot;: &quot;هل نجعل له اذنين&quot;,
+      &quot;reference_text&quot;: &quot;الم نجعل له عينين&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;هل&quot;,
+        &quot;نجعل&quot;,
+        &quot;له&quot;,
+        &quot;اذنين&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;الم&quot;,
+        &quot;نجعل&quot;,
+        &quot;له&quot;,
+        &quot;عينين&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;هل&quot;,
+          &quot;ref_words&quot;: &quot;الم&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            1
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;هل replaces الم.&quot;
+        },
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;اذنين&quot;,
+          &quot;ref_words&quot;: &quot;عينين&quot;,
+          &quot;hyp_span&quot;: [
+            3,
+            4
+          ],
+          &quot;ref_span&quot;: [
+            3,
+            4
+          ],
+          &quot;note&quot;: &quot;اذنين replaces عينين. The correct words between the changes separate the events.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t08"><h2>t08 — Extra words</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:9</h3><b>Transcript</b><div class="arabic" lang="ar">ولسانا وعينين وشفتين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ولسانا وشفتين</div>
+<p class="label">insertion_mistake</p><p>Transcript span [1, 2]: <span lang="ar" dir="rtl">وعينين</span><br>Reference span [1, 1]: <span lang="ar" dir="rtl">∅</span></p><p>وعينين is extra material, not a matching repeated phrase or a restatement.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t08&quot;,
+  &quot;name&quot;: &quot;Extra words&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090009&quot;,
+      &quot;transcript&quot;: &quot;ولسانا وعينين وشفتين&quot;,
+      &quot;reference_text&quot;: &quot;ولسانا وشفتين&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;ولسانا&quot;,
+        &quot;وعينين&quot;,
+        &quot;وشفتين&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;ولسانا&quot;,
+        &quot;وشفتين&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;insertion_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;وعينين&quot;,
+          &quot;ref_words&quot;: &quot;&quot;,
+          &quot;hyp_span&quot;: [
+            1,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            1,
+            1
+          ],
+          &quot;note&quot;: &quot;وعينين is extra material, not a matching repeated phrase or a restatement.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t09"><h2>t09 — Matching phrase repeated</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 91:1</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس وضحاها والشمس وضحاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والشمس وضحاها</div>
+<p class="label">repetition_benign</p><p>Transcript span [0, 4]: <span lang="ar" dir="rtl">والشمس وضحاها والشمس وضحاها</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">والشمس وضحاها</span></p><p>Select original plus extra copy against one reference occurrence.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t09&quot;,
+  &quot;name&quot;: &quot;Matching phrase repeated&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;091001&quot;,
+      &quot;transcript&quot;: &quot;والشمس وضحاها والشمس وضحاها&quot;,
+      &quot;reference_text&quot;: &quot;والشمس وضحاها&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;والشمس&quot;,
+        &quot;وضحاها&quot;,
+        &quot;والشمس&quot;,
+        &quot;وضحاها&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;والشمس&quot;,
+        &quot;وضحاها&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;repetition_benign&quot;,
+          &quot;hyp_words&quot;: &quot;والشمس وضحاها والشمس وضحاها&quot;,
+          &quot;ref_words&quot;: &quot;والشمس وضحاها&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            4
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            2
+          ],
+          &quot;note&quot;: &quot;Select original plus extra copy against one reference occurrence.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t10"><h2>t10 — Wrong then correct</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 91:2</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس والقمر اذا تلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والقمر اذا تلاها</div>
+<p class="label">substitution_corrected</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">والشمس والقمر</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">والقمر</span></p><p>The first word is wrong and the following attempt restores والقمر. Select both attempts.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t10&quot;,
+  &quot;name&quot;: &quot;Wrong then correct&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;091002&quot;,
+      &quot;transcript&quot;: &quot;والشمس والقمر اذا تلاها&quot;,
+      &quot;reference_text&quot;: &quot;والقمر اذا تلاها&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;والشمس&quot;,
+        &quot;والقمر&quot;,
+        &quot;اذا&quot;,
+        &quot;تلاها&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;والقمر&quot;,
+        &quot;اذا&quot;,
+        &quot;تلاها&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_corrected&quot;,
+          &quot;hyp_words&quot;: &quot;والشمس والقمر&quot;,
+          &quot;ref_words&quot;: &quot;والقمر&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;The first word is wrong and the following attempt restores والقمر. Select both attempts.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t11"><h2>t11 — Correct then wrong</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 91:3</h3><b>Transcript</b><div class="arabic" lang="ar">والنهار والليل اذا جلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والنهار اذا جلاها</div>
+<p class="label">substitution_mistake</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">والنهار والليل</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">والنهار</span></p><p>The first attempt matches والنهار; the final restatement changes it to والليل. Select both attempts.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t11&quot;,
+  &quot;name&quot;: &quot;Correct then wrong&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;091003&quot;,
+      &quot;transcript&quot;: &quot;والنهار والليل اذا جلاها&quot;,
+      &quot;reference_text&quot;: &quot;والنهار اذا جلاها&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;والنهار&quot;,
+        &quot;والليل&quot;,
+        &quot;اذا&quot;,
+        &quot;جلاها&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;والنهار&quot;,
+        &quot;اذا&quot;,
+        &quot;جلاها&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;والنهار والليل&quot;,
+          &quot;ref_words&quot;: &quot;والنهار&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;The first attempt matches والنهار; the final restatement changes it to والليل. Select both attempts.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t12"><h2>t12 — Omission restored on restart</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
+<p class="label">omission_corrected</p><p>Transcript span [0, 11]: <span lang="ar" dir="rtl">او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة</span><br>Reference span [0, 6]: <span lang="ar" dir="rtl">او اطعام في يوم ذي مسغبة</span></p><p>The first attempt lacks ذي; the complete restart restores it. Do not double-label the same attempt.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t12&quot;,
+  &quot;name&quot;: &quot;Omission restored on restart&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090014&quot;,
+      &quot;transcript&quot;: &quot;او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة&quot;,
+      &quot;reference_text&quot;: &quot;او اطعام في يوم ذي مسغبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;مسغبة&quot;,
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;ذي&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;ذي&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_corrected&quot;,
+          &quot;hyp_words&quot;: &quot;او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة&quot;,
+          &quot;ref_words&quot;: &quot;او اطعام في يوم ذي مسغبة&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            11
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            6
+          ],
+          &quot;note&quot;: &quot;The first attempt lacks ذي; the complete restart restores it. Do not double-label the same attempt.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t13"><h2>t13 — Ordinary spelling normalization is clean</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 92:3</h3><b>Transcript</b><div class="arabic" lang="ar">وما خلق الذكر والأنثى</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">وما خلق الذكر والانثى</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t13&quot;,
+  &quot;name&quot;: &quot;Ordinary spelling normalization is clean&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;092003&quot;,
+      &quot;transcript&quot;: &quot;وما خلق الذكر والأنثى&quot;,
+      &quot;reference_text&quot;: &quot;وما خلق الذكر والانثى&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;وما&quot;,
+        &quot;خلق&quot;,
+        &quot;الذكر&quot;,
+        &quot;والأنثى&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;وما&quot;,
+        &quot;خلق&quot;,
+        &quot;الذكر&quot;,
+        &quot;والانثى&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+<article id="t14"><h2>t14 — Complete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين ميم</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div>
+<p class="label">letters_benign</p><p>Transcript span [0, 3]: <span lang="ar" dir="rtl">طا سين ميم</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">طسم</span></p><p>The three spoken letter names express طسم in order.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t14&quot;,
+  &quot;name&quot;: &quot;Complete spoken letter names&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;026001&quot;,
+      &quot;transcript&quot;: &quot;طا سين ميم&quot;,
+      &quot;reference_text&quot;: &quot;طسم&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;طا&quot;,
+        &quot;سين&quot;,
+        &quot;ميم&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;طسم&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;letters_benign&quot;,
+          &quot;hyp_words&quot;: &quot;طا سين ميم&quot;,
+          &quot;ref_words&quot;: &quot;طسم&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            3
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;The three spoken letter names express طسم in order.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t15"><h2>t15 — Incomplete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p>
+<h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div>
+<p class="label">substitution_mistake</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">طا سين</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">طسم</span></p><p>The one-token reference sequence طسم lacks its final ميم in the hypothesis; use the one-token substitution convention.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t15&quot;,
+  &quot;name&quot;: &quot;Incomplete spoken letter names&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;026001&quot;,
+      &quot;transcript&quot;: &quot;طا سين&quot;,
+      &quot;reference_text&quot;: &quot;طسم&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;طا&quot;,
+        &quot;سين&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;طسم&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;طا سين&quot;,
+          &quot;ref_words&quot;: &quot;طسم&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;The one-token reference sequence طسم lacks its final ميم in the hypothesis; use the one-token substitution convention.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t16"><h2>t16 — Contextual word boundary — requires explicit approval</h2><p class="note">Draft; awaiting owner approval.</p>
+<p>Review this linguistic example explicitly before including it in an agent guide.</p>
+<h3>Ayah 4:78</h3><b>Transcript</b><div class="arabic" lang="ar">اين ما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">اينما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div>
+<p class="label">spelling_benign</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">اين ما</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">اينما</span></p><p>Proposed teaching equivalence: اين ما / اينما in this clause. Human approval is required; this is not an approved expansion of normalization.</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t16&quot;,
+  &quot;name&quot;: &quot;Contextual word boundary — requires explicit approval&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;Review this linguistic example explicitly before including it in an agent guide.&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;004078&quot;,
+      &quot;transcript&quot;: &quot;اين ما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا&quot;,
+      &quot;reference_text&quot;: &quot;اينما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;اين&quot;,
+        &quot;ما&quot;,
+        &quot;تكونوا&quot;,
+        &quot;يدرككم&quot;,
+        &quot;الموت&quot;,
+        &quot;ولو&quot;,
+        &quot;كنتم&quot;,
+        &quot;في&quot;,
+        &quot;بروج&quot;,
+        &quot;مشيدة&quot;,
+        &quot;وان&quot;,
+        &quot;تصبهم&quot;,
+        &quot;حسنة&quot;,
+        &quot;يقولوا&quot;,
+        &quot;هذه&quot;,
+        &quot;من&quot;,
+        &quot;عند&quot;,
+        &quot;الله&quot;,
+        &quot;وان&quot;,
+        &quot;تصبهم&quot;,
+        &quot;سيئة&quot;,
+        &quot;يقولوا&quot;,
+        &quot;هذه&quot;,
+        &quot;من&quot;,
+        &quot;عندك&quot;,
+        &quot;قل&quot;,
+        &quot;كل&quot;,
+        &quot;من&quot;,
+        &quot;عند&quot;,
+        &quot;الله&quot;,
+        &quot;فمال&quot;,
+        &quot;هؤلاء&quot;,
+        &quot;القوم&quot;,
+        &quot;لا&quot;,
+        &quot;يكادون&quot;,
+        &quot;يفقهون&quot;,
+        &quot;حديثا&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;اينما&quot;,
+        &quot;تكونوا&quot;,
+        &quot;يدرككم&quot;,
+        &quot;الموت&quot;,
+        &quot;ولو&quot;,
+        &quot;كنتم&quot;,
+        &quot;في&quot;,
+        &quot;بروج&quot;,
+        &quot;مشيدة&quot;,
+        &quot;وان&quot;,
+        &quot;تصبهم&quot;,
+        &quot;حسنة&quot;,
+        &quot;يقولوا&quot;,
+        &quot;هذه&quot;,
+        &quot;من&quot;,
+        &quot;عند&quot;,
+        &quot;الله&quot;,
+        &quot;وان&quot;,
+        &quot;تصبهم&quot;,
+        &quot;سيئة&quot;,
+        &quot;يقولوا&quot;,
+        &quot;هذه&quot;,
+        &quot;من&quot;,
+        &quot;عندك&quot;,
+        &quot;قل&quot;,
+        &quot;كل&quot;,
+        &quot;من&quot;,
+        &quot;عند&quot;,
+        &quot;الله&quot;,
+        &quot;فمال&quot;,
+        &quot;هؤلاء&quot;,
+        &quot;القوم&quot;,
+        &quot;لا&quot;,
+        &quot;يكادون&quot;,
+        &quot;يفقهون&quot;,
+        &quot;حديثا&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;spelling_benign&quot;,
+          &quot;hyp_words&quot;: &quot;اين ما&quot;,
+          &quot;ref_words&quot;: &quot;اينما&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            1
+          ],
+          &quot;note&quot;: &quot;Proposed teaching equivalence: اين ما / اينما in this clause. Human approval is required; this is not an approved expansion of normalization.&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>
+<article id="t17"><h2>t17 — Istiadhah outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p>
+<p>Opening text</p><div class="arabic" lang="ar">أعوذ بالله من الشيطان الرجيم</div><p class="label">isti3adha_benign</p>
+<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t17&quot;,
+  &quot;name&quot;: &quot;Istiadhah outside the ayah&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [
+    {
+      &quot;text&quot;: &quot;أعوذ بالله من الشيطان الرجيم&quot;,
+      &quot;label&quot;: &quot;isti3adha_benign&quot;
+    }
+  ],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090013&quot;,
+      &quot;transcript&quot;: &quot;فك رقبة&quot;,
+      &quot;reference_text&quot;: &quot;فك رقبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;فك&quot;,
+        &quot;رقبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;فك&quot;,
+        &quot;رقبة&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+<article id="t18"><h2>t18 — Basmala outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p>
+<p>Opening text</p><div class="arabic" lang="ar">بسم الله الرحمن الرحيم</div><p class="label">basmala_benign</p>
+<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t18&quot;,
+  &quot;name&quot;: &quot;Basmala outside the ayah&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;preamble&quot;: [
+    {
+      &quot;text&quot;: &quot;بسم الله الرحمن الرحيم&quot;,
+      &quot;label&quot;: &quot;basmala_benign&quot;
+    }
+  ],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090013&quot;,
+      &quot;transcript&quot;: &quot;فك رقبة&quot;,
+      &quot;reference_text&quot;: &quot;فك رقبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;فك&quot;,
+        &quot;رقبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;فك&quot;,
+        &quot;رقبة&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+<article id="t19"><h2>t19 — Whole intervening ayah omitted</h2><p class="note">Draft; awaiting owner approval.</p>
+<p>Constructed scenario: the intended continuous passage was established as 90:12–14 before event annotation. The supplied empty chunk makes this explicit. Do not infer missing ayahs from arbitrary ID gaps.</p>
+<h3>Ayah 90:12</h3><b>Transcript</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div>
+<p class="label">clean — no events</p>
+<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">∅</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
+<p class="label">omission_mistake</p><p>Transcript span [0, 0]: <span lang="ar" dir="rtl">∅</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">فك رقبة</span></p><p>The reviewed intended continuous passage includes this entirely missing ayah.</p>
+<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t19&quot;,
+  &quot;name&quot;: &quot;Whole intervening ayah omitted&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;Constructed scenario: the intended continuous passage was established as 90:12–14 before event annotation. The supplied empty chunk makes this explicit. Do not infer missing ayahs from arbitrary ID gaps.&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090012&quot;,
+      &quot;transcript&quot;: &quot;وما ادراك ما العقبة&quot;,
+      &quot;reference_text&quot;: &quot;وما ادراك ما العقبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;وما&quot;,
+        &quot;ادراك&quot;,
+        &quot;ما&quot;,
+        &quot;العقبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;وما&quot;,
+        &quot;ادراك&quot;,
+        &quot;ما&quot;,
+        &quot;العقبة&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    },
+    {
+      &quot;ayah_id&quot;: &quot;090013&quot;,
+      &quot;transcript&quot;: &quot;&quot;,
+      &quot;reference_text&quot;: &quot;فك رقبة&quot;,
+      &quot;transcript_tokens&quot;: [],
+      &quot;reference_tokens&quot;: [
+        &quot;فك&quot;,
+        &quot;رقبة&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_mistake&quot;,
+          &quot;hyp_words&quot;: &quot;&quot;,
+          &quot;ref_words&quot;: &quot;فك رقبة&quot;,
+          &quot;hyp_span&quot;: [
+            0,
+            0
+          ],
+          &quot;ref_span&quot;: [
+            0,
+            2
+          ],
+          &quot;note&quot;: &quot;The reviewed intended continuous passage includes this entirely missing ayah.&quot;
+        }
+      ]
+    },
+    {
+      &quot;ayah_id&quot;: &quot;090014&quot;,
+      &quot;transcript&quot;: &quot;او اطعام في يوم ذي مسغبة&quot;,
+      &quot;reference_text&quot;: &quot;او اطعام في يوم ذي مسغبة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;ذي&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;او&quot;,
+        &quot;اطعام&quot;,
+        &quot;في&quot;,
+        &quot;يوم&quot;,
+        &quot;ذي&quot;,
+        &quot;مسغبة&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+<article id="t20"><h2>t20 — Repeated word already in the reference is clean</h2><p class="note">Draft; awaiting owner approval.</p>
+<p>وتواصوا occurs twice in the reference; its two matching occurrences are not an extra repetition.</p>
+<h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div>
+<p class="label">clean — no events</p>
+<details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t20&quot;,
+  &quot;name&quot;: &quot;Repeated word already in the reference is clean&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;وتواصوا occurs twice in the reference; its two matching occurrences are not an extra repetition.&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090017&quot;,
+      &quot;transcript&quot;: &quot;ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة&quot;,
+      &quot;reference_text&quot;: &quot;ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;من&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالمرحمة&quot;
+      ],
+      &quot;reference_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;من&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالمرحمة&quot;
+      ],
+      &quot;events&quot;: [],
+      &quot;label&quot;: &quot;clean&quot;
+    }
+  ]
+}</code></pre></details></article>
+</html>

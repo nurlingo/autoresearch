@@ -1,5 +1,18 @@
 # autoresearch
 
+## MusIML submission work — 2026-09-09
+
+The revised Track 3 proposal concerns final-solution event annotation, with
+127 unlabelled training cases and a private gold100. The training release bundle
+itself is not published here: redistribution scope for the newly collected
+recordings is unsettled, so it is shared directly with colleagues instead.
+Rebuild it from private sources with `study3/tools/build_train_release.py`.
+See the [submission checklist](study3/SUBMISSION-TODO.md),
+[teaching examples for approval](study3/calibration/teaching-review.html), and
+[agent-comparison protocol](study3/EXPERIMENT.md). The historical Task A release
+is a different task; it does not supply the new event-annotation training split.
+
+
 Karpathy-style autoresearch loop for the **Follow My Reading** recitation
 algorithm. Goal: a transcript-only memorization checker for Quran reciters that
 (1) detects which ayahs were recited, (2) splits the transcript by ayah, and

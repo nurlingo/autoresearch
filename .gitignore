@@ -49,3 +49,7 @@ study3/private/
 study3/**/gold*.json*
 study3/**/inputs.jsonl
 study3/**/*_sample.jsonl
+
+# Training release bundle: shared directly with colleagues, not published
+# (redistribution scope for newly collected recordings is not settled)
+study3/release/

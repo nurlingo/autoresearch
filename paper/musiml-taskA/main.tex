@@ -9,53 +9,50 @@
 \usepackage{amsmath,amsfonts}
 \usepackage{microtype}
 
-\title{Detecting and Splitting Quran Recitation in Noisy ASR Transcripts:\\A Competition Proposal}
-
+\title{Quran Recitation Event Annotation:\\A Competition with Private Human Evaluation}
 \author{Anonymous Author(s)}
-
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Before an application can tell a learner what they recited wrongly, it has to work out what they recited at all: which ayahs appear in a noisy ASR transcript, where each one begins and ends, and whether the audio was Quran. We propose a competition on that task and release the benchmark it needs: 258 human-reviewed transcripts of production recordings, 1{,}267 gold ayah chunks over 604 ayahs, a deterministic recording-level split whose oracle floor is exactly zero, a fixed sub-second scorecard, a public 26-recording review sample, checksums, and three evaluated baselines spanning an order of magnitude, one of them the hand-built pipeline of a deployed application.
+A Quran transcript checker must distinguish unresolved mistakes from harmless repetition, successful repairs and accepted spelling differences. We propose a competition that supplies ayah-split transcripts and references, leaves method development to entrants, and scores only their final event predictions against private human annotations. The prepared training release contains 127 unlabelled recording cases and 888 input units, including 44 newly collected cases; a 23-recording review sample comes entirely from training. The private evaluation set contains 100 human-approved cases, 348 units and 162 events across ten labels. An executable label-and-span evaluator and evaluated baselines accompany the task. Agents are permitted, not required, and intermediate iterations are not ranked.
 \end{abstract}
 
-\section{The task and why it is open}
-Quran-memorization applications transcribe recitation and must identify ayahs and word boundaries despite opening formulas, repeats, restarts, corrections and ASR errors. A learner can skip an ayah or return to an earlier one. The task supports downstream feedback by recovering which reference passages the transcript represents.
+\section{Task and community value}
+Quran-memorization applications compare noisy ASR transcripts with a fixed public reference. A difference can be an unresolved mistake, a repeated correct phrase, a wrong attempt followed by a repair, or an accepted written variant. Treating every difference as a mistake produces misleading feedback. We evaluate transcript interpretation, not acoustic correctness, pronunciation or tajwid: a possible ASR origin does not excuse a textual mismatch.
 
-A system returns the set of recited ayah ids and a per-word assignment, or abstains on non-Quran input. The benchmark focuses on noisy, unconstrained memorization attempts rather than known-text transcription. A companion submission studies the interpretation of differences after ayahs have been identified.
+For each supplied unit, a method returns events with a combined label and two word spans, one in the original transcript and one in the reference. Spans are zero-based and half-open; missing material uses an empty transcript anchor, extra material an empty reference anchor. No events means clean. Ayah IDs and splits are provided, so identification errors are not scored. Opening formulas are separate units with an empty reference and must also be classified.
 
-\section{The benchmark}
-\textbf{Source and consent.} The 258 recordings come from adult users of a Quran-memorization chat bot, under terms of service that disclose review for service improvement. A commercial ASR model produced the transcripts, and a human reviewed every row after LLM pre-labeling, assigning ayah ids, splitting the transcript and recording a confidence. 254 rows are Quranic, covering 604 distinct ayahs from 45 surahs, with 1--46 ayahs and 2--261 words per recording (median 40); the remaining four are non-Quranic negatives on which a system must abstain. We release text only, replace learner and recording identifiers with surrogate ids, and checked the negatives by hand. Since the recited text comes from a closed public canon, the transcripts carry essentially no personal information. Licence CC~BY~4.0.
+Labels are \texttt{substitution\_mistake}, \texttt{omission\_mistake}, \texttt{insertion\_mistake}, \texttt{repetition\_benign}, \texttt{substitution\_corrected}, \texttt{omission\_corrected}, \texttt{letters\_benign}, \texttt{spelling\_benign}, \texttt{isti3adha\_benign} and \texttt{basmala\_benign}. Multiple events may occur in one unit. Adjacent replacements are grouped; repetitions and repairs span both attempts. Ordinary comparison normalization creates no event; contextual spelling equivalences require an explicit rubric rule.
 
-\textbf{Split.} A deterministic stratified 60/40 split by \emph{recording}, never by chunk: 151/107 recordings and 711/556 chunks. Splitting by chunk would leak one reciter's ASR quirks across the boundary. The negatives split 2/2 so abstention is testable held out, and the two rows whose gold assignment spans surahs are pinned to train, which makes the held-out oracle floor exactly~0: feeding the gold split back scores zero, so the dataset is internally consistent and the metric has a known bottom.
+\section{Prepared data and separation}
+\textbf{Training.} The frozen text-only release has 127 recording cases: 834 ayah units and 54 opening units, covering 503 ayahs in 29 surahs. Eighty-three cases come from an earlier export and 44 from newer submissions. Event answers are absent. Old ayah splits inherit human review; new production-generated splits were checked and repaired by the preparation assistant, not newly approved by a human. Unresolved cases are excluded. Source spelling is preserved, and references are verbatim canonical clean Quran text.
 
-\textbf{Sample and integrity.} A 26-recording sample, ten percent of the set, is published for review. It carries both negatives, a non-contiguous recitation, a medium-confidence row, a long al-Baqarah range and a recording of over 120 words, so a reviewer sees every behaviour the metric scores. Every released file is pinned by SHA-256.
+Starting with 221 candidates outside gold100, we exclude complete gold recitation copies and copies of gold chunks containing annotated events, including such chunks inside longer recordings. We then remove duplicate or redundant ordered training passages. Shared clean ayahs and different error variants remain eligible; this is case separation, not an unseen-ayah split. Gold labels are not exported. Attribution stays private; inputs use surrogate IDs and checksums. Selection targets diversity, not prevalence.
 
-\section{Metric and baselines}
-The scorecard is a fixed script; lower is better; each of the three components lies in $[0,1]$ and is printed beside the scalar:
-$\texttt{research\_score} = (1 - \text{ayah-set match}) + (1 - \text{word-assignment accuracy}) + (1 - \text{abstention accuracy})$.
-Detection compares the \emph{set} of ayah ids, so a repeated ayah is a split concern rather than a detection error. Split accuracy is the fraction of gold transcript words placed in the correct ayah, compared after a metric-only orthographic canonicalization that folds hamza-bearing alif forms, alif maqsura and hamza seats and strips diacritics, so spelling noise is not scored as a segmentation error. An empty system scores 2.0 and the gold labels 0.0, and scoring the full set takes under a second, which matters for the agent track below.
+\textbf{Private evaluation.} The fixed human-approved gold100 contains 314 ayah units, including 233 clean units, and 34 opening units: 115 within-ayah and 47 opening events. It covers 274 ayahs in 38 surahs; one of ten learners contributes 46 cases. The selected inputs were previously published in an older task, and twelve also occurred in a machine-labelled pilot. New annotations and membership are private, but this is not an unseen-input or unseen-speaker benchmark.
 
-\begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{5pt}
-\begin{tabular}{lrrll}\toprule
-Baseline & full set & held-out & \multicolumn{2}{c}{held-out components}\\\midrule
-Empty system & 2.000 & 2.000 & det 1.00, split 1.00 & abstain 0 \\
-Incumbent application pipeline (hand-built) & 0.785 & 0.760 & det 0.17, split 0.09 & abstain 0.50 \\
-Best of six coding-agent runs\footnotemark[1] & 0.008 & 0.079 & det 0.06, split 0.02 & abstain 0 \\
-\bottomrule
+\textbf{Review material.} The actual training sample contains 23 recordings and 394 units, exceeding ten percent of both combined train-plus-gold recording and unit counts. It contains no selected gold recordings or event answers; shared clean units are allowed. Twenty separate constructed teaching cases illustrate the rubric and are awaiting owner approval. The train-only interpretation of the workshop's sample requirement needs confirmation; reviewer access and release licensing must be finalized before submission. No private gold sample is promised.
+
+\section{Evaluation and baselines}
+The primary score is label-aware micro event F1: a correct prediction must match both label and location. One-to-one pairing requires the minimum of transcript-span and reference-span intersection-over-union to be at least 0.30. Empty anchors match exactly, or within one word with similarity 0.5; they never match nonempty spans. Invalid events receive no match credit. Pairing maximizes total span similarity exactly for up to seven events on each side, with a documented greedy fallback above that size. Exact-span F1, per-label F1 and label-agnostic localization are supporting measures.
+
+A secondary application cost is $(2M+F)/U\times100$, where $M$ counts missed mistake events, $F$ false mistake flags and $U$ scored units. The 2:1 preference and matching tolerances are proposed defaults, not empirically established user costs; they must be frozen before launch.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrr}\toprule
+Method & Label F1 & Exact-span F1 & Localization F1\\\midrule
+Empty predictions & 0.000 & 0.000 & 0.000\\
+Plain normalized diff & 0.531 & 0.505 & 0.839\\
+Adapted production components & 0.518 & 0.505 & 0.799\\\bottomrule
 \end{tabular}
-\caption{Baselines on the released split. The incumbent is the segmentation stack of a deployed application, tuned over roughly two years.}
+\caption{Evaluated on all 348 private units with evaluator v2.1. The production baseline adapts cleaner/alignment components; it is not the entire application.}
 \end{table}
 
-The incumbent misses 17\% of ayah sets and abstains on one of two held-out negatives. Six autonomous runs of two coding agents in a Karpathy-style fixed-metric loop all matched or beat it held out, the best by an order of magnitude.\footnotemark[1] That study is also why this competition keeps a hidden final test: without a held-out split the loop drove the score ten times lower largely by memorizing evaluation rows, hardcoding up to 41 ayah ids per run including literal transcript-to-answer lookups, and merely disclosing that a held-out set existed eliminated the literal memorization. A public score on a public split is not evidence of a better algorithm.
+The diff has zero F1 on eight labels; the adapted components on six. Their high localization relative to label F1 shows why detecting a difference is insufficient. These are task baselines, not results of the new agent comparison.
 
-Residual challenges include cross-surah recitation, non-contiguous ayah sets and abstention; one missed held-out rejection costs half a point.
+\section{Competition procedure and feasibility}
+Entrants may annotate training data, train models, write rules or use agents, and choose their own development checks. Neither an annotation phase nor an autoresearch loop is required. Organizers rank only the frozen final solution, executed on private inputs with no gold feedback during development; no iteration leaderboard is needed. Training annotations may be shared as optional machine-generated artifacts, without implying human validation.
 
-\section{Competition plan, feasibility and ethics}
-The competition launches on the frozen benchmark with a public leaderboard on the released test split, and ranks on a hidden test set of recordings collected after the public release, labeled by the same protocol and published when the competition closes. A read-only production check has identified 63 further recordings with 62 stored transcripts and one local ASR repair as candidates for that collection; the repaired transcript appears non-Quranic and needs review; reuse permission, de-identification and overlap are checked first. These candidates are not yet a frozen test set; any group allocated to annotation practice or agent development is excluded from hidden final ranking. A submission is a single Python file, and scoring takes under a second, so an \emph{agent track} for autonomous loops with per-experiment logs runs beside the human track under identical rules, with hardcoded-constant counts reported for every entry.
-
-\textbf{Feasibility.} Harness, data, checksums and review sample are attached, and the baselines run offline without API keys or audio. \textbf{Ethics.} Text only, de-identified, adult users, disclosed review, CC~BY~4.0; the task supports corrective feedback rather than surveillance, and abstention is scored precisely so a deployed system is rewarded for staying silent when it does not understand. \textbf{Participation.} Small data, sub-second evaluation, and a problem every Quran-learning application faces; Arabic NLP, speech and coding-agent groups are natural entrants. A companion submission covers the within-ayah mistake annotation built on the same recordings.
-
-\footnotetext[1]{\emph{Autoresearch with coding agents: generalizers and metric-maximizers on Quran recitation data}, AIST 2026.}
+Data, sample, reference, evaluator and a baseline implementation support local preparation. Execution isolation, resource rules, calendar, licensing and anonymous reviewer access remain to be finalized. The score script is not a sandbox. A companion paper studies the dataset and evaluator and plans an agent comparison; agents are optional in this competition.
 \end{document}
