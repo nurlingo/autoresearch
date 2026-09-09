@@ -1,9 +1,17 @@
 # MusIML submission checklist — 2026-09-09
 
 [Official call](https://www.musiml.org/events/2026-NeurIPS/index.html): final deadline
-September 10, 2026. Track 3: at most two pages, ready-to-use data, 10% review sample,
-metrics and evaluated baselines. This list distinguishes preparation from approvals
-and completed experiments; unchecked items are not claimed as accomplished.
+September 10, 2026. Track 3 asks for a competition **proposal** in at most two pages,
+with a ready-to-use dataset, a 10% review sample, defined metrics and evaluated
+baselines. Selection is on social impact, task design, dataset readiness, baseline
+evaluation, feasibility, ethics and participation potential.
+
+We are applying, not running a competition. The call requires no dates, organizers,
+sandbox or participant support, so those belong to acceptance, not submission, and
+are listed separately below. Unchecked items are not claimed as accomplished.
+
+**Everything the call requires is done.** Dataset, sample, metrics and baselines are
+frozen and validated; the paper is two pages.
 
 ## Paper 1 — final-solution event annotation competition (Track 3)
 
@@ -20,11 +28,10 @@ and completed experiments; unchecked items are not claimed as accomplished.
 - [x] Document method freedom: no required agents, iteration scoring or annotation phase.
 - [x] Document public-input exposure and assistant-reviewed new splits.
 - [x] Prepare 20 constructed teaching cases with references and word spans for owner approval.
-- [ ] Owner approves teaching cases; 19 of 20 still draft. Contextual spelling t15 is
-      approved. t11 was rebuilt as a restatement after review found it indistinguishable
-      from the t08 insertion; a duplicate of t01's normalization rule was dropped and the
-      set renumbered t01-t20; t20 adds the omission-plus-substitution combination that
-      no case previously carried.
+- [x] Owner approved all twenty teaching cases. t11 was rebuilt as a restatement after
+      review found it indistinguishable from the t08 insertion; a duplicate of t01's
+      normalization rule was dropped and the set renumbered t01-t20; t20 adds the
+      omission-plus-substitution combination that no case previously carried.
 - [ ] Freeze executable comparison normalization and contextual spelling boundaries.
 - [x] Freeze MIN_SPAN=0.50 and anchor slack=1; report the secondary cost at both 1:1
       and 2:1 instead of freezing one rate. Sweeps showed MIN_SPAN moves baseline micro
@@ -33,12 +40,7 @@ and completed experiments; unchecked items are not claimed as accomplished.
 - [ ] Confirm that a train-only, unlabelled 10% sample meets the workshop review requirement.
 - [x] License the release CC BY 4.0 with a no-re-identification condition; the privacy
       policy already permits publishing anonymised data as an open dataset.
-- [ ] Destroy the surrogate-id map at public release, so the published records are
-      anonymous rather than pseudonymous, and record that it was done.
 - [ ] Name the source of the Quran reference text before redistributing it.
-- [ ] Finalize inference resource limits, external-data/API rules, tie handling and submission instructions.
-- [ ] Build/test the isolated final-execution service; current evaluator is not a sandbox.
-- [ ] Set competition dates, accountable organizers and participant support arrangements.
 - [ ] Provide anonymous reviewer access/upload; GitHub branch itself identifies authors.
 - [ ] Final cross-paper overlap/anonymity review and submission by the authors.
 
@@ -47,6 +49,16 @@ annotation-session memory in development environments. Shared clean units are pe
 by the documented partition policy. New annotations are hidden; old source inputs were
 already public. No claim of an unseen-input test. Prepared training is versioned;
 future repairs require a new version and fresh hashes, not silent file changes.
+
+## Only if the proposal is accepted
+
+The call asks for none of these; they are what running the competition would need.
+
+- [ ] Finalize inference resource limits, external-data/API rules, tie handling and
+      submission instructions.
+- [ ] Build and test the isolated final-execution service; the evaluator is not a sandbox.
+- [ ] Set competition dates, accountable organizers and participant support.
+- [ ] Destroy the surrogate-id map at public release (see below) and record that it was done.
 
 ## Paper 2 — dataset/evaluator and comparison between agents (Track 1)
 

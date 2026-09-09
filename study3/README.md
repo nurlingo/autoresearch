@@ -17,7 +17,7 @@ agent experiment is not yet packaged. The historical `stage2/` harness uses a di
 
 The teaching cases are deliberately constructed transcript variants of the
 public Quran reference, not recordings or evidence of naturally occurring
-errors. All answers are drafts awaiting human review. Their reference ayah IDs
+errors. Their reference ayah IDs
 were checked outside the private evaluation set and the three then-reserved cases.
 Exact normalized chunk comparisons are recorded privately; further phrase-overlap
 review remains pending. Common Quran words and generic opening formulas are
@@ -41,5 +41,6 @@ The [training release](release/README.md) contains 127 recording cases / 888 inp
 units; its train-only review sample contains 23 cases / 394 units. Shared clean
 ayahs and different error variants are allowed; complete gold copies and copies of
 event-bearing gold chunks are excluded. The [submission checklist](SUBMISSION-TODO.md)
-tracks remaining approvals and execution work. [Teaching examples](calibration/teaching-review.html)
-are constructed drafts awaiting owner approval.
+tracks what the call requires against what only matters if the proposal is accepted.
+[Teaching examples](calibration/teaching-review.html) are constructed cases, all twenty
+approved by the owner.

@@ -1,7 +1,7 @@
 {
-  "status": "draft_for_human_review",
+  "status": "approved",
   "taxonomy_version": "0.19",
-  "purpose": "Constructed Arabic teaching cases only; no gold examples or real recording claims. Do not use as a scored practice set after exposing these answers.",
+  "purpose": "Constructed Arabic teaching cases only, owner-approved; no gold examples or real recording claims. Do not use as a scored practice set after exposing these answers.",
   "reference_source": "quran.json titles.clean",
   "reference_sha256": "2cf019e81084ca5927709d3866862d847d8e0d71618ff46e540ad1f8b1a4a885",
   "span_convention": "zero-based half-open spans into displayed original whitespace token arrays",
@@ -9,7 +9,7 @@
     {
       "example_id": "t01",
       "name": "Clean after ordinary hamza normalization",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -38,7 +38,7 @@
     {
       "example_id": "t02",
       "name": "Missing beginning",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -81,7 +81,7 @@
     {
       "example_id": "t03",
       "name": "Missing interior word",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -127,7 +127,7 @@
     {
       "example_id": "t04",
       "name": "Missing ending",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -178,7 +178,7 @@
     {
       "example_id": "t05",
       "name": "One unresolved replacement",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -221,7 +221,7 @@
     {
       "example_id": "t06",
       "name": "Adjacent replacements grouped",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -264,7 +264,7 @@
     {
       "example_id": "t07",
       "name": "Two mistakes separated by correct words",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -321,7 +321,7 @@
     {
       "example_id": "t08",
       "name": "Extra words",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -361,7 +361,7 @@
     {
       "example_id": "t09",
       "name": "Matching phrase repeated",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -402,7 +402,7 @@
     {
       "example_id": "t10",
       "name": "Wrong then correct",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -444,7 +444,7 @@
     {
       "example_id": "t11",
       "name": "Correct then wrong on restatement",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "The correct attempt comes first and the incorrect restatement follows; the span covers both attempts in that order. The extra material re-renders the same reference words (two of its three tokens match), which makes it a restatement rather than an insertion. Contrast t08, where the extra word restates nothing.",
       "preamble": [],
@@ -485,7 +485,7 @@
     {
       "example_id": "t12",
       "name": "Omission restored on restart",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -537,7 +537,7 @@
     {
       "example_id": "t13",
       "name": "Complete spoken letter names",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -576,7 +576,7 @@
     {
       "example_id": "t14",
       "name": "Incomplete spoken letter names",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [],
@@ -722,7 +722,7 @@
     {
       "example_id": "t16",
       "name": "Istiadhah outside the ayah",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [
@@ -752,7 +752,7 @@
     {
       "example_id": "t17",
       "name": "Basmala outside the ayah",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "",
       "preamble": [
@@ -782,7 +782,7 @@
     {
       "example_id": "t18",
       "name": "Whole intervening ayah omitted",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "Constructed scenario: the intended continuous passage was established as 90:12–14 before event annotation. The supplied empty chunk makes this explicit. Do not infer missing ayahs from arbitrary ID gaps.",
       "preamble": [],
@@ -860,7 +860,7 @@
     {
       "example_id": "t19",
       "name": "Repeated word already in the reference is clean",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "وتواصوا occurs twice in the reference; its two matching occurrences are not an extra repetition.",
       "preamble": [],
@@ -899,7 +899,7 @@
     {
       "example_id": "t20",
       "name": "Two different errors in one ayah",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "A chunk carries every event it contains, and they need not share a label. Finding one error does not end the search. Omission and substitution together are the most common combination in reviewed data.",
       "preamble": [],

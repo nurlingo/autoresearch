@@ -4,30 +4,30 @@
 
 | ID | Teaching objective | Status |
 |---|---|---|
-| t01 | Clean after ordinary hamza normalization | draft |
-| t02 | Missing beginning | draft |
-| t03 | Missing interior word | draft |
-| t04 | Missing ending | draft |
-| t05 | One unresolved replacement | draft |
-| t06 | Adjacent replacements grouped | draft |
-| t07 | Two mistakes separated by correct words | draft |
-| t08 | Extra words | draft |
-| t09 | Matching phrase repeated | draft |
-| t10 | Wrong then correct | draft |
-| t11 | Correct then wrong on restatement | draft |
-| t12 | Omission restored on restart | draft |
-| t13 | Complete spoken letter names | draft |
-| t14 | Incomplete spoken letter names | draft |
+| t01 | Clean after ordinary hamza normalization | approved |
+| t02 | Missing beginning | approved |
+| t03 | Missing interior word | approved |
+| t04 | Missing ending | approved |
+| t05 | One unresolved replacement | approved |
+| t06 | Adjacent replacements grouped | approved |
+| t07 | Two mistakes separated by correct words | approved |
+| t08 | Extra words | approved |
+| t09 | Matching phrase repeated | approved |
+| t10 | Wrong then correct | approved |
+| t11 | Correct then wrong on restatement | approved |
+| t12 | Omission restored on restart | approved |
+| t13 | Complete spoken letter names | approved |
+| t14 | Incomplete spoken letter names | approved |
 | t15 | Contextual word boundary is benign | approved |
-| t16 | Istiadhah outside the ayah | draft |
-| t17 | Basmala outside the ayah | draft |
-| t18 | Whole intervening ayah omitted | draft |
-| t19 | Repeated word already in the reference is clean | draft |
-| t20 | Two different errors in one ayah | draft |
+| t16 | Istiadhah outside the ayah | approved |
+| t17 | Basmala outside the ayah | approved |
+| t18 | Whole intervening ayah omitted | approved |
+| t19 | Repeated word already in the reference is clean | approved |
+| t20 | Two different errors in one ayah | approved |
 
 ## t01 — Clean after ordinary hamza normalization
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:1
 
@@ -38,7 +38,7 @@ Ayah 90:1
 
 ## t02 — Missing beginning
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:4
 
@@ -49,7 +49,7 @@ Ayah 90:4
 
 ## t03 — Missing interior word
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:14
 
@@ -60,7 +60,7 @@ Ayah 90:14
 
 ## t04 — Missing ending
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:17
 
@@ -71,7 +71,7 @@ Ayah 90:17
 
 ## t05 — One unresolved replacement
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:6
 
@@ -82,7 +82,7 @@ Ayah 90:6
 
 ## t06 — Adjacent replacements grouped
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:6
 
@@ -93,7 +93,7 @@ Ayah 90:6
 
 ## t07 — Two mistakes separated by correct words
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:8
 
@@ -105,7 +105,7 @@ Ayah 90:8
 
 ## t08 — Extra words
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:9
 
@@ -116,7 +116,7 @@ Ayah 90:9
 
 ## t09 — Matching phrase repeated
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 91:1
 
@@ -127,7 +127,7 @@ Ayah 91:1
 
 ## t10 — Wrong then correct
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 91:2
 
@@ -138,7 +138,7 @@ Ayah 91:2
 
 ## t11 — Correct then wrong on restatement
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 91:3
 
@@ -151,7 +151,7 @@ Note. The correct attempt comes first and the incorrect restatement follows; the
 
 ## t12 — Omission restored on restart
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:14
 
@@ -162,7 +162,7 @@ Ayah 90:14
 
 ## t13 — Complete spoken letter names
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 26:1
 
@@ -173,7 +173,7 @@ Ayah 26:1
 
 ## t14 — Incomplete spoken letter names
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 26:1
 
@@ -197,7 +197,7 @@ Note. Approved. Word-boundary difference only: with whitespace removed the lette
 
 ## t16 — Istiadhah outside the ayah
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Preamble (`isti3adha_benign`): أعوذ بالله من الشيطان الرجيم
 
@@ -210,7 +210,7 @@ Ayah 90:13
 
 ## t17 — Basmala outside the ayah
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Preamble (`basmala_benign`): بسم الله الرحمن الرحيم
 
@@ -223,7 +223,7 @@ Ayah 90:13
 
 ## t18 — Whole intervening ayah omitted
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:12
 
@@ -248,7 +248,7 @@ Note. Constructed scenario: the intended continuous passage was established as 9
 
 ## t19 — Repeated word already in the reference is clean
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:17
 
@@ -261,7 +261,7 @@ Note. وتواصوا occurs twice in the reference; its two matching occurrences
 
 ## t20 — Two different errors in one ayah
 
-Status: **draft**. constructed teaching transcript; not a recording.
+Status: **approved**. constructed teaching transcript; not a recording.
 
 Ayah 90:17
 
