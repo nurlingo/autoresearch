@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the constructed teaching cases as a review page. No gold access."""
+"""Render the constructed teaching cases as review pages (.html or .md). No gold access."""
 import argparse,html,json
 from pathlib import Path
 
@@ -39,6 +39,39 @@ def render(ex):
           f'{html.escape(json.dumps(ex,ensure_ascii=False,indent=2))}</code></pre></details></article>')
  return ''.join(o)
 
+
+def ayah(aid):return f"{int(aid[:3])}:{int(aid[3:])}" if aid else "chunk"
+
+def span_md(toks,s):
+ a,b=s
+ return f"«{' '.join(toks[a:b])}»" if b>a else f"empty anchor at {a}"
+
+def render_md(d):
+ ex=d["examples"]
+ o=[f"# Constructed Arabic teaching cases\n",
+    f"{len(ex)} deliberately constructed text variants, not collected recordings. "
+    f"Reference text is verbatim `titles.clean`. Spans are zero-based and half-open "
+    f"over whitespace tokens. Taxonomy {d['taxonomy_version']}.\n",
+    "| ID | Teaching objective | Status |","|---|---|---|"]
+ for e in ex:o.append(f"| {e['example_id']} | {e['name']} | {e['review_status']} |")
+ for e in ex:
+  o.append(f"\n## {e['example_id']} — {e['name']}\n")
+  o.append(f"Status: **{e['review_status']}**. {e['provenance']}.\n")
+  for p in e.get("preamble") or []:
+   o.append(f"Preamble (`{p['label']}`): {p['text']}\n")
+  for c in e["chunks"]:
+   o.append(f"Ayah {ayah(c.get('ayah_id'))}\n")
+   o.append(f"- transcript: {c['transcript'] or '_empty — adjudicated whole-ayah omission_'}")
+   o.append(f"- reference: {c['reference_text']}")
+   evs=c.get("events") or []
+   if not evs:o.append("- **clean** — no events")
+   for v in evs:
+    o.append(f"- **{v['label']}** — transcript {v['hyp_span']} {span_md(c['transcript_tokens'],v['hyp_span'])}, "
+             f"reference {v['ref_span']} {span_md(c['reference_tokens'],v['ref_span'])}")
+   o.append("")
+  if (e.get("annotation_note") or "").strip():o.append(f"Note. {e['annotation_note']}\n")
+ return "\n".join(o)
+
 def main():
  ap=argparse.ArgumentParser()
  ap.add_argument('draft',type=Path);ap.add_argument('out',type=Path);a=ap.parse_args()
@@ -54,6 +87,6 @@ def main():
   f'<p>Taxonomy {html.escape(d["taxonomy_version"])}. '
   +(f'Awaiting approval: {", ".join(pending)}.' if pending else 'All examples approved.')
   +' The JSON beneath each example contains the full data point.</p>')
- a.out.write_text(head+'\n'.join(render(e) for e in ex)+'\n')
+ a.out.write_text(render_md(d) if a.out.suffix=='.md' else head+'\n'.join(render(e) for e in ex)+'\n')
  print(f'wrote {a.out}: {len(ex)} examples, {len(pending)} awaiting approval')
 if __name__=='__main__':main()

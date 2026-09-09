@@ -535,7 +535,7 @@
       ]
     },
     {
-      "example_id": "t14",
+      "example_id": "t13",
       "name": "Complete spoken letter names",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -574,7 +574,7 @@
       ]
     },
     {
-      "example_id": "t15",
+      "example_id": "t14",
       "name": "Incomplete spoken letter names",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -612,8 +612,8 @@
       ]
     },
     {
-      "example_id": "t16",
-      "name": "Contextual word boundary — requires explicit approval",
+      "example_id": "t15",
+      "name": "Contextual word boundary is benign",
       "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
       "annotation_note": "Approved. Word-boundary difference only: with whitespace removed the letter sequences are identical (اينما = اين ما), so no letters were changed. The same phrase is written joined in 4:78 and separated in 2:148, so the boundary is contextual. A split that also changes letters is a substitution, not a benign spelling difference.",
@@ -720,7 +720,7 @@
       ]
     },
     {
-      "example_id": "t17",
+      "example_id": "t16",
       "name": "Istiadhah outside the ayah",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -750,7 +750,7 @@
       ]
     },
     {
-      "example_id": "t18",
+      "example_id": "t17",
       "name": "Basmala outside the ayah",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -780,7 +780,7 @@
       ]
     },
     {
-      "example_id": "t19",
+      "example_id": "t18",
       "name": "Whole intervening ayah omitted",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -858,7 +858,7 @@
       ]
     },
     {
-      "example_id": "t20",
+      "example_id": "t19",
       "name": "Repeated word already in the reference is clean",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
@@ -897,7 +897,7 @@
       ]
     },
     {
-      "example_id": "t21",
+      "example_id": "t20",
       "name": "Two different errors in one ayah",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
