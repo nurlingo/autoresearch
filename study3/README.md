@@ -18,7 +18,7 @@ agent experiment is not yet packaged. The historical `stage2/` harness uses a di
 The teaching cases are deliberately constructed transcript variants of the
 public Quran reference, not recordings or evidence of naturally occurring
 errors. All answers are drafts awaiting human review. Their reference ayah IDs
-were checked outside the private evaluation set and its approved reserves.
+were checked outside the private evaluation set and the three then-reserved cases.
 Exact normalized chunk comparisons are recorded privately; further phrase-overlap
 review remains pending. Common Quran words and generic opening formulas are
 not exclusive dataset material.
@@ -37,6 +37,7 @@ check: 63 additional bot submissions, with 62 stored transcripts and preliminary
 duplicate screening. Private production exports are not included here.
 
 [EXPERIMENT.md](EXPERIMENT.md) explains gold isolation and the current candidate
-counts: 220 transcripts outside gold100, 217 with reserves withheld, and 166
-distinct text groups after exact held-out equivalents are removed. Related-case
+counts: 221 transcripts outside gold100 (including three former reserves and
+one new local ASR transcript), and 170 distinct text groups after exact gold
+equivalents are removed. The new local transcript needs non-Quran review. Related-case
 review and a practice/development/future-test partition remain pending.

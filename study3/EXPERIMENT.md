@@ -24,24 +24,77 @@ not themselves implement runtime isolation.
 
 ## Candidate inventory, 2026-09-09
 
-There are 321 source recordings and 320 available transcripts (including local
-ASR repairs in the original export): 258 old plus 63 new recordings, of which
-62 new recordings have stored transcripts. One new recording lacks a transcript.
+There are 321 source recordings and 321 available transcripts: 258 old plus
+63 new. Of the new transcripts, 62 were stored in production and one was obtained
+with a local ASR call on 2026-09-09; the production export and database were not
+changed. That last transcript appears to contain salawat/dua rather than ayahs,
+with Urdu-style characters, and needs human review before task inclusion.
 
-Holding gold100 aside leaves **220 transcripts = 158 old + 62 new**. Holding the
-three approved reserves aside too leaves 217. Preliminary punctuation/mark/alif
-normalization and standard-opening removal produce 182 distinct nonempty text
-groups; 16 match a held-out gold or reserve group, leaving **166 candidate groups**.
-Of those, 65 are flagged for containment or token similarity >=0.85 with held-out
-text, while 101 are not flagged by this screen. These are candidate counts, not
-a finalized independent development set. Shared ayah/event patterns and split
-coverage still need review. Gold membership and overlap maps remain private.
+Holding gold100 aside leaves **221 transcript candidates = 158 old + 63 new**.
+The three former approved reserves are included in the 158 old candidates:
+their transcript-only copies now join this pool, while original approved
+annotations remain private archives. Gold100 and its reviewer bundle are unchanged.
+
+Preliminary punctuation/mark/alif normalization and standard-opening removal
+produce 186 distinct nonempty text groups. Sixteen groups (36 recordings) match
+gold recitation cores, leaving **170 candidate groups / 185 recordings**.
+Sixty-three groups are flagged for token containment or token similarity >=0.85
+with gold, while 107 are unflagged. This screen uses the reviewed gold transcripts;
+it does not automatically reject every shared ayah or establish safe independence.
+The new non-Quran candidate is included in these raw counts. Related-case review,
+within-recording chunk overlap and corrected ayah splits remain to be completed.
+All membership maps and candidate transcripts stay private during preparation.
+
+## Duplicate policy
+
+Exclude exact copies of gold inputs and equivalent recitation/error cases from
+agent development, even if their answers have been stripped: the agent would
+otherwise practice on its final exam. Review near matches at the ayah/chunk level.
+Shared Quran references, generic formulas, and the same ayah with materially
+different mistake patterns are not automatically leakage. Do not impose an unseen-
+ayah split unless that is the intended generalization claim.
+
+Within development, keep one representative per equivalent text case by default;
+retain provenance and multiplicity privately. This improves coverage per unit of
+annotation cost. Keeping duplicates can represent repeated production patterns,
+but overweights common cases and wastes annotation budget; use declared weights
+if frequency is the intended objective. Do not silently delete the source archive.
 
 The old inputs already have public Task A answers, and some have legacy Task B
-machine labels. New recordings alone do not establish unseen text. The newly
-collected candidates also appear in the proposed Task A hidden-test plan: assign
-each related group a role before sharing it. A group used for practice or agent
-development must not later be described as unseen final-test material.
+machine labels. Hiding our annotations cannot undo prior public exposure. Build
+an allowlisted development environment and state this limitation explicitly.
+A group used for development must not later be called unseen final-test material.
+
+## Proposed competition scope
+
+Paper 1 can propose the annotation-and-algorithm task: entrants receive approved
+label definitions/examples, the Quran reference and separately reviewed ayah-split
+unlabelled development transcripts. They save their annotations and revisions,
+then train a model or develop an algorithm. They submit frozen code and logs;
+the owner runs that code on gold100 inputs and compares predictions privately.
+Neither gold inputs nor answers are available during development. Ayah splitting
+is provided so identification errors do not contaminate annotation evaluation.
+
+Use public practice/development feedback for iteration, never gold100 feedback.
+Repeated gold leaderboard queries would turn the final set into development data.
+Primary scoring is label-aware event F1; exact-span F1 and the provisional 2:1
+review cost are supporting metrics. Submitted training annotations make the
+process inspectable but are not independently graded without another human audit.
+
+The current two-page Paper 1 still describes detect-and-split (Task A). This is
+a proposed replacement scope, not a completed Task B release. Track 3 requires
+a ready-to-use dataset, a 10% review sample, defined metrics and evaluated baselines
+([official call](https://www.musiml.org/events/2026-NeurIPS/index.html)). Prepare
+and approve an actual development sample and specify the sample denominator;
+confirm how a hidden-test competition should satisfy the review requirement.
+Keeping gold private from agents does not mean withholding required review material.
+
+Paper 2 currently contributes the human annotation, taxonomy, evaluator and
+baseline analysis. It has no measured annotation-and-algorithm loop yet. An
+empirical extension would compare an explicit annotation-and-development loop
+against an algorithm-only loop under equal model/tool budgets and feedback,
+then evaluate both frozen methods once on gold100. Distinguish this research
+contribution from competition rules if submitting both papers.
 
 ## Before a measured run
 
