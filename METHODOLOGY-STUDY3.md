@@ -4,8 +4,9 @@ Status as of **2026-09-09**: **100/100 selected recording cases are human-approv
 covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additional
 approved recordings are reserves outside the scored set. Taxonomy v0.19 and
 recording format v0.6 describe the completed annotation snapshot. The input
-choice is settled: supply reviewed ayah chunks and references. The executable
-interface, event matcher and experiment design still need to be frozen.
+choice is settled: supply reviewed ayah chunks and references. The event matcher
+is frozen (MIN_SPAN=0.50, anchor slack=1); the executable comparison
+normalization and the experiment design still need to be frozen.
 Evaluator v2.1 and corrected baseline adapters have been tested and scored;
 no agent experiment has run. See [the scorecard](study3/EVALUATOR.md) and
 [baseline results](study3/BASELINES-v19.md).
@@ -150,8 +151,9 @@ and localization quality, missed mistakes, false flags on clean/benign/corrected
 cases, and per-label results. Matching must prevent one broad prediction from
 claiming multiple distinct gold events, and must explicitly handle zero-length
 omission anchors and both-attempt spans. The current primary metric is label-aware micro F1, with exact-span F1 alongside
-it and a raw-count mistake cost as a secondary metric. MIN_SPAN=0.30, anchor
-slack=1 and cost ratio 2:1 remain provisional. Baselines have been rerun against
+it and a raw-count mistake cost as a secondary metric. MIN_SPAN=0.50 and anchor
+slack=1 are frozen; the secondary cost is reported at both 1:1 and 2:1 rather
+than frozen at one rate. Baselines have been rerun against
 v2.1; do not reuse v1.0/v2.0 or legacy pilot numbers. Freeze the experiment
 contract after disjoint practice validation.
 
@@ -195,9 +197,10 @@ annotation benchmark, not evidence that such a new collection already exists.
 
 ## Candidate pool after new submissions
 
-The 321 source recordings have 320 transcripts, including the original local ASR
-repairs. Holding gold100 aside leaves 220 transcripts; withholding its three
-approved reserves leaves 217. The preliminary text screen leaves 166 distinct
+The 321 source recordings have 321 transcripts, including the original local ASR
+repairs. Holding gold100 aside leaves 221 transcripts; the three approved
+reserves' transcript-only copies are included in that pool. The preliminary
+text screen leaves 166 distinct
 groups after removing exact normalized held-out equivalents; 65 require closer
 overlap review. See [the experiment plan](study3/EXPERIMENT.md). No pool has been
 allocated or exposed to a development agent. Gold inputs stripped of answers

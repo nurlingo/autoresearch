@@ -1,8 +1,8 @@
 # MusIML @ NeurIPS 2026 — Track 1, annotation and evaluation (Task B)
 
 Within-ayah recitation events: what counts as a mistake, and can existing
-systems tell. NeurIPS 2026 `dblblindworkshop` style, **3 pages**, inside the
-4-page Track 1 short-paper limit.
+systems tell. NeurIPS 2026 `dblblindworkshop` style, **4 pages**, at the
+4-page Track 1 short-paper limit. Any edit must be length-neutral.
 
 ```sh
 pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex

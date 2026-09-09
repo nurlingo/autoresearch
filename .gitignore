@@ -53,3 +53,11 @@ study3/**/*_sample.jsonl
 # Training release bundle: shared directly with colleagues, not published
 # (redistribution scope for newly collected recordings is not settled)
 study3/release/
+
+# Private study-3 material pasted in as archives (gold answers, 50MB source ref).
+# study3/private/ and study3/release/ are already ignored above; these catch the
+# archives themselves if they are ever dropped in the repo root again.
+/reviewer_bundle_*
+/autoresearch-train-release-*
+/quran.json
+*.zip

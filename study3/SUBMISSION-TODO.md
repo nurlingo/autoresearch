@@ -37,11 +37,25 @@ frozen and validated; the paper is two pages.
       and 2:1 instead of freezing one rate. Sweeps showed MIN_SPAN moves baseline micro
       F1 about four points across its whole range and anchor slack moves it none, so both
       are chosen to be explainable rather than tuned.
-- [ ] Confirm that a train-only, unlabelled 10% sample meets the workshop review requirement.
+- [ ] Confirm that a train-only, unlabelled 10% sample meets the workshop review
+      requirement. Sample frozen as v1.1 (23 recordings, 381 units), discloses zero
+      previously-unpublished recordings; interpretation still needs organizer
+      confirmation, not the disclosure question.
 - [x] License the release CC BY 4.0 with a no-re-identification condition; the privacy
       policy already permits publishing anonymised data as an open dataset.
-- [ ] Name the source of the Quran reference text before redistributing it.
-- [ ] Provide anonymous reviewer access/upload; GitHub branch itself identifies authors.
+- [x] Name the source of the Quran reference text. It is Tanzil `simple-clean`,
+      reached via the application's quran.com/QUL-assembled `quran.json`; our copy
+      is a normalized derivative (basmala prefix removed, hamza and alif maqsura
+      folded), so it is not verbatim Tanzil text. See [README.md](README.md).
+- [ ] Before redistributing: add Tanzil attribution plus the tanzil.net link and
+      copyright notice to the release, and stop describing the reference as
+      "verbatim" canonical text.
+- [x] Provide anonymous reviewer access/upload. The training release, 10% review
+      sample (v1.1, 0 previously-unpublished recordings), reference, evaluator v2.1
+      and one runnable baseline are published anonymously at
+      https://anonymous.4open.science/r/quran-recitation-event-review-5C71/ and linked
+      from the proposal. The GitHub branch itself still identifies authors and is not
+      linked from either paper.
 - [ ] Final cross-paper overlap/anonymity review and submission by the authors.
 
 Do not publish or mount the selected gold test bundle, labels, private maps or
