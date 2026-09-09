@@ -1,0 +1,62 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alagrami and Eljazzar(2020)]{alagrami2021smartajweed}
+Ali~M Alagrami and Maged~M Eljazzar.
+\newblock {SmarTajweed}: Automatic recognition of {A}rabic {Q}uranic recitation rules.
+\newblock \emph{arXiv preprint arXiv:2101.04200}, 2020.
+
+\bibitem[Balula et~al.(2021)Balula, Rashwan, and Abdou]{farghaly2021asrreview}
+Nazik~O'mar Balula, Mohsen Rashwan, and Shrief Abdou.
+\newblock Automatic speech recognition ({ASR}) systems for learning {A}rabic language and {A}l-{Q}uran recitation: A review.
+\newblock \emph{International Journal of Computer Science and Mobile Computing}, 10\penalty0 (7):\penalty0 91--100, 2021.
+
+\bibitem[Chan et~al.(2025)Chan, Chowdhury, Jaffe, Aung, Sherburn, Mays, Starace, Liu, Maksin, Patwardhan, et~al.]{chan2024mlebench}
+Jun~Shern Chan, Neil Chowdhury, Oliver Jaffe, James Aung, Dane Sherburn, Evan Mays, Giulio Starace, Kevin Liu, Leon Maksin, Tejal Patwardhan, et~al.
+\newblock {MLE}-bench: Evaluating machine learning agents on machine learning engineering.
+\newblock In \emph{International Conference on Learning Representations}, pages 50466--50494, 2025.
+
+\bibitem[Hossain et~al.(2026)Hossain, Islam, and Obaidellah]{alharbi2026comparative}
+Nabil~Mosharraf Hossain, Riasat Islam, and Unaizah Obaidellah.
+\newblock A comparative study of pretrained transformer models for {Q}uranic {ASR}: Speech representations, label formats, and dataset composition.
+\newblock \emph{arXiv preprint arXiv:2606.19747}, 2026.
+
+\bibitem[Jimenez et~al.(2024)Jimenez, Yang, Wettig, Yao, Pei, Press, and Narasimhan]{jimenez2024swebench}
+Carlos~E Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik Narasimhan.
+\newblock {SWE}-bench: Can language models resolve real-world {G}ithub issues?
+\newblock In \emph{International Conference on Learning Representations}, pages 54107--54157, 2024.
+
+\bibitem[Khan et~al.(2021)Khan, Abid, Moussa, and Abou-Allaban]{yousfi2018tarteel}
+Hamzah~I Khan, Abubakar Abid, Mohamed~Medhat Moussa, and Anas Abou-Allaban.
+\newblock The {T}arteel dataset: Crowd-sourced and labeled {Q}uranic recitation, 2021.
+
+\bibitem[Salameh et~al.(2024)Salameh, Al~Mdfaa, Askarbekuly, and Mazzara]{salameh2024quranic}
+Raghad Salameh, Mohamad Al~Mdfaa, Nursultan Askarbekuly, and Manuel Mazzara.
+\newblock {Q}uranic audio dataset: Crowdsourced and labeled recitation from non-{A}rabic speakers.
+\newblock \emph{arXiv preprint arXiv:2405.02675}, 2024.
+
+\bibitem[Salman et~al.(2026)Salman, Qazi, and Alam]{salman2026quranmd}
+Muhammad~Umar Salman, Mohammad~Areeb Qazi, and Mohammed~Talha Alam.
+\newblock {Q}uran-{MD}: A fine-grained multilingual multimodal dataset of the {Q}uran.
+\newblock \emph{arXiv preprint arXiv:2601.17880}, 2026.
+
+\bibitem[Shriberg(1994)]{shriberg1994}
+Elizabeth~E Shriberg.
+\newblock \emph{Preliminaries to a theory of speech disfluencies}.
+\newblock PhD thesis, University of California, Berkeley, 1994.
+
+\bibitem[Tabbal et~al.(2006)Tabbal, El~Falou, and Monla]{tabbal2006recitation}
+Hassan Tabbal, W~El~Falou, and B~Monla.
+\newblock Analysis and implementation of a "{Q}uranic" verses delimitation system in audio files using speech recognition techniques.
+\newblock In \emph{2006 2nd International Conference on Information \& Communication Technologies}, volume~2, pages 2979--2984. IEEE, 2006.
+
+\bibitem[Witt and Young(2000)]{witt2000goodness}
+Silke~M Witt and Steve~J Young.
+\newblock Phone-level pronunciation scoring and assessment for interactive language learning.
+\newblock \emph{Speech Communication}, 30\penalty0 (2-3):\penalty0 95--108, 2000.
+
+\end{thebibliography}
