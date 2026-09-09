@@ -26,10 +26,10 @@ sys.path.insert(0, str(HERE / "baselines"))
 BASELINES = [
     ("B0 predict nothing", None),
     ("B1 naive diff", "naive_diff19"),
-    ("B2 incumbent application pipeline", "incumbent19"),
+    ("B2 adapted production components", "incumbent19"),
 ]
-COLS = [("micro_f1", "micro F1"), ("macro_f1", "macro F1"), ("precision", "P"),
-        ("recall", "R"), ("loc_f1", "loc F1"), ("span_iou", "span IoU"),
+COLS = [("micro_f1", "micro F1"), ("strict_micro_f1", "strict F1"), ("macro_f1", "macro F1"), ("precision", "P"),
+        ("recall", "R"), ("loc_f1", "loc F1"), ("loc_recall", "loc recall"), ("span_iou", "span IoU"),
         ("review_cost", "review cost"), ("clean_flag_rate", "clean flags")]
 
 
@@ -61,31 +61,39 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--gold", type=Path, required=True)
     ap.add_argument("--out", type=Path, default=HERE / "BASELINES-v19.md")
+    ap.add_argument("--json-out", type=Path, help="Aggregate metrics only; no predictions or gold records")
     a = ap.parse_args()
 
-    tmp = Path(tempfile.mkdtemp(prefix="study3-"))
-    inputs = tmp / "inputs.jsonl"
-    subprocess.run([sys.executable, str(HERE / "tools" / "make_inputs.py"),
-                    "--gold", str(a.gold), "--out", str(inputs)], check=True)
+    with tempfile.TemporaryDirectory(prefix="study3-") as tmpdir:
+        tmp = Path(tmpdir)
+        inputs = tmp / "inputs.jsonl"
+        subprocess.run([sys.executable, str(HERE / "tools" / "make_inputs.py"),
+                        "--gold", str(a.gold), "--out", str(inputs)], check=True)
 
-    rows, notes = [], []
-    for name, module in BASELINES:
-        pred = tmp / f"{(module or 'empty')}.jsonl"
-        note = predict(module, inputs, pred)
-        if note:
-            notes.append(f"{name}: {note}")
-        r = subprocess.run([sys.executable, str(HERE / "eval19.py"), "--gold", str(a.gold),
-                            "--pred", str(pred), "--json"], capture_output=True, text=True)
-        if r.returncode != 0:
-            notes.append(f"{name}: scoring failed: {r.stderr.strip()[-300:]}")
-            rows.append((name, None))
-            continue
-        rows.append((name, json.loads(r.stdout)))
+        rows, notes = [], []
+        for name, module in BASELINES:
+            pred = tmp / f"{(module or 'empty')}.jsonl"
+            note = predict(module, inputs, pred)
+            if note:
+                notes.append(f"{name}: {note}")
+            r = subprocess.run([sys.executable, str(HERE / "eval19.py"), "--gold", str(a.gold),
+                                "--pred", str(pred), "--json"], capture_output=True, text=True)
+            if r.returncode != 0:
+                notes.append(f"{name}: scoring failed: {r.stderr.strip()[-300:]}")
+                rows.append((name, None))
+                continue
+            rows.append((name, json.loads(r.stdout)))
 
     first = next((d for _, d in rows if d), None)
     if first is None:
         print("every baseline failed", file=sys.stderr)
         return 1
+    if a.json_out:
+        a.json_out.write_text(json.dumps({"baselines": {name: d for name, d in rows}, "notes": notes}, indent=2) + "\n")
+    if notes:
+        raise RuntimeError("Baseline execution failed: " + "; ".join(notes))
+    if any(d["counts"]["invalid_predictions"] for _, d in rows):
+        raise RuntimeError("Baseline emitted invalid events; fix the adapter before reporting results")
     c = first["counts"]
     md = [
         "# Task B baselines under taxonomy v0.19",
@@ -106,17 +114,22 @@ def main() -> int:
     md += ["", "Primary measure is label-aware event F1: a paired prediction counts only when its "
                "label also matches. `loc F1` runs the same matching with labels ignored, so the gap "
                "between the two columns is naming rather than finding. `review cost` is "
-               "(2 x missed mistakes + false flags) per 100 chunks. Predicting nothing gives micro "
+               "(2 x missed mistakes + false flags) per 100 scored units. Predicting nothing gives micro "
                "F1 0.000; the gold annotation gives 1.000.", ""]
-    best = max((d for _, d in rows if d), key=lambda d: d["micro_f1"], default=None)
-    if best:
-        name = next(n for n, d in rows if d is best)
-        md += [f"Per-label F1, strongest baseline ({name}):", "",
+    for name, d in rows:
+        if name.startswith("B0"):
+            continue
+        md += [f"Per-label F1 — {name}:", "",
                "| label | gold | predicted | P | R | F1 |", "|---|---:|---:|---:|---:|---:|"]
-        for lab, dd in best["per_label"].items():
+        for lab, dd in d["per_label"].items():
             md.append(f"| `{lab}` | {dd['tp'] + dd['fn']} | {dd['tp'] + dd['fp']} | "
                       f"{dd['precision']:.2f} | {dd['recall']:.2f} | {dd['f1']:.2f} |")
         md.append("")
+    md += ["All baseline calls completed without crashes or invalid predictions.", "",
+           "B2 adapts production cleaner/alignment components to this event schema; "
+           "it is not the full deployed application. See EVALUATOR.md for mapping assumptions. "
+           "MIN_SPAN=0.30, anchor slack=1 and the secondary 2:1 cost remain provisional. "
+           "Strict F1 requires exact endpoints and labels.", ""]
     if notes:
         md += ["Notes:", ""] + [f"- {n}" for n in notes] + [""]
     a.out.write_text("\n".join(md), encoding="utf-8")

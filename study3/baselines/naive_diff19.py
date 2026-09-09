@@ -1,7 +1,7 @@
 """
 B1 - naive diff under taxonomy v0.19.
 
-Normalize both token lists with the agreed context-independent rules, align with
+Normalize both token lists with this baseline's fixed comparison rules, align with
 SequenceMatcher, and call every non-equal opcode a mistake:
     replace -> substitution_mistake
     delete  -> omission_mistake     (reference material absent from the transcript)
@@ -18,8 +18,8 @@ import re
 import unicodedata
 from difflib import SequenceMatcher
 
-# Context-independent normalization named in rubric v0.19 ("Spelling"):
-# hamza-bearing alif forms, alif maqsura, hamza seats, diacritics, tatweel.
+# Algorithm-specific comparison choices, not additions to the approved rubric.
+# In particular this baseline folds ta marbuta to ha; the gold remains unchanged.
 _FOLD = {"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ى": "ي", "ؤ": "ء", "ئ": "ء", "ة": "ه"}
 _HARAKAT = re.compile(r"[ؐ-ًؚ-ٰٟۖ-ۭ]")
 _PUNCT = re.compile(r"[^\w؀-ۿ]+", re.UNICODE)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 make_inputs.py - strip a private gold file down to the inputs a system is allowed
-to see, so a baseline or an agent can never read the answers.
+to see, for final frozen-code evaluation. This is NOT a development-data exporter.
 
     python3 study3/tools/make_inputs.py --gold <private gold.jsonl> --out inputs.jsonl
 
@@ -37,7 +37,7 @@ def main() -> int:
         for r in recs:
             chunks = r.get("chunks", [])
             pre = r.get("preamble") or {}
-            if pre.get("text") and (pre.get("label") or pre.get("segments")):
+            if pre.get("text") and pre["text"].strip():
                 toks = pre["text"].split()
                 f.write(json.dumps({"review_id": r.get("review_id"), "chunk_idx": -1,
                                     "n_chunks": len(chunks), "ayah_id": None,

@@ -1,12 +1,14 @@
 # Study 3 — annotation-assisted transcript checking
 
-Status as of **2026-09-08**: **100/100 selected recording cases are human-approved**,
+Status as of **2026-09-09**: **100/100 selected recording cases are human-approved**,
 covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additional
 approved recordings are reserves outside the scored set. Taxonomy v0.19 and
 recording format v0.6 describe the completed annotation snapshot. The input
 choice is settled: supply reviewed ayah chunks and references. The executable
 interface, event matcher and experiment design still need to be frozen.
-No agent run or algorithm evaluation under this protocol has begun.
+Evaluator v2.1 and corrected baseline adapters have been tested and scored;
+no agent experiment has run. See [the scorecard](study3/EVALUATOR.md) and
+[baseline results](study3/BASELINES-v19.md).
 
 This document supersedes the earlier Study 3 plan. The old 20-recording,
 99-chunk machine-labeled pilot is a separate artifact, not these 100 approved
@@ -147,9 +149,11 @@ Evaluate the frozen final algorithm privately after the run. Report event-label
 and localization quality, missed mistakes, false flags on clean/benign/corrected
 cases, and per-label results. Matching must prevent one broad prediction from
 claiming multiple distinct gold events, and must explicitly handle zero-length
-omission anchors and both-attempt spans. Scalar weights and matching tolerances
-are not yet chosen. Do not reuse or report the legacy pilot score as a result
-on this set. Re-evaluate baselines only after the new contract is frozen.
+omission anchors and both-attempt spans. The current primary metric is label-aware micro F1, with exact-span F1 alongside
+it and a raw-count mistake cost as a secondary metric. MIN_SPAN=0.30, anchor
+slack=1 and cost ratio 2:1 remain provisional. Baselines have been rerun against
+v2.1; do not reuse v1.0/v2.0 or legacy pilot numbers. Freeze the experiment
+contract after disjoint practice validation.
 
 ## 5. Isolation and public-input exposure
 
@@ -182,9 +186,19 @@ annotation benchmark, not evidence that such a new collection already exists.
    preserve adjudication history if later corrections change membership.
 2. Enforce the audited duplicate/related-case groups when preparing development
    data, and verify permission for intended reuse or a new collection.
-3. Implement and freeze the supplied-split interface, matching rules and study design;
+3. Finalize the supplied-split interface, matching rules and study design;
    publish a sanitized rubric with disjoint examples.
-4. Build the new evaluator and isolated development bundle. Verify baseline
-   behavior and oracle cases under that contract, then freeze artifacts.
+4. Build the isolated development bundle; retain the validated evaluator and
+   adapter regressions, and freeze the chosen scoring contract and artifacts.
 5. Run the annotation-and-development experiments and score final code
    privately. Keep feasibility/pilot observations separate from new results.
+
+## Candidate pool after new submissions
+
+The 321 source recordings have 320 transcripts, including the original local ASR
+repairs. Holding gold100 aside leaves 220 transcripts; withholding its three
+approved reserves leaves 217. The preliminary text screen leaves 166 distinct
+groups after removing exact normalized held-out equivalents; 65 require closer
+overlap review. See [the experiment plan](study3/EXPERIMENT.md). No pool has been
+allocated or exposed to a development agent. Gold inputs stripped of answers
+remain evaluation inputs and must not be used as the development pool.

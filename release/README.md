@@ -60,8 +60,8 @@ test requires a separately collected, previously unreleased corpus.
 
 The new development agent will annotate an unlabelled pool and build an
 algorithm. Final code receives reviewed ayah splits, IDs and exact references
-and is scored privately for event labels and localization. No new metric is frozen and no
-algorithm has been evaluated on the new gold set. Do not score the new format
+and is scored privately for event labels and localization. Evaluator v2.1 and corrected baseline results are documented separately in
+`study3/`; matching tolerances and the agent experiment are not yet frozen. Do not score the new format
 with the legacy executable or treat legacy scores as new results.
 
 ## Provenance and reuse

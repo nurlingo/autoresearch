@@ -9,14 +9,16 @@ The root directory contains the **Stage 1 fixed harness**: a frozen dataset
 and scorecard plus an editable algorithm. Study 3 adds an annotation protocol
 and legacy pilot artifacts alongside it. This authoring checkout is not an
 isolated agent runtime; prepare a separate allowed-data bundle for each run.
-The new Study 3 evaluator has not yet been frozen or implemented.
+Study 3 evaluator v2.1 and rerun baselines are available; matching tolerances and
+the agent experiment design remain provisional. See [evaluation](study3/EVALUATOR.md)
+and [the isolated experiment plan](study3/EXPERIMENT.md).
 
 ## Two stages
 
 | Stage | Input | Output | Status |
 | --- | --- | --- | --- |
 | **1. Detect + split** | full transcript | ayahs recited + per-ayah split | **active** (this harness) |
-| **2. Event annotation** | reviewed ayah chunks + IDs + Quran reference | combined event labels and spans | Study 3: 100/100 recordings approved; no runs |
+| **2. Event annotation** | reviewed ayah chunks + IDs + Quran reference | combined event labels and spans | Study 3: 100/100 approved; v2.1 baselines; no agent runs |
 
 In production, Stage 2 consumes Stage 1's output. The Study 3 evaluation
 supplies reviewed splits to isolate event annotation from detection errors.

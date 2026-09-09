@@ -4,7 +4,8 @@
 chunks and 274 ayahs across 38 surahs. Taxonomy **v0.19**, recording format
 **v0.6**. Three additional approved recordings are held as reserves outside
 the scored set. No selected annotation decisions remain unresolved. These are
-annotation findings; no new Study 3 algorithm results are available.
+annotation findings. Evaluator v2.1 baseline results are now available; no
+annotation-and-algorithm agent experiment has run.
 
 Shared documentation contains aggregate results and synthetic examples.
 Selected recording identities, transcripts, answer spans, reviewer notes and
@@ -144,4 +145,5 @@ The bundle includes an offline searchable viewer, JSON/JSONL, the private rubric
 and checksums. It excludes production identifiers and audio paths; the owner
 retains a private attribution manifest. Approved reserves are separate. Ask
 the dataset owner for the private human-review copy; it is not hosted in this
-repository. A completed annotation set does not mean the evaluator has run.
+repository. The v2.1 baselines were evaluated privately; see
+[the scorecard](../study3/EVALUATOR.md) and [results](../study3/BASELINES-v19.md).

@@ -13,7 +13,8 @@ Unwritten vowels and tajweed are outside this task.
 Inputs contain reviewed ayah chunks, ayah IDs and exact reference texts. Do not
 redetect ayahs or change their assignment. Opening formulas remain separately
 available as unlabelled text. Source corrections and gold review notes are not
-part of the input. The executable envelope still needs to be frozen.
+part of the input. The executable envelope is documented in EVALUATOR.md; experiment settings
+and tolerant matching choices still need to be frozen.
 
 Reference text comes verbatim from `quran.json` → `titles.clean`. Normalization
 is a comparison operation; never rewrite the saved transcript or reference.
@@ -94,9 +95,11 @@ missing letter identified in the note.
 ## Before this becomes the agent guide
 
 Approve the Arabic examples, add counterexamples for every accepted contextual
-spelling category, and freeze normalization (including punctuation-only token
-handling). The current private rubric contains a punctuation-token wording
-ambiguity; resolve it without changing existing saved event indices silently.
+spelling category, and freeze the comparison normalization. Coordinates use every original
+whitespace token, including standalone punctuation tokens; comparison may ignore
+punctuation without deleting tokens from the index arrays. The earlier ambiguous
+wording is superseded for the executable contract; existing gold indices remain
+unchanged (no selected gold chunk contains a punctuation-only token).
 Then verify comprehension on separate practice inputs. Teaching, practice,
 development and final evaluation are different roles; no gold answers or
 selected-case hints belong in this guide or an agent runtime.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-eval19.py - scorecard for Study 3 Task B, taxonomy v0.19. Evaluator v2.0.
+eval19.py - scorecard for Study 3 Task B, taxonomy v0.19. Evaluator v2.1.
 
     python3 study3/eval19.py --gold <private gold.jsonl> --pred <predictions.jsonl>
     python3 study3/eval19.py --gold <gold.jsonl> --self-test
@@ -17,6 +17,9 @@ entirely, and inventing benign annotations on clean chunks. All three, together,
 still scored a perfect 0. Its match test also averaged the two span
 similarities, so an exact reference span carried a match on its own and a
 completely wrong hypothesis span cost nothing.
+
+v2.1 additionally validates labels, bounds and empty-span shapes, counts invalid
+predictions as false positives, and reports exact-span F1.
 
 v2.0 makes label-aware event F1 the primary measure, requires BOTH spans to
 overlap before a pair can match, and prices the application cost in raw event
@@ -37,7 +40,7 @@ so ayah detection is not scored.
 
 Opening formulas ARE scored: each record's isti'adhah or basmala is presented
 as a chunk with `chunk_idx = -1`, its text as the transcript and an empty
-reference, carrying one gold event. Deciding that an opening formula is benign
+reference, carrying one or two gold events. Deciding that an opening formula is benign
 rather than an insertion is part of the task.
 
 Predictions file: one JSON object per line,
@@ -54,9 +57,8 @@ event. A pair is eligible only when BOTH spans overlap:
     sim(pred, gold) = min(span_sim(hyp), span_sim(ref)) >= MIN_SPAN
 
 span_sim treats an empty span as an anchor: two anchors score 1.0 when they
-coincide and 0.5 within ANCHOR_SLACK tokens; an anchor against a real span
-scores 0.5 when it falls inside that span widened by ANCHOR_SLACK; two real
-spans use intersection over union. Corrected and repetition events span all
+coincide and 0.5 within ANCHOR_SLACK tokens. Empty spans never match
+nonempty spans; two nonempty spans use intersection over union. Corrected and repetition events span all
 attempts, so a prediction covering one attempt loses IoU but can still match.
 
 Pairing itself ignores labels, which lets localization be reported separately
@@ -114,23 +116,38 @@ MISTAKE = {l for l in LABELS if l.endswith("_mistake")}
 
 
 # ---------------------------------------------------------------- similarity
-def span_sim(a: list[int] | None, b: list[int] | None) -> float:
-    """Similarity of two half-open spans; an empty span is an anchor."""
-    if a is None or b is None or len(a) != 2 or len(b) != 2:
-        return 0.0
-    try:
-        a0, a1, b0, b1 = int(a[0]), int(a[1]), int(b[0]), int(b[1])
-    except (TypeError, ValueError):
-        return 0.0
-    if a1 < a0 or b1 < b0:
-        return 0.0
+def event_error(event: Any, n_hyp: int, n_ref: int) -> str | None:
+    """Validate original-token coordinates and label-specific empty spans."""
+    if not isinstance(event, dict) or event.get("label") not in LABELS:
+        return "unknown or missing event label"
+    spans = []
+    for name, limit in (("hyp_span", n_hyp), ("ref_span", n_ref)):
+        span = event.get(name)
+        if (not isinstance(span, list) or len(span) != 2
+                or any(type(i) is not int for i in span)
+                or not 0 <= span[0] <= span[1] <= limit):
+            return "invalid " + name
+        spans.append(span)
+    h_empty, r_empty = (a == b for a, b in spans)
+    label = event["label"]
+    expected = ((True, False) if label == "omission_mistake" else
+                (False, True) if label in {"insertion_mistake", "basmala_benign", "isti3adha_benign"}
+                else (False, False))
+    if (h_empty, r_empty) != expected:
+        return "empty spans incompatible with label"
+    return None
+
+
+def span_sim(a: list[int], b: list[int]) -> float:
+    """IoU for token spans; empty spans match only other empty anchors."""
+    a0, a1 = a
+    b0, b1 = b
     a_empty, b_empty = a0 == a1, b0 == b1
     if a_empty and b_empty:
         d = abs(a0 - b0)
         return 1.0 if d == 0 else (0.5 if d <= ANCHOR_SLACK else 0.0)
     if a_empty or b_empty:
-        point, lo, hi = (a0, b0, b1) if a_empty else (b0, a0, a1)
-        return 0.5 if lo - ANCHOR_SLACK <= point <= hi + ANCHOR_SLACK else 0.0
+        return 0.0
     inter = max(0, min(a1, b1) - max(a0, b0))
     union = max(a1, b1) - min(a0, b0)
     return inter / union if union else 0.0
@@ -142,11 +159,12 @@ def event_sim(pred: dict, gold: dict) -> float:
                span_sim(pred.get("ref_span"), gold.get("ref_span")))
 
 
-def match_events(pred: list[dict], gold: list[dict]) -> list[tuple[int, int, float]]:
+def match_events(pred: list[dict], gold: list[dict], *, strict: bool = False) -> list[tuple[int, int, float]]:
     """One-to-one maximum-similarity pairing, labels ignored."""
     if not pred or not gold:
         return []
-    sim = [[event_sim(p, g) for g in gold] for p in pred]
+    sim = [[(float(p["hyp_span"] == g["hyp_span"] and p["ref_span"] == g["ref_span"])
+             if strict else event_sim(p, g)) for g in gold] for p in pred]
     n, m = len(pred), len(gold)
     if n <= 7 and m <= 7:                       # exact; chunks hold few events
         rows = range(n) if n <= m else range(m)
@@ -188,15 +206,37 @@ class ChunkResult:
     missed: int = 0
     false_flags: int = 0
     clean_flagged: bool = False
+    invalid_predictions: int = 0
+    strict_tp: int = 0
 
 
 def score_chunk(gold_chunk: dict, pred_events: list[dict], key: str) -> ChunkResult:
     r = ChunkResult(key)
     gold = list(gold_chunk.get("events") or [])
-    pred = [p for p in pred_events if isinstance(p, dict)]
-    r.is_clean, r.n_gold, r.n_pred = not gold, len(gold), len(pred)
-
+    if not isinstance(pred_events, list):
+        raise ValueError("events must be a list: " + key)
+    n, m = len(gold_chunk["transcript_tokens"]), len(gold_chunk["reference_tokens"])
+    for event in gold:
+        error = event_error(event, n, m)
+        if error:
+            raise ValueError("Invalid gold event in " + key + ": " + error)
+    pred, invalid = [], []
+    for event in pred_events:
+        if event_error(event, n, m):
+            invalid.append(event)
+        else:
+            pred.append(event)
+    r.invalid_predictions = len(invalid)
+    # Invalid predictions count as false positives, never as localization hits.
+    for event in invalid:
+        label = event.get("label") if isinstance(event, dict) else None
+        r.fp.append(label if label in LABELS else "invalid_prediction")
+        if isinstance(label, str) and label in MISTAKE:
+            r.false_flags += 1
+    r.is_clean, r.n_gold, r.n_pred = not gold, len(gold), len(pred_events)
     pairs = match_events(pred, gold)
+    r.strict_tp = sum(pred[i]["label"] == gold[j]["label"]
+                      for i, j, _ in match_events(pred, gold, strict=True))
     r.loc_hit = len(pairs)
     r.sim_sum = sum(s for _, _, s in pairs)
     paired_p = {i: j for i, j, _ in pairs}
@@ -225,7 +265,7 @@ def score_chunk(gold_chunk: dict, pred_events: list[dict], key: str) -> ChunkRes
         j = paired_p.get(i)
         if j is None or gold[j].get("label") not in MISTAKE:
             r.false_flags += 1
-    r.clean_flagged = r.is_clean and any(p.get("label") in MISTAKE for p in pred)
+    r.clean_flagged = r.is_clean and any(isinstance(p, dict) and isinstance(p.get("label"), str) and p.get("label") in MISTAKE for p in pred_events)
     return r
 
 
@@ -250,7 +290,7 @@ def summarize(results: list[ChunkResult]) -> dict[str, Any]:
             per.setdefault(lab, {"tp": 0, "fp": 0, "fn": 0})["fp"] += 1
         for lab in r.fn:
             per.setdefault(lab, {"tp": 0, "fp": 0, "fn": 0})["fn"] += 1
-    gold_labels = {lab for d in per.values() for lab in ()} or {
+    gold_labels = {
         lab for lab, d in per.items() if d["tp"] + d["fn"] > 0}
     for lab, d in per.items():
         d["precision"], d["recall"], d["f1"] = (round(x, 4) for x in _prf(d["tp"], d["fp"], d["fn"]))
@@ -259,7 +299,9 @@ def summarize(results: list[ChunkResult]) -> dict[str, Any]:
     loc_tp = sum(r.loc_hit for r in results)
     n_gold = sum(r.n_gold for r in results)
     n_pred = sum(r.n_pred for r in results)
-    _, _, loc_f1 = _prf(loc_tp, n_pred - loc_tp, n_gold - loc_tp)
+    loc_p, loc_r, loc_f1 = _prf(loc_tp, n_pred - loc_tp, n_gold - loc_tp)
+    strict_tp = sum(r.strict_tp for r in results)
+    _, _, strict_f1 = _prf(strict_tp, n_pred - strict_tp, n_gold - strict_tp)
 
     chunks = len(results) or 1
     missed = sum(r.missed for r in results)
@@ -269,10 +311,12 @@ def summarize(results: list[ChunkResult]) -> dict[str, Any]:
         "event_error": round(1 - micro, 6),
         "score_direction": "lower_is_better",
         "taxonomy_version": "0.19",
-        "evaluator_version": "2.0",
+        "evaluator_version": "2.1",
         "micro_f1": round(micro, 4), "precision": round(p, 4), "recall": round(rc, 4),
         "macro_f1": round(macro, 4),
         "loc_f1": round(loc_f1, 4),
+        "loc_precision": round(loc_p, 4), "loc_recall": round(loc_r, 4),
+        "strict_micro_f1": round(strict_f1, 4),
         "span_iou": round(sum(r.sim_sum for r in results) / loc_tp, 4) if loc_tp else 0.0,
         "review_cost": round((2 * missed + flags) / chunks * 100, 2),
         "clean_flag_rate": round(sum(1 for r in clean if r.clean_flagged) / len(clean), 4) if clean else 0.0,
@@ -281,6 +325,7 @@ def summarize(results: list[ChunkResult]) -> dict[str, Any]:
             "gold_events": n_gold, "predicted_events": n_pred,
             "tp": TP, "fp": FP, "fn": FN, "located": loc_tp,
             "missed_mistakes": missed, "false_flags": flags,
+            "invalid_predictions": sum(r.invalid_predictions for r in results),
         },
         "per_label": dict(sorted(per.items())),
     }
@@ -316,6 +361,8 @@ def load_gold(path: Path) -> list[tuple[str, dict]]:
             }))
         for c in r.get("chunks", []):
             out.append((f"{rid}:{c.get('chunk_idx')}", c))
+    if len({key for key, _ in out}) != len(out):
+        raise ValueError("Duplicate gold unit identifiers")
     return out
 
 
@@ -324,7 +371,13 @@ def load_pred(path: Path) -> dict[str, list[dict]]:
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             d = json.loads(line)
-            out[f"{d.get('review_id')}:{d.get('chunk_idx')}"] = d.get("events") or []
+            if (not isinstance(d, dict) or not isinstance(d.get("review_id"), str)
+                    or type(d.get("chunk_idx")) is not int or not isinstance(d.get("events"), list)):
+                raise ValueError("Each prediction row requires review_id, integer chunk_idx and an events list")
+            key = f"{d['review_id']}:{d['chunk_idx']}"
+            if key in out:
+                raise ValueError("Duplicate prediction unit: " + key)
+            out[key] = d["events"]
     return out
 
 
@@ -339,11 +392,13 @@ def print_report(s: dict) -> None:
           f"predicted {c['predicted_events']}")
     print(f"  micro F1:   {s['micro_f1']:.3f}   (P {s['precision']:.3f} / R {s['recall']:.3f}; "
           f"tp {c['tp']}, fp {c['fp']}, fn {c['fn']})")
+    print(f"  strict F1:  {s['strict_micro_f1']:.3f}   exact spans and labels")
     print(f"  macro F1:   {s['macro_f1']:.3f}   over the labels present in gold")
     print(f"  loc F1:     {s['loc_f1']:.3f}   labels ignored; span IoU {s['span_iou']:.3f}")
     print(f"  review_cost {s['review_cost']:.2f} per 100 chunks "
           f"({c['missed_mistakes']} missed x2 + {c['false_flags']} false flags)")
     print(f"  clean_flag_rate {s['clean_flag_rate']:.3f}")
+    print(f"  invalid predictions: {c['invalid_predictions']}")
     print("  per label   gold  pred    P     R    F1")
     for lab, d in s["per_label"].items():
         print(f"    {lab:<24} {d['tp'] + d['fn']:>4}  {d['tp'] + d['fp']:>4}  "
@@ -370,7 +425,7 @@ def self_test(gold_path: Path) -> int:
         print(f"  {'ok ' if good else 'FAIL'} {name:<46} micro_f1 {s['micro_f1']:.3f}  "
               f"error {s['event_error']:.3f}   (expect {want})")
 
-    print("evaluator v2.0 oracle tests")
+    print("evaluator v2.1 oracle tests")
     check("gold in", run(lambda c: list(c.get("events") or [])), "f1 1.0",
           lambda s: abs(s["micro_f1"] - 1.0) < 1e-9 and abs(s["span_iou"] - 1.0) < 1e-9)
     check("empty in", run(lambda c: []), "f1 0.0",
@@ -406,6 +461,12 @@ def self_test(gold_path: Path) -> int:
     print(f"  {'ok ' if good else 'FAIL'} {'one chunk-wide flag':<46} micro_f1 {s['micro_f1']:.3f}  "
           f"({left} gold events in multi-event chunks unrecovered)")
 
+    synthetic = {"transcript_tokens": ["A", "X", "C"], "reference_tokens": ["A", "B", "C"],
+                 "events": [{"label": "substitution_mistake", "hyp_span": [1, 2], "ref_span": [1, 2]}]}
+    empty_sub = [{"label": "substitution_mistake", "hyp_span": [1, 1], "ref_span": [1, 1]}]
+    s = summarize([score_chunk(synthetic, empty_sub, "synthetic")])
+    check("zero-word substitution rejected", s, "f1 0, invalid 1",
+          lambda s: s["micro_f1"] == 0 and s["counts"]["invalid_predictions"] == 1)
     print("SELF-TEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
@@ -423,6 +484,8 @@ def main() -> int:
         ap.error("--pred is required unless --self-test")
     gold = load_gold(a.gold)
     pred = load_pred(a.pred)
+    if set(pred) - {k for k, _ in gold}:
+        raise ValueError("Predictions contain unknown unit identifiers")
     s = summarize([score_chunk(c, pred.get(k, []), k) for k, c in gold])
     print(json.dumps(s, ensure_ascii=False, indent=1) if a.json else "", end="")
     if not a.json:
