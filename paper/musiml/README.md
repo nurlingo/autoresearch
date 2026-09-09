@@ -1,12 +1,12 @@
 # MusIML @ NeurIPS 2026 — Track 1, annotation and evaluation (Task B)
 
-Within-ayah recitation events: what counts as a mistake, and can existing
-systems tell. NeurIPS 2026 `dblblindworkshop` style, **4 pages of body plus a
-references page**, at the 4-page Track 1 short-paper limit. The 2025 NeurIPS and
-2026 ICML calls both state the limit as four pages "including all figures and
-tables but excluding references"; the 2026 NeurIPS page gives lengths only and is
-silent on references. Body text must end on page 4, so any edit must be
-length-neutral.
+Within-ayah recitation events: what counts as a mistake, can existing systems
+tell, and what a coding agent gets wrong when handed the rubric. NeurIPS 2026
+`dblblindworkshop` style, submitted as an **8-page long paper**; the body
+currently runs about 6 pages with references after it. Track 1 accepts 4 pages
+(short) or 8 (long). The 2025 NeurIPS and 2026 ICML calls both state the limit
+as "including all figures and tables but excluding references"; the 2026 NeurIPS
+page gives lengths only and is silent on references.
 
 ```sh
 pdflatex -interaction=nonstopmode main.tex && bibtex main \
