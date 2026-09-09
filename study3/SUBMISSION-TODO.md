@@ -26,9 +26,16 @@ and completed experiments; unchecked items are not claimed as accomplished.
       set renumbered t01-t20; t20 adds the omission-plus-substitution combination that
       no case previously carried.
 - [ ] Freeze executable comparison normalization and contextual spelling boundaries.
-- [ ] Approve/freeze MIN_SPAN=0.30, anchor slack=1 and secondary 2:1 cost (current defaults).
+- [x] Freeze MIN_SPAN=0.50 and anchor slack=1; report the secondary cost at both 1:1
+      and 2:1 instead of freezing one rate. Sweeps showed MIN_SPAN moves baseline micro
+      F1 about four points across its whole range and anchor slack moves it none, so both
+      are chosen to be explainable rather than tuned.
 - [ ] Confirm that a train-only, unlabelled 10% sample meets the workshop review requirement.
-- [ ] Confirm redistribution/license scope for newly collected text and complete release metadata.
+- [x] License the release CC BY 4.0 with a no-re-identification condition; the privacy
+      policy already permits publishing anonymised data as an open dataset.
+- [ ] Destroy the surrogate-id map at public release, so the published records are
+      anonymous rather than pseudonymous, and record that it was done.
+- [ ] Name the source of the Quran reference text before redistributing it.
 - [ ] Finalize inference resource limits, external-data/API rules, tie handling and submission instructions.
 - [ ] Build/test the isolated final-execution service; current evaluator is not a sandbox.
 - [ ] Set competition dates, accountable organizers and participant support arrangements.

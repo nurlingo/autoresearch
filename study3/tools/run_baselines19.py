@@ -30,7 +30,8 @@ BASELINES = [
 ]
 COLS = [("micro_f1", "micro F1"), ("strict_micro_f1", "strict F1"), ("macro_f1", "macro F1"), ("precision", "P"),
         ("recall", "R"), ("loc_f1", "loc F1"), ("loc_recall", "loc recall"), ("span_iou", "span IoU"),
-        ("review_cost", "review cost"), ("clean_flag_rate", "clean flags")]
+        ("review_cost", "cost 2:1"), ("review_cost_1to1", "cost 1:1"),
+        ("clean_flag_rate", "clean flags")]
 
 
 def predict(module: str | None, inputs: Path, out: Path) -> str:
@@ -114,7 +115,9 @@ def main() -> int:
     md += ["", "Primary measure is label-aware event F1: a paired prediction counts only when its "
                "label also matches. `loc F1` runs the same matching with labels ignored, so the gap "
                "between the two columns is naming rather than finding. `review cost` is "
-               "(2 x missed mistakes + false flags) per 100 scored units. Predicting nothing gives micro "
+               "reported at two exchange rates per 100 scored units: (2 x missed + false flags) and "
+               "(missed + false flags). Neither ranks systems; micro F1 does, and the ranking here is "
+               "unchanged from 1:1 through 5:1. Predicting nothing gives micro "
                "F1 0.000; the gold annotation gives 1.000.", ""]
     for name, d in rows:
         if name.startswith("B0"):
@@ -128,7 +131,8 @@ def main() -> int:
     md += ["All baseline calls completed without crashes or invalid predictions.", "",
            "B2 adapts production cleaner/alignment components to this event schema; "
            "it is not the full deployed application. See EVALUATOR.md for mapping assumptions. "
-           "MIN_SPAN=0.30, anchor slack=1 and the secondary 2:1 cost remain provisional. "
+           "MIN_SPAN=0.50 and anchor slack=1 are frozen; the secondary cost is reported at both "
+           "1:1 and 2:1 rather than frozen at one rate. "
            "Strict F1 requires exact endpoints and labels.", ""]
     if notes:
         md += ["Notes:", ""] + [f"- {n}" for n in notes] + [""]

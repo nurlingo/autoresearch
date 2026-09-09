@@ -64,6 +64,11 @@ class EvaluatorTests(unittest.TestCase):
         extra = self.score([event()], chunk([]))['review_cost']
         self.assertEqual(missed, 2 * extra)
 
+    def test_secondary_is_also_reported_symmetrically(self):
+        missed = self.score([])['review_cost_1to1']
+        extra = self.score([event()], chunk([]))['review_cost_1to1']
+        self.assertEqual(missed, extra)
+
     def test_invalid_gold_is_rejected(self):
         with self.assertRaises(ValueError):
             self.score([], chunk([event(hyp=(1, 1))]))

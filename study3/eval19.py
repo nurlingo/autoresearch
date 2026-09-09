@@ -102,7 +102,7 @@ from itertools import permutations
 from pathlib import Path
 from typing import Any
 
-MIN_SPAN = 0.30      # BOTH spans must reach this before a pair can match
+MIN_SPAN = 0.50      # BOTH spans must overlap more than not before a pair can match
 ANCHOR_SLACK = 1     # tokens of tolerance for omission/insertion anchors
 FORMULA_IDX = -1     # chunk index used for a record's opening formula
 
@@ -318,7 +318,9 @@ def summarize(results: list[ChunkResult]) -> dict[str, Any]:
         "loc_precision": round(loc_p, 4), "loc_recall": round(loc_r, 4),
         "strict_micro_f1": round(strict_f1, 4),
         "span_iou": round(sum(r.sim_sum for r in results) / loc_tp, 4) if loc_tp else 0.0,
+        # Reported at both exchange rates; neither ranks systems, micro F1 does.
         "review_cost": round((2 * missed + flags) / chunks * 100, 2),
+        "review_cost_1to1": round((missed + flags) / chunks * 100, 2),
         "clean_flag_rate": round(sum(1 for r in clean if r.clean_flagged) / len(clean), 4) if clean else 0.0,
         "counts": {
             "chunks": len(results), "clean_chunks": len(clean),
@@ -395,8 +397,8 @@ def print_report(s: dict) -> None:
     print(f"  strict F1:  {s['strict_micro_f1']:.3f}   exact spans and labels")
     print(f"  macro F1:   {s['macro_f1']:.3f}   over the labels present in gold")
     print(f"  loc F1:     {s['loc_f1']:.3f}   labels ignored; span IoU {s['span_iou']:.3f}")
-    print(f"  review_cost {s['review_cost']:.2f} per 100 chunks "
-          f"({c['missed_mistakes']} missed x2 + {c['false_flags']} false flags)")
+    print(f"  review_cost {s['review_cost']:.2f} at 2:1, {s['review_cost_1to1']:.2f} at 1:1, "
+          f"per 100 chunks ({c['missed_mistakes']} missed, {c['false_flags']} false flags)")
     print(f"  clean_flag_rate {s['clean_flag_rate']:.3f}")
     print(f"  invalid predictions: {c['invalid_predictions']}")
     print("  per label   gold  pred    P     R    F1")

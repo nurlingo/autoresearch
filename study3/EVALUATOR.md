@@ -1,8 +1,9 @@
 # Task B evaluator — taxonomy v0.19, evaluator v2.1
 
 The evaluator reads private gold by path. Its source contains no gold records.
-The annotation set is fixed; MIN_SPAN=0.30, anchor slack=1 and the secondary
-2:1 cost remain provisional protocol choices. No agent experiment has run.
+The annotation set is fixed. MIN_SPAN=0.50 and anchor slack=1 are frozen; the
+secondary cost is reported at both 1:1 and 2:1 rather than frozen at one rate.
+No agent experiment has run.
 
 ## Evaluation in plain language
 
@@ -51,14 +52,36 @@ prediction unit IDs and malformed row envelopes are rejected. Missing units
 count as empty predictions. Invalid predictions from a baseline fail the baseline
 report generation rather than producing a publishable table silently.
 
+Sweeping MIN_SPAN from 0.05 to 1.00 moves baseline micro F1 by about four points
+and leaves strict F1 unchanged, because diff-based baselines emit exact token
+spans and rarely depend on the threshold. The value is therefore chosen to be
+explainable rather than tuned: at 0.50 the spans overlap more than they do not.
+An agent producing looser spans will feel it more than these baselines do.
+
+Anchor slack is 1 because the index of an omission between two tokens is
+genuinely ambiguous, not because 1 scored best: sweeping 0 to 10 changes no
+baseline score, even though 74 of 162 gold events are anchors.
+
+## Secondary cost
+
+The secondary diagnostic is reported at two exchange rates, `review_cost`
+(2:1) and `review_cost_1to1`, because no single rate is defensible on its own
+and neither ranks systems; micro F1 does. Ranking is in fact unchanged across
+1:1, 2:1, 3:1 and 5:1 on the current baselines. What the rate does control is
+whether predicting nothing can win: on gold100 the empty baseline beats naive
+diff only below roughly 0.77:1, so any rate at or above 1:1 rules it out.
+Rates far above 2:1 push a system toward over-flagging, which in a memorization
+app means telling a reciter they erred when they did not.
+
 ## MIN_SPAN and matching
 
 For two nonempty spans, overlap is intersection over union (IoU): the number of
 selected token positions shared by both spans divided by the positions covered
 by either. If gold selects two words and the prediction includes those two plus
-one extra, IoU is 2/3. MIN_SPAN=0.30 requires at least 30% IoU on **each side**;
+one extra, IoU is 2/3. MIN_SPAN=0.50 requires the spans to overlap more than
+they do not, on **each side**;
 it is not confidence, a proportion of mistakes caught, or a requirement to flag
-30% of words. One accurate side cannot compensate for a wrong other side.
+half the words. One accurate side cannot compensate for a wrong other side.
 
 Empty anchors match only other empty anchors: 1.0 at the same boundary, 0.5 one
 boundary away, and zero farther away. An empty anchor never matches a selected
