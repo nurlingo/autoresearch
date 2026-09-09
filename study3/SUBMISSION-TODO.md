@@ -20,7 +20,10 @@ and completed experiments; unchecked items are not claimed as accomplished.
 - [x] Document method freedom: no required agents, iteration scoring or annotation phase.
 - [x] Document public-input exposure and assistant-reviewed new splits.
 - [x] Prepare 20 constructed teaching cases with references and word spans for owner approval.
-- [ ] Owner approves teaching cases, especially contextual spelling example t16; resolve any changes.
+- [ ] Owner approves teaching cases; 19 of 20 still draft. Contextual spelling t16 is
+      approved. t11 was rebuilt as a restatement after review found it indistinguishable
+      from the t08 insertion; t13 was dropped as a duplicate of t01's normalization rule;
+      t21 adds the omission-plus-substitution combination absent from the set.
 - [ ] Freeze executable comparison normalization and contextual spelling boundaries.
 - [ ] Approve/freeze MIN_SPAN=0.30, anchor slack=1 and secondary 2:1 cost (current defaults).
 - [ ] Confirm that a train-only, unlabelled 10% sample meets the workshop review requirement.

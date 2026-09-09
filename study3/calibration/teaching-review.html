@@ -1,8 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teaching examples — owner review</title><style>body{font:16px/1.5 system-ui;max-width:1000px;margin:30px auto;padding:0 20px;color:#172033}article{border:1px solid #d5dbe5;border-radius:10px;padding:20px;margin:24px 0} .arabic{font:25px/1.8 serif;direction:rtl;background:#f5f7fb;padding:12px;white-space:pre-wrap}.label{font-family:monospace;color:#174b85}code{white-space:pre-wrap}summary{cursor:pointer}h2{margin-top:0}.note{color:#555}</style><h1>20 constructed teaching examples — awaiting approval</h1><p>These are deliberate transcript variants, not recordings. “Reference” always means the actual ayah text from quran.json titles.clean. Transcripts retain their spelling. Event spans use zero-based, half-open whitespace indices. No gold cases are shown.</p><p>t16 needs explicit contextual-spelling approval. The JSON beneath each example contains the full data point.</p>
-<article id="t01"><h2>t01 — Clean after ordinary hamza normalization</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:1</h3><b>Transcript</b><div class="arabic" lang="ar">لا أقسم بهذا البلد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لا اقسم بهذا البلد</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teaching examples — owner review</title><style>body{font:16px/1.5 system-ui;max-width:1000px;margin:30px auto;padding:0 20px;color:#172033}article{border:1px solid #d5dbe5;border-radius:10px;padding:20px;margin:24px 0}.arabic{font:25px/1.8 serif;direction:rtl;background:#f5f7fb;padding:12px;white-space:pre-wrap}.label{font-family:monospace;color:#174b85}code{white-space:pre-wrap}summary{cursor:pointer}h2{margin-top:0}.note{color:#555}.ok{color:#186a3b}</style><h1>20 constructed teaching examples</h1><p>These are deliberate transcript variants, not recordings. “Reference” always means the actual ayah text from quran.json titles.clean. Transcripts retain their spelling. Event spans use zero-based, half-open whitespace indices. No gold cases are shown.</p><p>Taxonomy 0.19. Awaiting approval: t01, t02, t03, t04, t05, t06, t07, t08, t09, t10, t11, t12, t14, t15, t17, t18, t19, t20, t21. The JSON beneath each example contains the full data point.</p><article id="t01"><h2>t01 — Clean after ordinary hamza normalization</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:1</h3><b>Transcript</b><div class="arabic" lang="ar">لا أقسم بهذا البلد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لا اقسم بهذا البلد</div><p class="label">clean — no events</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t01&quot;,
   &quot;name&quot;: &quot;Clean after ordinary hamza normalization&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -31,10 +27,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t02"><h2>t02 — Missing beginning</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:4</h3><b>Transcript</b><div class="arabic" lang="ar">الانسان في كبد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لقد خلقنا الانسان في كبد</div>
-<p class="label">omission_mistake</p><p>Transcript span [0, 0]: <span lang="ar" dir="rtl">∅</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">لقد خلقنا</span></p><p>The two initial reference words are absent.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t02"><h2>t02 — Missing beginning</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:4</h3><b>Transcript</b><div class="arabic" lang="ar">الانسان في كبد</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">لقد خلقنا الانسان في كبد</div><p class="label">omission_mistake<br>&nbsp;&nbsp;transcript [0, 0] = «∅ empty at 0»<br>&nbsp;&nbsp;reference [0, 2] = «لقد خلقنا»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t02&quot;,
   &quot;name&quot;: &quot;Missing beginning&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -77,10 +70,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t03"><h2>t03 — Missing interior word</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
-<p class="label">omission_mistake</p><p>Transcript span [4, 4]: <span lang="ar" dir="rtl">∅</span><br>Reference span [4, 5]: <span lang="ar" dir="rtl">ذي</span></p><p>ذي is missing between يوم and مسغبة.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t03"><h2>t03 — Missing interior word</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><p class="label">omission_mistake<br>&nbsp;&nbsp;transcript [4, 4] = «∅ empty at 4»<br>&nbsp;&nbsp;reference [4, 5] = «ذي»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t03&quot;,
   &quot;name&quot;: &quot;Missing interior word&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -126,10 +116,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t04"><h2>t04 — Missing ending</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div>
-<p class="label">omission_mistake</p><p>Transcript span [7, 7]: <span lang="ar" dir="rtl">∅</span><br>Reference span [7, 9]: <span lang="ar" dir="rtl">وتواصوا بالمرحمة</span></p><p>The last two reference words are absent, even if the recording stops here.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t04"><h2>t04 — Missing ending</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><p class="label">omission_mistake<br>&nbsp;&nbsp;transcript [7, 7] = «∅ empty at 7»<br>&nbsp;&nbsp;reference [7, 9] = «وتواصوا بالمرحمة»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t04&quot;,
   &quot;name&quot;: &quot;Missing ending&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -180,10 +167,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t05"><h2>t05 — One unresolved replacement</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت ذهبا لبدا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div>
-<p class="label">substitution_mistake</p><p>Transcript span [2, 3]: <span lang="ar" dir="rtl">ذهبا</span><br>Reference span [2, 3]: <span lang="ar" dir="rtl">مالا</span></p><p>ذهبا replaces مالا.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t05"><h2>t05 — One unresolved replacement</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت ذهبا لبدا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [2, 3] = «ذهبا»<br>&nbsp;&nbsp;reference [2, 3] = «مالا»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t05&quot;,
   &quot;name&quot;: &quot;One unresolved replacement&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -226,10 +210,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t06"><h2>t06 — Adjacent replacements grouped</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت كنزا كثيرا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div>
-<p class="label">substitution_mistake</p><p>Transcript span [2, 4]: <span lang="ar" dir="rtl">كنزا كثيرا</span><br>Reference span [2, 4]: <span lang="ar" dir="rtl">مالا لبدا</span></p><p>Two continuous replaced words form one event.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t06"><h2>t06 — Adjacent replacements grouped</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:6</h3><b>Transcript</b><div class="arabic" lang="ar">يقول اهلكت كنزا كثيرا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">يقول اهلكت مالا لبدا</div><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [2, 4] = «كنزا كثيرا»<br>&nbsp;&nbsp;reference [2, 4] = «مالا لبدا»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t06&quot;,
   &quot;name&quot;: &quot;Adjacent replacements grouped&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -272,11 +253,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t07"><h2>t07 — Two mistakes separated by correct words</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:8</h3><b>Transcript</b><div class="arabic" lang="ar">هل نجعل له اذنين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">الم نجعل له عينين</div>
-<p class="label">substitution_mistake</p><p>Transcript span [0, 1]: <span lang="ar" dir="rtl">هل</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">الم</span></p><p>هل replaces الم.</p>
-<p class="label">substitution_mistake</p><p>Transcript span [3, 4]: <span lang="ar" dir="rtl">اذنين</span><br>Reference span [3, 4]: <span lang="ar" dir="rtl">عينين</span></p><p>اذنين replaces عينين. The correct words between the changes separate the events.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t07"><h2>t07 — Two mistakes separated by correct words</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:8</h3><b>Transcript</b><div class="arabic" lang="ar">هل نجعل له اذنين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">الم نجعل له عينين</div><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [0, 1] = «هل»<br>&nbsp;&nbsp;reference [0, 1] = «الم»</p><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [3, 4] = «اذنين»<br>&nbsp;&nbsp;reference [3, 4] = «عينين»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t07&quot;,
   &quot;name&quot;: &quot;Two mistakes separated by correct words&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -333,10 +310,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t08"><h2>t08 — Extra words</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:9</h3><b>Transcript</b><div class="arabic" lang="ar">ولسانا وعينين وشفتين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ولسانا وشفتين</div>
-<p class="label">insertion_mistake</p><p>Transcript span [1, 2]: <span lang="ar" dir="rtl">وعينين</span><br>Reference span [1, 1]: <span lang="ar" dir="rtl">∅</span></p><p>وعينين is extra material, not a matching repeated phrase or a restatement.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t08"><h2>t08 — Extra words</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:9</h3><b>Transcript</b><div class="arabic" lang="ar">ولسانا وعينين وشفتين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ولسانا وشفتين</div><p class="label">insertion_mistake<br>&nbsp;&nbsp;transcript [1, 2] = «وعينين»<br>&nbsp;&nbsp;reference [1, 1] = «∅ empty at 1»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t08&quot;,
   &quot;name&quot;: &quot;Extra words&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -376,10 +350,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t09"><h2>t09 — Matching phrase repeated</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 91:1</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس وضحاها والشمس وضحاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والشمس وضحاها</div>
-<p class="label">repetition_benign</p><p>Transcript span [0, 4]: <span lang="ar" dir="rtl">والشمس وضحاها والشمس وضحاها</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">والشمس وضحاها</span></p><p>Select original plus extra copy against one reference occurrence.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t09"><h2>t09 — Matching phrase repeated</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 91:1</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس وضحاها والشمس وضحاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والشمس وضحاها</div><p class="label">repetition_benign<br>&nbsp;&nbsp;transcript [0, 4] = «والشمس وضحاها والشمس وضحاها»<br>&nbsp;&nbsp;reference [0, 2] = «والشمس وضحاها»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t09&quot;,
   &quot;name&quot;: &quot;Matching phrase repeated&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -420,10 +391,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t10"><h2>t10 — Wrong then correct</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 91:2</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس والقمر اذا تلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والقمر اذا تلاها</div>
-<p class="label">substitution_corrected</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">والشمس والقمر</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">والقمر</span></p><p>The first word is wrong and the following attempt restores والقمر. Select both attempts.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t10"><h2>t10 — Wrong then correct</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 91:2</h3><b>Transcript</b><div class="arabic" lang="ar">والشمس والقمر اذا تلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والقمر اذا تلاها</div><p class="label">substitution_corrected<br>&nbsp;&nbsp;transcript [0, 2] = «والشمس والقمر»<br>&nbsp;&nbsp;reference [0, 1] = «والقمر»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t10&quot;,
   &quot;name&quot;: &quot;Wrong then correct&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -465,23 +433,22 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t11"><h2>t11 — Correct then wrong</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 91:3</h3><b>Transcript</b><div class="arabic" lang="ar">والنهار والليل اذا جلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والنهار اذا جلاها</div>
-<p class="label">substitution_mistake</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">والنهار والليل</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">والنهار</span></p><p>The first attempt matches والنهار; the final restatement changes it to والليل. Select both attempts.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t11"><h2>t11 — Correct then wrong on restatement</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 91:3</h3><b>Transcript</b><div class="arabic" lang="ar">والنهار اذا جلاها والليل اذا جلاها</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">والنهار اذا جلاها</div><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [0, 6] = «والنهار اذا جلاها والليل اذا جلاها»<br>&nbsp;&nbsp;reference [0, 3] = «والنهار اذا جلاها»</p><p class="note"><b>Note.</b> The correct attempt comes first and the incorrect restatement follows; the span covers both attempts in that order. The extra material re-renders the same reference words (two of its three tokens match), which makes it a restatement rather than an insertion. Contrast t08, where the extra word restates nothing.</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t11&quot;,
-  &quot;name&quot;: &quot;Correct then wrong&quot;,
+  &quot;name&quot;: &quot;Correct then wrong on restatement&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
   &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
-  &quot;annotation_note&quot;: &quot;&quot;,
+  &quot;annotation_note&quot;: &quot;The correct attempt comes first and the incorrect restatement follows; the span covers both attempts in that order. The extra material re-renders the same reference words (two of its three tokens match), which makes it a restatement rather than an insertion. Contrast t08, where the extra word restates nothing.&quot;,
   &quot;preamble&quot;: [],
   &quot;chunks&quot;: [
     {
       &quot;ayah_id&quot;: &quot;091003&quot;,
-      &quot;transcript&quot;: &quot;والنهار والليل اذا جلاها&quot;,
+      &quot;transcript&quot;: &quot;والنهار اذا جلاها والليل اذا جلاها&quot;,
       &quot;reference_text&quot;: &quot;والنهار اذا جلاها&quot;,
       &quot;transcript_tokens&quot;: [
         &quot;والنهار&quot;,
+        &quot;اذا&quot;,
+        &quot;جلاها&quot;,
         &quot;والليل&quot;,
         &quot;اذا&quot;,
         &quot;جلاها&quot;
@@ -494,26 +461,20 @@
       &quot;events&quot;: [
         {
           &quot;label&quot;: &quot;substitution_mistake&quot;,
-          &quot;hyp_words&quot;: &quot;والنهار والليل&quot;,
-          &quot;ref_words&quot;: &quot;والنهار&quot;,
           &quot;hyp_span&quot;: [
             0,
-            2
+            6
           ],
           &quot;ref_span&quot;: [
             0,
-            1
-          ],
-          &quot;note&quot;: &quot;The first attempt matches والنهار; the final restatement changes it to والليل. Select both attempts.&quot;
+            3
+          ]
         }
       ]
     }
   ]
 }</code></pre></details></article>
-<article id="t12"><h2>t12 — Omission restored on restart</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
-<p class="label">omission_corrected</p><p>Transcript span [0, 11]: <span lang="ar" dir="rtl">او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة</span><br>Reference span [0, 6]: <span lang="ar" dir="rtl">او اطعام في يوم ذي مسغبة</span></p><p>The first attempt lacks ذي; the complete restart restores it. Do not double-label the same attempt.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t12"><h2>t12 — Omission restored on restart</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><p class="label">omission_corrected<br>&nbsp;&nbsp;transcript [0, 11] = «او اطعام في يوم مسغبة او اطعام في يوم ذي مسغبة»<br>&nbsp;&nbsp;reference [0, 6] = «او اطعام في يوم ذي مسغبة»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t12&quot;,
   &quot;name&quot;: &quot;Omission restored on restart&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -565,42 +526,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t13"><h2>t13 — Ordinary spelling normalization is clean</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 92:3</h3><b>Transcript</b><div class="arabic" lang="ar">وما خلق الذكر والأنثى</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">وما خلق الذكر والانثى</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
-  &quot;example_id&quot;: &quot;t13&quot;,
-  &quot;name&quot;: &quot;Ordinary spelling normalization is clean&quot;,
-  &quot;review_status&quot;: &quot;draft&quot;,
-  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
-  &quot;annotation_note&quot;: &quot;&quot;,
-  &quot;preamble&quot;: [],
-  &quot;chunks&quot;: [
-    {
-      &quot;ayah_id&quot;: &quot;092003&quot;,
-      &quot;transcript&quot;: &quot;وما خلق الذكر والأنثى&quot;,
-      &quot;reference_text&quot;: &quot;وما خلق الذكر والانثى&quot;,
-      &quot;transcript_tokens&quot;: [
-        &quot;وما&quot;,
-        &quot;خلق&quot;,
-        &quot;الذكر&quot;,
-        &quot;والأنثى&quot;
-      ],
-      &quot;reference_tokens&quot;: [
-        &quot;وما&quot;,
-        &quot;خلق&quot;,
-        &quot;الذكر&quot;,
-        &quot;والانثى&quot;
-      ],
-      &quot;events&quot;: [],
-      &quot;label&quot;: &quot;clean&quot;
-    }
-  ]
-}</code></pre></details></article>
-<article id="t14"><h2>t14 — Complete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين ميم</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div>
-<p class="label">letters_benign</p><p>Transcript span [0, 3]: <span lang="ar" dir="rtl">طا سين ميم</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">طسم</span></p><p>The three spoken letter names express طسم in order.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t14"><h2>t14 — Complete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين ميم</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div><p class="label">letters_benign<br>&nbsp;&nbsp;transcript [0, 3] = «طا سين ميم»<br>&nbsp;&nbsp;reference [0, 1] = «طسم»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t14&quot;,
   &quot;name&quot;: &quot;Complete spoken letter names&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -639,10 +565,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t15"><h2>t15 — Incomplete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p>
-<h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div>
-<p class="label">substitution_mistake</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">طا سين</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">طسم</span></p><p>The one-token reference sequence طسم lacks its final ميم in the hypothesis; use the one-token substitution convention.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t15"><h2>t15 — Incomplete spoken letter names</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 26:1</h3><b>Transcript</b><div class="arabic" lang="ar">طا سين</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">طسم</div><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [0, 2] = «طا سين»<br>&nbsp;&nbsp;reference [0, 1] = «طسم»</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t15&quot;,
   &quot;name&quot;: &quot;Incomplete spoken letter names&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -680,16 +603,12 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t16"><h2>t16 — Contextual word boundary — requires explicit approval</h2><p class="note">Draft; awaiting owner approval.</p>
-<p>Review this linguistic example explicitly before including it in an agent guide.</p>
-<h3>Ayah 4:78</h3><b>Transcript</b><div class="arabic" lang="ar">اين ما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">اينما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div>
-<p class="label">spelling_benign</p><p>Transcript span [0, 2]: <span lang="ar" dir="rtl">اين ما</span><br>Reference span [0, 1]: <span lang="ar" dir="rtl">اينما</span></p><p>Proposed teaching equivalence: اين ما / اينما in this clause. Human approval is required; this is not an approved expansion of normalization.</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t16"><h2>t16 — Contextual word boundary — requires explicit approval</h2><p class="note ok">Approved by the owner.</p><h3>Ayah 4:78</h3><b>Transcript</b><div class="arabic" lang="ar">اين ما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">اينما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وان تصبهم حسنة يقولوا هذه من عند الله وان تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا</div><p class="label">spelling_benign<br>&nbsp;&nbsp;transcript [0, 2] = «اين ما»<br>&nbsp;&nbsp;reference [0, 1] = «اينما»</p><p class="note"><b>Note.</b> Approved. Word-boundary difference only: with whitespace removed the letter sequences are identical (اينما = اين ما), so no letters were changed. The same phrase is written joined in 4:78 and separated in 2:148, so the boundary is contextual. A split that also changes letters is a substitution, not a benign spelling difference.</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t16&quot;,
   &quot;name&quot;: &quot;Contextual word boundary — requires explicit approval&quot;,
-  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;review_status&quot;: &quot;approved&quot;,
   &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
-  &quot;annotation_note&quot;: &quot;Review this linguistic example explicitly before including it in an agent guide.&quot;,
+  &quot;annotation_note&quot;: &quot;Approved. Word-boundary difference only: with whitespace removed the letter sequences are identical (اينما = اين ما), so no letters were changed. The same phrase is written joined in 4:78 and separated in 2:148, so the boundary is contextual. A split that also changes letters is a substitution, not a benign spelling difference.&quot;,
   &quot;preamble&quot;: [],
   &quot;chunks&quot;: [
     {
@@ -792,11 +711,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t17"><h2>t17 — Istiadhah outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p>
-<p>Opening text</p><div class="arabic" lang="ar">أعوذ بالله من الشيطان الرجيم</div><p class="label">isti3adha_benign</p>
-<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t17"><h2>t17 — Istiadhah outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p><b>Preamble — <span class="label">isti3adha_benign</span></b><div class="arabic" lang="ar">أعوذ بالله من الشيطان الرجيم</div><h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div><p class="label">clean — no events</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t17&quot;,
   &quot;name&quot;: &quot;Istiadhah outside the ayah&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -826,11 +741,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t18"><h2>t18 — Basmala outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p>
-<p>Opening text</p><div class="arabic" lang="ar">بسم الله الرحمن الرحيم</div><p class="label">basmala_benign</p>
-<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t18"><h2>t18 — Basmala outside the ayah</h2><p class="note">Draft; awaiting owner approval.</p><b>Preamble — <span class="label">basmala_benign</span></b><div class="arabic" lang="ar">بسم الله الرحمن الرحيم</div><h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">فك رقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div><p class="label">clean — no events</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t18&quot;,
   &quot;name&quot;: &quot;Basmala outside the ayah&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -860,15 +771,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t19"><h2>t19 — Whole intervening ayah omitted</h2><p class="note">Draft; awaiting owner approval.</p>
-<p>Constructed scenario: the intended continuous passage was established as 90:12–14 before event annotation. The supplied empty chunk makes this explicit. Do not infer missing ayahs from arbitrary ID gaps.</p>
-<h3>Ayah 90:12</h3><b>Transcript</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div>
-<p class="label">clean — no events</p>
-<h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar">∅</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div>
-<p class="label">omission_mistake</p><p>Transcript span [0, 0]: <span lang="ar" dir="rtl">∅</span><br>Reference span [0, 2]: <span lang="ar" dir="rtl">فك رقبة</span></p><p>The reviewed intended continuous passage includes this entirely missing ayah.</p>
-<h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t19"><h2>t19 — Whole intervening ayah omitted</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:12</h3><b>Transcript</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">وما ادراك ما العقبة</div><p class="label">clean — no events</p><h3>Ayah 90:13</h3><b>Transcript</b><div class="arabic" lang="ar"><i>empty — adjudicated whole-ayah omission</i></div><b>Reference — actual ayah</b><div class="arabic" lang="ar">فك رقبة</div><p class="label">omission_mistake<br>&nbsp;&nbsp;transcript [0, 0] = «∅ empty at 0»<br>&nbsp;&nbsp;reference [0, 2] = «فك رقبة»</p><h3>Ayah 90:14</h3><b>Transcript</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">او اطعام في يوم ذي مسغبة</div><p class="label">clean — no events</p><p class="note"><b>Note.</b> Constructed scenario: the intended continuous passage was established as 90:12–14 before event annotation. The supplied empty chunk makes this explicit. Do not infer missing ayahs from arbitrary ID gaps.</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t19&quot;,
   &quot;name&quot;: &quot;Whole intervening ayah omitted&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -946,11 +849,7 @@
     }
   ]
 }</code></pre></details></article>
-<article id="t20"><h2>t20 — Repeated word already in the reference is clean</h2><p class="note">Draft; awaiting owner approval.</p>
-<p>وتواصوا occurs twice in the reference; its two matching occurrences are not an extra repetition.</p>
-<h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div>
-<p class="label">clean — no events</p>
-<details><summary>Full data point</summary><pre><code>{
+<article id="t20"><h2>t20 — Repeated word already in the reference is clean</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><p class="label">clean — no events</p><p class="note"><b>Note.</b> وتواصوا occurs twice in the reference; its two matching occurrences are not an extra repetition.</p><details><summary>Full data point</summary><pre><code>{
   &quot;example_id&quot;: &quot;t20&quot;,
   &quot;name&quot;: &quot;Repeated word already in the reference is clean&quot;,
   &quot;review_status&quot;: &quot;draft&quot;,
@@ -989,4 +888,65 @@
     }
   ]
 }</code></pre></details></article>
-</html>
+<article id="t21"><h2>t21 — Two different errors in one ayah</h2><p class="note">Draft; awaiting owner approval.</p><h3>Ayah 90:17</h3><b>Transcript</b><div class="arabic" lang="ar">ثم كان الذين امنوا وتواصوا بالصبر وتواصوا بالرحمة</div><b>Reference — actual ayah</b><div class="arabic" lang="ar">ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة</div><p class="label">omission_mistake<br>&nbsp;&nbsp;transcript [2, 2] = «∅ empty at 2»<br>&nbsp;&nbsp;reference [2, 3] = «من»</p><p class="label">substitution_mistake<br>&nbsp;&nbsp;transcript [7, 8] = «بالرحمة»<br>&nbsp;&nbsp;reference [8, 9] = «بالمرحمة»</p><p class="note"><b>Note.</b> A chunk carries every event it contains, and they need not share a label. Finding one error does not end the search. Omission and substitution together are the most common combination in reviewed data.</p><details><summary>Full data point</summary><pre><code>{
+  &quot;example_id&quot;: &quot;t21&quot;,
+  &quot;name&quot;: &quot;Two different errors in one ayah&quot;,
+  &quot;review_status&quot;: &quot;draft&quot;,
+  &quot;provenance&quot;: &quot;constructed teaching transcript; not a recording&quot;,
+  &quot;annotation_note&quot;: &quot;A chunk carries every event it contains, and they need not share a label. Finding one error does not end the search. Omission and substitution together are the most common combination in reviewed data.&quot;,
+  &quot;preamble&quot;: [],
+  &quot;chunks&quot;: [
+    {
+      &quot;ayah_id&quot;: &quot;090017&quot;,
+      &quot;chunk_idx&quot;: 0,
+      &quot;n_chunks&quot;: 1,
+      &quot;transcript&quot;: &quot;ثم كان الذين امنوا وتواصوا بالصبر وتواصوا بالرحمة&quot;,
+      &quot;transcript_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالرحمة&quot;
+      ],
+      &quot;reference_text&quot;: &quot;ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة&quot;,
+      &quot;reference_tokens&quot;: [
+        &quot;ثم&quot;,
+        &quot;كان&quot;,
+        &quot;من&quot;,
+        &quot;الذين&quot;,
+        &quot;امنوا&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالصبر&quot;,
+        &quot;وتواصوا&quot;,
+        &quot;بالمرحمة&quot;
+      ],
+      &quot;events&quot;: [
+        {
+          &quot;label&quot;: &quot;omission_mistake&quot;,
+          &quot;hyp_span&quot;: [
+            2,
+            2
+          ],
+          &quot;ref_span&quot;: [
+            2,
+            3
+          ]
+        },
+        {
+          &quot;label&quot;: &quot;substitution_mistake&quot;,
+          &quot;hyp_span&quot;: [
+            7,
+            8
+          ],
+          &quot;ref_span&quot;: [
+            8,
+            9
+          ]
+        }
+      ]
+    }
+  ]
+}</code></pre></details></article>

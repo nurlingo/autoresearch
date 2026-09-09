@@ -443,18 +443,20 @@
     },
     {
       "example_id": "t11",
-      "name": "Correct then wrong",
+      "name": "Correct then wrong on restatement",
       "review_status": "draft",
       "provenance": "constructed teaching transcript; not a recording",
-      "annotation_note": "",
+      "annotation_note": "The correct attempt comes first and the incorrect restatement follows; the span covers both attempts in that order. The extra material re-renders the same reference words (two of its three tokens match), which makes it a restatement rather than an insertion. Contrast t08, where the extra word restates nothing.",
       "preamble": [],
       "chunks": [
         {
           "ayah_id": "091003",
-          "transcript": "والنهار والليل اذا جلاها",
+          "transcript": "والنهار اذا جلاها والليل اذا جلاها",
           "reference_text": "والنهار اذا جلاها",
           "transcript_tokens": [
             "والنهار",
+            "اذا",
+            "جلاها",
             "والليل",
             "اذا",
             "جلاها"
@@ -467,17 +469,14 @@
           "events": [
             {
               "label": "substitution_mistake",
-              "hyp_words": "والنهار والليل",
-              "ref_words": "والنهار",
               "hyp_span": [
                 0,
-                2
+                6
               ],
               "ref_span": [
                 0,
-                1
-              ],
-              "note": "The first attempt matches والنهار; the final restatement changes it to والليل. Select both attempts."
+                3
+              ]
             }
           ]
         }
@@ -532,35 +531,6 @@
               "note": "The first attempt lacks ذي; the complete restart restores it. Do not double-label the same attempt."
             }
           ]
-        }
-      ]
-    },
-    {
-      "example_id": "t13",
-      "name": "Ordinary spelling normalization is clean",
-      "review_status": "draft",
-      "provenance": "constructed teaching transcript; not a recording",
-      "annotation_note": "",
-      "preamble": [],
-      "chunks": [
-        {
-          "ayah_id": "092003",
-          "transcript": "وما خلق الذكر والأنثى",
-          "reference_text": "وما خلق الذكر والانثى",
-          "transcript_tokens": [
-            "وما",
-            "خلق",
-            "الذكر",
-            "والأنثى"
-          ],
-          "reference_tokens": [
-            "وما",
-            "خلق",
-            "الذكر",
-            "والانثى"
-          ],
-          "events": [],
-          "label": "clean"
         }
       ]
     },
@@ -644,9 +614,9 @@
     {
       "example_id": "t16",
       "name": "Contextual word boundary — requires explicit approval",
-      "review_status": "draft",
+      "review_status": "approved",
       "provenance": "constructed teaching transcript; not a recording",
-      "annotation_note": "Review this linguistic example explicitly before including it in an agent guide.",
+      "annotation_note": "Approved. Word-boundary difference only: with whitespace removed the letter sequences are identical (اينما = اين ما), so no letters were changed. The same phrase is written joined in 4:78 and separated in 2:148, so the boundary is contextual. A split that also changes letters is a substitution, not a benign spelling difference.",
       "preamble": [],
       "chunks": [
         {
@@ -923,6 +893,68 @@
           ],
           "events": [],
           "label": "clean"
+        }
+      ]
+    },
+    {
+      "example_id": "t21",
+      "name": "Two different errors in one ayah",
+      "review_status": "draft",
+      "provenance": "constructed teaching transcript; not a recording",
+      "annotation_note": "A chunk carries every event it contains, and they need not share a label. Finding one error does not end the search. Omission and substitution together are the most common combination in reviewed data.",
+      "preamble": [],
+      "chunks": [
+        {
+          "ayah_id": "090017",
+          "chunk_idx": 0,
+          "n_chunks": 1,
+          "transcript": "ثم كان الذين امنوا وتواصوا بالصبر وتواصوا بالرحمة",
+          "transcript_tokens": [
+            "ثم",
+            "كان",
+            "الذين",
+            "امنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالرحمة"
+          ],
+          "reference_text": "ثم كان من الذين امنوا وتواصوا بالصبر وتواصوا بالمرحمة",
+          "reference_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "امنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالمرحمة"
+          ],
+          "events": [
+            {
+              "label": "omission_mistake",
+              "hyp_span": [
+                2,
+                2
+              ],
+              "ref_span": [
+                2,
+                3
+              ]
+            },
+            {
+              "label": "substitution_mistake",
+              "hyp_span": [
+                7,
+                8
+              ],
+              "ref_span": [
+                8,
+                9
+              ]
+            }
+          ]
         }
       ]
     }
