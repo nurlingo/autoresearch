@@ -38,7 +38,7 @@ duplicate screening. Private production exports are not included here.
 
 [EXPERIMENT.md](EXPERIMENT.md) explains the agent comparison and gold isolation.
 The [training release](release/README.md) contains 127 recording cases / 888 input
-units; its train-only review sample contains 23 cases / 394 units. Shared clean
+units; its train-only review sample contains 23 cases / 381 units. Shared clean
 ayahs and different error variants are allowed; complete gold copies and copies of
 event-bearing gold chunks are excluded. The [submission checklist](SUBMISSION-TODO.md)
 tracks what the call requires against what only matters if the proposal is accepted.

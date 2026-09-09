@@ -22,7 +22,7 @@ frozen and validated; the paper is two pages.
 - [x] Remove redundant training cases and quarantine unresolved/out-of-scope inputs.
 - [x] Freeze train v1.0: 127 cases, 888 units, including 44 new recordings.
 - [x] Preserve original source tokens and canonical Quran reference text.
-- [x] Prepare actual train-only review sample: 23 cases, 394 units.
+- [x] Prepare actual train-only review sample: 23 cases, 381 units (v1.1).
 - [x] Implement/test evaluator v2.1 and evaluate empty, diff and production-component baselines.
 - [x] Rewrite the two-page proposal around annotation outputs and final-only scoring.
 - [x] Document method freedom: no required agents, iteration scoring or annotation phase.

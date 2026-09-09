@@ -43,7 +43,7 @@ gold chunk copies, 20 unresolved cases, one non-Quran case and 26 redundant
 training cases are excluded. Shared clean ayahs and different error variants
 remain eligible. See [release preparation](release/README.md) for exact rules,
 provenance and limitations. The source archive and private attribution are intact.
-The train-only review sample contains 23 cases and 394 units, exceeding 10% of
+The train-only review sample contains 23 cases and 381 units, exceeding 10% of
 combined train+gold by either count. Sample interpretation still needs confirmation.
 
 ## Duplicate policy

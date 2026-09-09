@@ -5,7 +5,7 @@ event annotation, not Task A detection/splitting. Only final solutions are score
 entrants choose their method and whether to annotate or use agents.
 
 Data: `study3/release/` (127 train cases, 888 units). Review sample: 23 train cases,
-394 units. Private test: gold100, 348 units, 162 events. No gold data is committed.
+381 units (v1.1). Private test: gold100, 348 units, 162 events. No gold data is committed.
 Evaluator: `study3/eval19.py` v2.1; baselines: `study3/BASELINES-v19.md`.
 
 See `study3/SUBMISSION-TODO.md` for remaining approvals, sample interpretation,
