@@ -17,7 +17,7 @@
 \maketitle
 
 \begin{abstract}
-Checking Quran recitation from an ASR transcript requires distinguishing unresolved mistakes from repetitions, repairs, opening formulas and accepted spelling differences. We report a completed human annotation of 100 production recording cases, covering 348 scored units and 162 localized events across ten combined labels. An executable evaluator scores labels and word positions together. A plain diff reaches label-aware F1 0.531 and localization F1 0.839; adapted production cleaner/alignment components reach 0.518 and 0.799. Their exact-span F1 scores are both 0.505. Correcting the adapter's word coordinates recovers all five annotated repetition events, showing why annotation interfaces must be checked before interpreting baseline failures. The dataset and scorecard support a planned comparison between agents developing annotation methods under a shared budget.
+Checking Quran recitation from an ASR transcript requires distinguishing unresolved mistakes from repetitions, repairs, opening formulas and accepted spelling differences. We report a completed human annotation of 100 production recording cases, covering 348 scored units and 162 localized events across ten combined labels. An executable evaluator scores labels and word positions together. A plain diff reaches label-aware F1 0.525 and localization F1 0.826; adapted production cleaner/alignment components reach 0.518 and 0.786. Their exact-span F1 scores are both 0.505. Correcting the adapter's word coordinates recovers all five annotated repetition events, showing why annotation interfaces must be checked before interpreting baseline failures. The dataset and scorecard support a planned comparison between agents developing annotation methods under a shared budget.
 \end{abstract}
 
 \section{The distinction the task turns on}
@@ -47,14 +47,14 @@ Systems receive the reviewed ayah split, the ayah ids and the exact references, 
 \begin{tabular}{lrrrrr}\toprule
 System & micro F1 & exact F1 & macro F1 & loc F1 & review cost\\\midrule
 Predict nothing & 0.000 & 0.000 & 0.000 & 0.000 & 51.2 \\
-Plain diff & 0.531 & 0.505 & 0.179 & 0.839 & 22.4 \\
-Adapted production components & 0.518 & 0.505 & 0.284 & 0.799 & 26.7 \\
+Plain diff & 0.525 & 0.505 & 0.178 & 0.826 & 23.3 \\
+Adapted production components & 0.518 & 0.505 & 0.284 & 0.786 & 26.7 \\
 \bottomrule
 \end{tabular}
 \caption{Evaluator v2.1: 348 units, 162 gold events. All baseline calls complete without crashes or invalid predictions.}
 \end{table}
 
-The plain diff locates 128 of 162 gold events (recall 0.790), with localization F1 0.839. Its label-aware recall is 0.500 and F1 is 0.531. These quantities differ: localization F1 is not the percentage of gold events found. It reaches per-label F1 0.94 for omissions and 0.85 for substitutions, and zero for the other eight labels. It emits 46 insertion predictions, 34 of them on opening-text units, whereas gold has one insertion event. Compound openings contain two gold formulas but a diff can return one insertion spanning both.
+The plain diff locates 126 of 162 gold events (recall 0.778), with localization F1 0.826. Its label-aware recall is 0.494 and F1 is 0.525. These quantities differ: localization F1 is not the percentage of gold events found. It reaches per-label F1 0.94 for omissions and 0.85 for substitutions, and zero for the other eight labels. It emits 46 insertion predictions, 34 of them on opening-text units, whereas gold has one insertion event. Compound openings contain two gold formulas but a diff can return one insertion spanning both.
 
 The second baseline adapts existing production cleaner and alignment components to the new event schema; the deployed application does not natively expose it. The adapter retains original token identities through deletion, uses alignment indices and reference offsets, and maps cleaner notes to reference phrases and both attempts. Its explicit heuristic interprets a stumble as a repair only when the following equally long surviving span matches the reference; unlocalizable removed fragments remain extra text. Production's partial-start scoring policy is retained. These choices are part of the baseline, not additional gold decisions.
 
