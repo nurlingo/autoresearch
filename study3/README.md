@@ -45,6 +45,14 @@ tracks what the call requires against what only matters if the proposal is accep
 [Teaching examples](calibration/teaching-review.html) are constructed cases, all twenty
 approved by the owner.
 
+## Human annotation of the training set
+
+The [selection audit and review plan](TRAIN-ANNOTATION.md) independently confirm
+221 candidates → 127 retained cases. The owner is preparing human annotations for
+training as well as gold100: three prior approvals carry over and 124 training
+cases await review. Answers and the review queue stay private; agent inputs remain
+unlabelled. This will permit direct evaluation of agents' training annotations.
+
 ## Corrections to frozen training release v1.0
 
 `release/` is byte-frozen and its `SHA256SUMS` are authoritative, so these two
