@@ -3,3 +3,6 @@ main.log
 main.out
 pg-*.png
 main.blg
+main.fdb_latexmk
+main.fls
+main.synctex.gz
