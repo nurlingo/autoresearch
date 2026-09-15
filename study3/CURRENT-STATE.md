@@ -6,19 +6,19 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **194 cases, 1,028 units, 458 events**, including draft annotations |
-| Working source-review statuses | 146 reviewed, one partially reviewed, 47 draft; these are provenance, not blanket approval of every revised event |
+| Working annotation corpus | **193 cases, 1,027 units, 457 events** — 96 `r*` and 97 `train-*` |
+| Working source-review statuses | 146 reviewed, one partially reviewed, 41 draft, five approved; these are provenance, not blanket approval of every revised event |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events |
-| Remaining interpretation questions | Ten existing cases; the six new additions also await ordinary draft review |
-| Corpus target | 200 cases; **six more suitable autodetect recordings needed** |
+| Remaining interpretation questions | Ten existing cases; the five additions are approved |
+| Corpus target | 200 cases; **seven more suitable autodetect recordings needed** |
 
 ## New inventory and six-case extension
 
 Read-only production check: 330 bot/autodetect recordings with 305 stored transcripts, and 25,776 single-ayah app recordings with 25,599 transcripts. Against the September 8 inventory, there are nine additional bot IDs and 357 newer single-ayah rows; all additions have stored transcripts.
 
-The owner selected **autodetect only** for this corpus. Single-ayah app transcripts have a different vocalization/transcription convention and are not pooled with them. One retained autodetect transcript also has harakat; its stored text is preserved unchanged. Six useful autodetect cases were added as drafts, one exact stored transcript per recording. Three other new bot candidates were left outside this batch because they repeat already-covered text/cases. The target is not filled by adding redundant cases or mixing recording families.
+The owner selected **autodetect only** for this corpus. Single-ayah app transcripts have a different vocalization/transcription convention and are not pooled with them. Six useful autodetect cases were added as drafts, one exact stored transcript per recording. One of them, a full-length 2:219 that shared 81% of its tokens with another in the same batch, was dropped on review; it was also the one vocalized transcript in the batch, so the corpus no longer contains a harakat-bearing autodetect transcript. The five kept were renumbered into the train series as train-128..132 and approved. Three other new bot candidates were left outside this batch because they repeat already-covered text/cases. The target is not filled by adding redundant cases or mixing recording families.
 
 Original objects for the selected recordings were downloaded and their SHA-256 hashes agree with the database. Storage metadata was checked against the existing corpus; no identical-byte audio group was found. This does not prove that differently encoded/clipped recordings are independent takes. Recorded `duration_sec` was not treated as measured audio length; durations come from the audio probe.
 
