@@ -6,13 +6,14 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **196 cases, 1,031 units, 465 events** — **99** `r*` (181 events) and 97 `train-*` (284 events) |
+| Working annotation corpus | **195 cases, 1,030 units, 461 events** — 98 `r*` (177 events) and 97 `train-*` (284 events) |
 | Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
 | Remaining interpretation questions | One, on r119: whether a false start drawn from a neighbouring ayah is an insertion or a corrected omission |
-| Corpus target | 100 train + 100 gold. **Three more train and one more gold**, selected by missing label |
+| Taxonomy gap | One case held out for want of `insertion_corrected`; see below |
+| Corpus target | 100 train + 100 gold. **Three more train and two more gold**, selected by missing label |
 
 ## New inventory and six-case extension
 
@@ -55,6 +56,26 @@ saying the canonical two-word form against that joined reference. Since the
 reference was the artifact and the reciters were right, those three events were
 withdrawn rather than kept. The other
 word-boundary decisions in the hamza adjudication are unaffected.
+
+## Taxonomy gap: a repaired insertion
+
+v0.19 has `substitution_corrected` and `omission_corrected` but no corrected form
+for an insertion, and one recording needs one. In 2:221 the reciter says
+ويبين الله, abandons الله and restarts at ويبين, continuing correctly. ويبين was
+never wrong, so `substitution_corrected` would claim a repair that did not
+happen; `insertion_mistake` records the extra word but loses the repair, and
+scores it against a reciter who fixed it.
+
+The recording is held in `deferred-taxonomy-gaps.jsonl` with the label it needs,
+outside the corpus, so no case in the scored data carries a label the evaluator
+does not know. Nine `insertion_mistake` events remain in the corpus and none is
+self-repaired: seven add a particle or a phrase and carry on, two add words
+before an intact opening. So this is the first instance in 195 recordings.
+
+Deciding it means weighing one attested case against an eleventh label that the
+evaluator, the guide, the agent instructions and eight frozen solutions would all
+have to account for. The natural moment is alongside the next corpus freeze,
+when scores are rebaselined anyway.
 
 ## Current rubric
 
