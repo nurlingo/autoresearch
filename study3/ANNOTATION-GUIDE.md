@@ -105,3 +105,9 @@ unchanged (no selected gold chunk contains a punctuation-only token).
 Then verify comprehension on separate practice inputs. Teaching, practice,
 development and final evaluation are different roles; no gold answers or
 selected-case hints belong in this guide or an agent runtime.
+
+## Current working review: entrance cases and grouping
+
+A corrected substitution requires evidence of two attempts at the same reference target. Repeated matching context is a strong anchor; inside an established clause, the aligned surrounding words can also identify the target. At an ayah entrance, an extra fragment followed by an intact opening, without such an anchor, is `insertion_mistake`. Recognizing a fragment from another ayah can explain the episode but is not sufficient to change its label. This is an operational convention for ambiguous text, not a claim that a repair did not occur.
+
+Apply granular grouping consistently to repeated passages. Record a more natural whole-passage interpretation as a note, without introducing an exception that merges its events. These are working-review rules; frozen experiment files remain unchanged.

@@ -1,6 +1,6 @@
 # Granular annotation review
 
-Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 442 events; the checkpoint below records the state before that audit. Granular grouping is the default, with an exception for a coherent passage replaced by a recognizable parallel-ayah passage. Such a replacement is one substitution event linking both versions, without additional internal repetition events. Context-supported abandoned openings can be corrected substitutions; initial position alone does not determine the label.
+Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 447 events; the checkpoint below records the state before that audit. Granular grouping is applied consistently, including parallel-ayah passage replacements. A broader episode interpretation may be documented in a note, without changing event grouping. For opening fragments, a donor phrase alone is insufficient to establish a corrected substitution; require repeated matching context or other independent evidence of two attempts at the same reference target. Otherwise use insertion for extra text before an intact opening.
 
 ## Checkpoint before the hamza audit — 2026-09-15
 
