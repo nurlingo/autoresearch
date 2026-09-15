@@ -111,3 +111,7 @@ alif maqsura folded — not verbatim Tanzil text. Before redistributing:
 - Reproduce Tanzil's copyright notice in the release directory.
 - Describe the reference as normalized for comparison, never as verbatim canonical text.
 - The application's own MIT LICENSE covers its code only, not this third-party text.
+
+## Current annotation review
+
+See [the granular review checkpoint](annotation-review/README.md) for the combined private corpus, multi-location events and per-transcript summaries. The frozen experiment remains separate.
