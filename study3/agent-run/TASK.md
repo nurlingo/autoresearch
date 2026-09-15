@@ -48,7 +48,7 @@ The ten labels: `substitution_mistake`, `omission_mistake`, `insertion_mistake`,
 
 ## Data
 
-- `data/corpus-inputs.jsonl` — all {N_CASES} cases, {N_UNITS} units. Inputs only:
+- `data/corpus-inputs.jsonl` — {N_CASES} recordings, {N_UNITS} units. Inputs only:
   **no answers are in your workspace.**
 - `data/quran-reference.json` — canonical ayah text, `{ayah_id: text}`.
 
@@ -58,12 +58,19 @@ The ten labels: `substitution_mistake`, `omission_mistake`, `insertion_mistake`,
 python3 score.py                 # runs solution.py over every case, prints the score
 ```
 
-It reports aggregate metrics and per-label F1 over all {N_CASES} cases. The
-primary measure is label-aware micro F1: a prediction counts only when its label
-matches and both spans overlap the gold event by at least half.
+It reports aggregate metrics and per-label F1 over the {N_CASES} recordings in
+your workspace. The primary measure is label-aware micro F1: a prediction counts
+only when its label matches and both spans overlap the gold event by at least
+half.
 
-You will not be told which cases failed, and nothing in your workspace names a
-case's answer. That is deliberate — see below.
+You will not be told which recordings failed, and nothing in your workspace
+names an answer. That is deliberate — see below.
+
+**These {N_CASES} are not the whole dataset.** A separate set of recordings,
+annotated to the same rubric, is held back. When you stop, your frozen
+`solution.py` is run against it. That is the number that decides whether the
+method works, and no amount of fitting to the recordings you can see will move
+it. Iterate here; aim there.
 
 ## Rules
 
@@ -81,8 +88,8 @@ Your solution must be a **general algorithm**. Specifically:
    recording is a memorized answer.
 4. **Standard library only.** No network, no file reads beyond the two data
    files above, no installing anything.
-5. Your solution is re-scored afterwards on recordings that are not in your
-   workspace. A solution that fits these {N_CASES} and nothing else will show it.
+5. Your solution is re-scored on the held-back recordings. A solution that fits
+   these {N_CASES} and nothing else will show it there.
 
 An automated audit runs on your final file and reports hardcoded identifiers,
 long literal transcript fragments and file access. Its findings are reported
@@ -90,16 +97,21 @@ alongside your score.
 
 ## Where the difficulty actually is
 
-The current best solutions score around 0.75–0.80 micro F1. They are near
-ceiling on the opening formulas and the disjoined letters, strong on plain
-substitutions and omissions, and weak in four places:
+The best existing solution scores 0.788 micro F1 on these recordings. It is at
+or near ceiling on the opening formulas, strong on plain substitutions and
+omissions, and weak in four places:
 
-| label | gold events | best F1 so far |
+| label | annotated events here | best F1 so far |
 |---|---:|---:|
-| `repetition_benign` | 43 | 0.31 |
-| `substitution_corrected` | 12 | 0.08 |
+| `repetition_benign` | 29 | 0.30 |
+| `substitution_corrected` | 7 | 0.00 |
 | `omission_corrected` | 7 | 0.14 |
-| `spelling_benign` | 68 | 0.70 |
+| `spelling_benign` | 56 | 0.70 |
+
+One label, `letters_benign`, does not occur in these recordings at all but does
+occur in the held-back set. The rubric describes it; you will get no feedback on
+it here. The same is true of anything else the rubric covers and these
+recordings happen not to contain.
 
 Repetitions and repairs need you to look across the whole unit rather than at a
 single diff position: the same words appear twice, or a wrong attempt is
