@@ -25,13 +25,12 @@ def load_solution(path: Path):
     return mod.Solution()
 
 
-def predict(sol, corpus, use_spelling=False):
+def predict(sol, corpus):
     preds, crashes = {}, 0
     for rec in corpus:
         rows = []
         for u in rec["units"]:
-            ref_tokens = (u.get("reference_spelling_tokens") if use_spelling else None) \
-                or u["reference_tokens"]
+            ref_tokens = u["reference_tokens"]
             chunk = {
                 "review_id": rec["case_id"],
                 "chunk_idx": u["chunk_idx"],
@@ -42,9 +41,6 @@ def predict(sol, corpus, use_spelling=False):
                 "reference_text": " ".join(ref_tokens),
                 "reference_tokens": list(ref_tokens),
             }
-            for extra in ("reference_spelling_tokens", "reference_spelling_text"):
-                if u.get(extra):
-                    chunk[extra] = list(u[extra]) if extra.endswith("tokens") else u[extra]
             try:
                 events = sol.detect_events(chunk) or []
             except Exception:
@@ -63,7 +59,6 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--solutions", nargs="+", type=Path, required=True)
-    ap.add_argument("--spelling", action="store_true", help="feed the hamza-preserving reference as reference_tokens")
     ap.add_argument("--out", type=Path, help="write per-solution predictions here")
     a = ap.parse_args()
     corpus = eval21.load_corpus(a.corpus)
@@ -71,7 +66,7 @@ def main() -> int:
     print(f"corpus: {len(corpus)} cases, "
           f"{sum(len(r['units']) for r in corpus)} units, "
           f"{sum(len(r.get('events') or []) for r in corpus)} events")
-    print(f"reference given to solutions: {'spelling (hamza preserved)' if a.spelling else 'clean (hamza folded)'}\n")
+    print("reference given to solutions: hamza preserved\n")
     print(f"{'solution':<34}{'micro':>7}{'exact':>7}{'macro':>7}{'loc':>7}{'cost2:1':>9}{'cleanflag':>10}{'inval':>7}")
     print("-" * 88)
     for sp in a.solutions:
@@ -81,7 +76,7 @@ def main() -> int:
         except Exception as exc:
             print(f"{name:<34}  load failed: {exc}")
             continue
-        preds, crashes = predict(sol, corpus, a.spelling)
+        preds, crashes = predict(sol, corpus)
         s = eval21.score(corpus, preds)
         c = s["counts"]
         print(f"{name:<34}{s['micro_f1']:>7.3f}{s['strict_micro_f1']:>7.3f}{s['macro_f1']:>7.3f}"

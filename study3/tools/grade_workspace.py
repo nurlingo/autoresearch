@@ -53,9 +53,6 @@ def main() -> int:
                 "reference_text": u["reference_text"],
                 "reference_tokens": list(u["reference_tokens"]),
             }
-            for extra in ("reference_spelling_tokens", "reference_spelling_text"):
-                if u.get(extra):
-                    chunk[extra] = list(u[extra]) if extra.endswith("tokens") else u[extra]
             try:
                 events = sol.detect_events(chunk) or []
             except Exception:
