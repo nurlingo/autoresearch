@@ -25,26 +25,81 @@ class Solution:
         ...
 ```
 
-`chunk` has `case_id`, `chunk_idx`, `n_chunks`, `ayah_id`, `transcript`,
-`transcript_tokens`, `reference_text`, `reference_tokens`, and for ayah units
-also `reference_vocalized_tokens` — the same reference with hamza and vowels
-preserved. Opening-formula units have `chunk_idx == -1`, no `ayah_id`, and empty
-reference fields.
+It is called **once per unit** — one ayah, or one opening formula. It never sees
+a whole recording at once, so everything it decides must be decidable from the
+unit in front of it.
 
-Return zero or more events, each:
+### The unit it receives
+
+| key | what it is |
+|---|---|
+| `case_id` | the recording this unit belongs to |
+| `chunk_idx` | position in the recording; `-1` marks an opening-formula unit |
+| `n_chunks` | how many ayah units the recording has |
+| `ayah_id` | six digits, e.g. `002219`; `None` on a formula unit |
+| `transcript`, `transcript_tokens` | what was recited, and the same split on whitespace |
+| `reference_text`, `reference_tokens` | the reference, hamza folded to bare alif and no vowels |
+| `reference_vocalized_text`, `reference_vocalized_tokens` | the same reference with hamza, madda and vowels intact |
+| `reference_spelling_text`, `reference_spelling_tokens` | the same reference in modern spelling: hamza written, no vowels |
+
+The three reference views are aligned token for token, so
+`reference_tokens[i]`, `reference_vocalized_tokens[i]` and
+`reference_spelling_tokens[i]` are the same word. Spans index the **plain**
+`reference_tokens`. The other two views exist so you can tell an accepted
+spelling from a changed word: the folded view has already lost hamza and alif
+maqsura distinctions, and a difference that only exists there is usually
+notation, not pronunciation.
+
+A formula unit (`chunk_idx == -1`) carries the isti'adhah or basmala as its
+transcript and has empty reference fields.
+
+### What it returns
+
+A list of events, each:
 
 ```json
 {"label": "...", "hyp_span": [start, end], "ref_span": [start, end]}
 ```
 
-Spans are zero-based, end-exclusive, over `transcript_tokens` and
+Spans are zero-based and end-exclusive over `transcript_tokens` and
 `reference_tokens` — the **original** arrays, not anything you normalize. An
-empty hypothesis span anchors an omission; an empty reference span anchors an
-insertion or a benign opening formula. Return `[]` for a clean unit.
+empty hypothesis span anchors an omission at that position; an empty reference
+span anchors an insertion or a benign opening formula. Return `[]` for a clean
+unit.
 
-The ten labels: `substitution_mistake`, `omission_mistake`, `insertion_mistake`,
-`substitution_corrected`, `omission_corrected`, `repetition_benign`,
-`letters_benign`, `spelling_benign`, `basmala_benign`, `isti3adha_benign`.
+### One event per phenomenon, not per occurrence
+
+This is the part that costs the most marks if you get it wrong.
+
+An event describes **something that happened**, not every place you can see it.
+When a reciter repeats a phrase, that is *one* `repetition_benign` event, even
+though the words appear twice. When they say a word wrongly and then correct
+themselves, that is *one* `substitution_corrected` event covering the attempt
+and the repair, not one event per attempt.
+
+```
+said:      وحيث ما كنتم فولوا وجوهكم شطره  وحيث ما كنتم فولوا وجوهكم شطره
+reference: وحيث ما كنتم فولوا وجوهكم شطره
+
+correct:   one repetition_benign event
+wrong:     two repetition_benign events — the second scores as a false positive
+```
+
+Emit one event and point its `hyp_span` at any one of the occurrences; the
+grader accepts whichever you choose. Emit one per occurrence and every extra is
+a false positive.
+
+Every `repetition_benign`, `substitution_corrected` and `omission_corrected`
+event in this data spans more than one place in the transcript. So does a small
+number of `substitution_mistake` events, where several failed attempts share
+one target.
+
+### The data file is shaped differently from the call
+
+`data/corpus-inputs.jsonl` is one JSON object per **recording**:
+`{"case_id": ..., "units": [ ... ]}`. Each entry in `units` is exactly the dict
+your `detect_events` will be called with. Read the file to develop against the
+data; the grader does the iterating for you.
 
 ## Data
 
@@ -115,6 +170,6 @@ recordings happen not to contain.
 
 Repetitions and repairs need you to look across the whole unit rather than at a
 single diff position: the same words appear twice, or a wrong attempt is
-followed by a right one. Accepted spellings need real orthographic knowledge —
-the vocalized reference is supplied for exactly this, and no current solution
-uses it.
+followed by a right one. Accepted spellings need real orthographic knowledge — the
+vocalized and spelling reference views are supplied for exactly this, and no
+current solution reads either of them.

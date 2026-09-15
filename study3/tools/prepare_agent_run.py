@@ -44,8 +44,10 @@ def main() -> int:
                     "reference_text": u["reference_text"],
                     "reference_tokens": list(u["reference_tokens"]),
                 }
-                if u.get("reference_vocalized_tokens"):
-                    row["reference_vocalized_tokens"] = list(u["reference_vocalized_tokens"])
+                for extra in ("reference_vocalized_tokens", "reference_vocalized_text",
+                              "reference_spelling_tokens", "reference_spelling_text"):
+                    if u.get(extra):
+                        row[extra] = list(u[extra]) if extra.endswith("tokens") else u[extra]
                 units.append(row)
                 n_units += 1
             f.write(json.dumps({"case_id": rec["case_id"], "units": units}, ensure_ascii=False) + "\n")
