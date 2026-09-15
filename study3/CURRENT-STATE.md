@@ -7,11 +7,11 @@ Use this page for current progress. Historical snapshots and published pilot num
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
 | Working annotation corpus | **193 cases, 1,027 units, 454 events** — 96 `r*` (170 events) and 97 `train-*` (284 events) |
-| Working source-review statuses | 146 reviewed, one partially reviewed, 41 draft, five approved; these are provenance, not blanket approval of every revised event |
+| Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
-| Remaining interpretation questions | Ten existing cases; the five additions are approved |
+| Remaining interpretation questions | Ten cases still carry a recorded question; the annotations themselves are approved |
 | Corpus target | 200 cases; **seven more suitable autodetect recordings needed** |
 
 ## New inventory and six-case extension
@@ -38,7 +38,15 @@ what makes 54% of a transcript's apparent differences turn out to be nothing at
 all. An agent scored against the folded text cannot tell a missing hamza mark
 from a different word, so it is no longer scored against it.
 
-`titles.clean` also disagrees with `titles.ar` on tokenization in six ayahs,
+`titles.clean` in the application's `quran.json` has been rebuilt so that it is
+exactly `titles.ar` with vowel marks, tatweel and waqf signs removed and أ إ آ ٱ
+folded to ا. It previously disagreed with `titles.ar` in 94 ayahs: six tokenized
+differently, and 78 ayah-segment entries had never had their hamza folded at all,
+so the field meant two different things depending on the entry. It now agrees
+with `content/quran.json` on all 6,231 shared ayahs and drifts from its own
+`titles.ar` nowhere.
+
+The tokenization disagreement had reached this corpus in one place,
 of which one reaches this corpus: an ayah where the mushaf writes بعد ما as two
 words and `clean` had joined it. Three `spelling_benign` events annotated reciters
 saying the canonical two-word form against that joined reference. Since the
