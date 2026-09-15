@@ -11,8 +11,8 @@ Use this page for current progress. Historical snapshots and published pilot num
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
-| Remaining interpretation questions | Ten cases still carry a recorded question; the annotations themselves are approved |
-| Corpus target | 200 cases; **seven more suitable autodetect recordings needed** |
+| Remaining interpretation questions | None. The ten open questions were settled by the approved annotations and cleared |
+| Corpus target | 100 train + 100 gold; **three and four more needed**, selected by missing label |
 
 ## New inventory and six-case extension
 
@@ -26,12 +26,14 @@ The temporary six single-ayah candidates were removed from active files, manifes
 
 ## Reference contract
 
-The reference now keeps its hamza. `reference_text` is `titles.ar` with vowel
-marks, tatweel and waqf signs removed; the folded form the app calls
-`titles.clean` is retained per unit as `reference_folded_text` so the legacy
-coordinates stay traceable. Both tokenize identically, so no span moved.
-`study3/quran-reference.json` is built from `content/quran.json` by the same
-rule and is what an agent receives.
+The reference keeps its hamza, and one definition now holds everywhere:
+`titles.ar` with vowel marks, tatweel and waqf signs removed, and nothing else.
+That text is the corpus `reference_text` (973 ayah units),
+`study3/quran-reference.json` built from `content/quran.json` (6,231 ayahs), and
+the application's own `titles.clean` (6,362 ayahs) — which no longer folds
+hamza, because every consumer of it already folds hamza itself. The earlier
+folded form is retained per unit as `reference_folded_text` so the legacy
+coordinates stay traceable; both tokenize identically, so no span moved.
 
 Folding أ إ آ to bare ا is what hid eight real substitutions from the audit and
 what makes 54% of a transcript's apparent differences turn out to be nothing at
@@ -75,10 +77,15 @@ Those results use frozen evaluator v2.1 and the original 162 events. They have n
 - [x] Prepare granular events, summaries, approval provenance and an offline reviewer.
 - [x] Apply owner-approved hamza decisions and retain faithful reference evidence.
 - [x] Check live production inventory read-only; add six verified autodetect drafts.
-- [ ] Review the six additions and resolve the ten earlier interpretation questions.
-- [ ] Collect/select six more suitable autodetect recordings to reach 200.
-- [ ] Obtain owner review of all remaining draft annotations and revised representations.
-- [ ] Implement/test a multi-location evaluator, including event matching across chunks and empty omission anchors.
+- [x] Review the additions and resolve the earlier interpretation questions.
+- [ ] Collect three more train and four more gold recordings to reach 100 each.
+      Choose for the labels the corpus lacks, not for volume: `omission_corrected`
+      is absent from the holdout entirely and cannot be measured there,
+      `letters_benign` is absent from train and cannot be learned from it, and
+      `insertion_mistake` has two events in the holdout. The last batch of six
+      added no benign events at all.
+- [x] Obtain owner review of all annotations: 193 cases and 454 events approved 2026-09-15.
+- [x] Implement/test a multi-location evaluator: `study3/eval21.py`, oracle 1.000 and empty 0.000 on both splits.
 - [ ] Refresh constructed teaching examples and comprehension checks for the current rubric, without using private examples.
 - [ ] Freeze a new corpus version, reference contract and grouped train/test allocation before new experiments.
 - [ ] Rerun baselines/agents on that version; retain old tables as historical results.
