@@ -6,14 +6,14 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **196 cases, 1,030 units, 459 events** — 97 `r*` (173 events) and 99 `train-*` (286 events) |
+| Working annotation corpus | **195 cases, 1,029 units, 458 events** — 97 `r*` (173 events) and 98 `train-*` (285 events) |
 | Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
 | Remaining interpretation questions | None in the corpus |
 | Taxonomy gap | One case held out for want of `insertion_corrected`; see below |
-| Corpus target | 100 train + 100 gold. **One more train and three more gold**, selected by missing label |
+| Corpus target | 100 train + 100 gold. **Two more train and three more gold**, selected by missing label |
 
 ## New inventory and six-case extension
 
@@ -84,6 +84,19 @@ assistant and removed rather than patched. Its inputs — transcript, split and 
 three reference views — are kept in `unannotated-pending.jsonl` with no events at
 all, so re-annotation starts from the recording rather than from a bad reading of
 it. Source recording `cf681047-e3ba-40d1-9eec-292b82069336`.
+
+## Split hygiene
+
+Checked after the latest train additions. 52 ayah units carry an identical transcript on
+both sides of the split, and **every one of them is clean on both sides** — a
+correctly recited ayah yields the same text whoever recites it, which the
+partition policy permits explicitly. No unit carrying an annotated event is
+duplicated across the split.
+
+One case was caught by this check and removed: a training recording whose
+transcript and event were identical to a case in the holdout. An event-bearing unit present on both sides is exactly what
+the policy excludes, and it would have let a solution match a holdout case from
+something it had seen in training.
 
 ## Current rubric
 
