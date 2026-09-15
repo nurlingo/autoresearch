@@ -6,13 +6,13 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **196 cases, 1,031 units, 465 events** — 96 `r*` (170 events) and **100** `train-*` (295 events) |
+| Working annotation corpus | **196 cases, 1,031 units, 465 events** — **99** `r*` (181 events) and 97 `train-*` (284 events) |
 | Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
-| Remaining interpretation questions | One, on train-135: whether a false start drawn from a neighbouring ayah is an insertion or a corrected omission |
-| Corpus target | 100 train + 100 gold. Train is complete; **four more gold recordings needed**, selected by missing label |
+| Remaining interpretation questions | One, on r119: whether a false start drawn from a neighbouring ayah is an insertion or a corrected omission |
+| Corpus target | 100 train + 100 gold. **Three more train and one more gold**, selected by missing label |
 
 ## New inventory and six-case extension
 
@@ -78,8 +78,8 @@ Those results use frozen evaluator v2.1 and the original 162 events. They have n
 - [x] Apply owner-approved hamza decisions and retain faithful reference evidence.
 - [x] Check live production inventory read-only; add six verified autodetect drafts.
 - [x] Review the additions and resolve the earlier interpretation questions.
-- [x] Reach 100 train cases: train-133/134/135 added from production, drafts awaiting review.
-- [ ] Collect four more gold recordings to reach 100.
+- [x] Add three production recordings to the holdout, drafts awaiting review.
+- [ ] Collect three more train and one more gold recording to reach 100 each.
       Choose for the labels the corpus lacks, not for volume: `omission_corrected`
       is absent from the holdout entirely and cannot be measured there,
       `letters_benign` is absent from train and cannot be learned from it, and
