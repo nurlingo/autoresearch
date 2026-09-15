@@ -6,11 +6,11 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **193 cases, 1,027 units, 457 events** — 96 `r*` and 97 `train-*` |
+| Working annotation corpus | **193 cases, 1,027 units, 454 events** — 96 `r*` (170 events) and 97 `train-*` (284 events) |
 | Working source-review statuses | 146 reviewed, one partially reviewed, 41 draft, five approved; these are provenance, not blanket approval of every revised event |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
-| Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events |
+| Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
 | Remaining interpretation questions | Ten existing cases; the five additions are approved |
 | Corpus target | 200 cases; **seven more suitable autodetect recordings needed** |
 
@@ -23,6 +23,28 @@ The owner selected **autodetect only** for this corpus. Single-ayah app transcri
 Original objects for the selected recordings were downloaded and their SHA-256 hashes agree with the database. Storage metadata was checked against the existing corpus; no identical-byte audio group was found. This does not prove that differently encoded/clipped recordings are independent takes. Recorded `duration_sec` was not treated as measured audio length; durations come from the audio probe.
 
 The temporary six single-ayah candidates were removed from active files, manifest and review bundle after the owner's clarification. Their read-only export remains private archival material.
+
+## Reference contract
+
+The reference now keeps its hamza. `reference_text` is `titles.ar` with vowel
+marks, tatweel and waqf signs removed; the folded form the app calls
+`titles.clean` is retained per unit as `reference_folded_text` so the legacy
+coordinates stay traceable. Both tokenize identically, so no span moved.
+`study3/quran-reference.json` is built from `content/quran.json` by the same
+rule and is what an agent receives.
+
+Folding أ إ آ to bare ا is what hid eight real substitutions from the audit and
+what makes 54% of a transcript's apparent differences turn out to be nothing at
+all. An agent scored against the folded text cannot tell a missing hamza mark
+from a different word, so it is no longer scored against it.
+
+`titles.clean` also disagrees with `titles.ar` on tokenization in six ayahs,
+of which one reaches this corpus: an ayah where the mushaf writes بعد ما as two
+words and `clean` had joined it. Three `spelling_benign` events annotated reciters
+saying the canonical two-word form against that joined reference. Since the
+reference was the artifact and the reciters were right, those three events were
+withdrawn rather than kept. The other
+word-boundary decisions in the hamza adjudication are unaffected.
 
 ## Current rubric
 
