@@ -6,14 +6,14 @@ Use this page for current progress. Historical snapshots and published pilot num
 |---|---|
 | Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
 | Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **194 cases, 1,028 units, 457 events** — 97 `r*` (173 events) and 97 `train-*` (284 events) |
+| Working annotation corpus | **196 cases, 1,030 units, 459 events** — 97 `r*` (173 events) and 99 `train-*` (286 events) |
 | Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
 | Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
 | Repetition convention | All matching occurrences linked; 43 events / 89 locations |
 | Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
 | Remaining interpretation questions | None in the corpus |
 | Taxonomy gap | One case held out for want of `insertion_corrected`; see below |
-| Corpus target | 100 train + 100 gold. **Three more train and three more gold**, selected by missing label |
+| Corpus target | 100 train + 100 gold. **One more train and three more gold**, selected by missing label |
 
 ## New inventory and six-case extension
 
