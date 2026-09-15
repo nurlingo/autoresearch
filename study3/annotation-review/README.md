@@ -1,6 +1,6 @@
 # Granular annotation review
 
-Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 447 events; the checkpoint below records the state before that audit. Granular grouping is applied consistently, including parallel-ayah passage replacements. A broader episode interpretation may be documented in a note, without changing event grouping. For opening fragments, a donor phrase alone is insufficient to establish a corrected substitution; require repeated matching context or other independent evidence of two attempts at the same reference target. Otherwise use insertion for extra text before an intact opening.
+Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 452 events; the checkpoint below records the state before that audit. Granular grouping is applied consistently, including parallel-ayah passage replacements. A broader episode interpretation may be documented in a note, without changing event grouping. For opening fragments, a donor phrase alone is insufficient to establish a corrected substitution; require repeated matching context or other independent evidence of two attempts at the same reference target. Otherwise use insertion for extra text before an intact opening.
 
 ## Checkpoint before the hamza audit — 2026-09-15
 
