@@ -25,12 +25,12 @@ def load_solution(path: Path):
     return mod.Solution()
 
 
-def predict(sol, corpus, use_vocalized=False):
+def predict(sol, corpus, use_spelling=False):
     preds, crashes = {}, 0
     for rec in corpus:
         rows = []
         for u in rec["units"]:
-            ref_tokens = (u.get("reference_vocalized_tokens") if use_vocalized else None) \
+            ref_tokens = (u.get("reference_spelling_tokens") if use_spelling else None) \
                 or u["reference_tokens"]
             chunk = {
                 "review_id": rec["case_id"],
@@ -42,8 +42,7 @@ def predict(sol, corpus, use_vocalized=False):
                 "reference_text": " ".join(ref_tokens),
                 "reference_tokens": list(ref_tokens),
             }
-            for extra in ("reference_vocalized_tokens", "reference_vocalized_text",
-                          "reference_spelling_tokens", "reference_spelling_text"):
+            for extra in ("reference_spelling_tokens", "reference_spelling_text"):
                 if u.get(extra):
                     chunk[extra] = list(u[extra]) if extra.endswith("tokens") else u[extra]
             try:
@@ -64,7 +63,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--solutions", nargs="+", type=Path, required=True)
-    ap.add_argument("--vocalized", action="store_true", help="feed the hamza-preserving reference")
+    ap.add_argument("--spelling", action="store_true", help="feed the hamza-preserving reference as reference_tokens")
     ap.add_argument("--out", type=Path, help="write per-solution predictions here")
     a = ap.parse_args()
     corpus = eval21.load_corpus(a.corpus)
@@ -72,7 +71,7 @@ def main() -> int:
     print(f"corpus: {len(corpus)} cases, "
           f"{sum(len(r['units']) for r in corpus)} units, "
           f"{sum(len(r.get('events') or []) for r in corpus)} events")
-    print(f"reference given to solutions: {'vocalized (hamza preserved)' if a.vocalized else 'clean (hamza folded)'}\n")
+    print(f"reference given to solutions: {'spelling (hamza preserved)' if a.spelling else 'clean (hamza folded)'}\n")
     print(f"{'solution':<34}{'micro':>7}{'exact':>7}{'macro':>7}{'loc':>7}{'cost2:1':>9}{'cleanflag':>10}{'inval':>7}")
     print("-" * 88)
     for sp in a.solutions:
@@ -82,7 +81,7 @@ def main() -> int:
         except Exception as exc:
             print(f"{name:<34}  load failed: {exc}")
             continue
-        preds, crashes = predict(sol, corpus, a.vocalized)
+        preds, crashes = predict(sol, corpus, a.spelling)
         s = eval21.score(corpus, preds)
         c = s["counts"]
         print(f"{name:<34}{s['micro_f1']:>7.3f}{s['strict_micro_f1']:>7.3f}{s['macro_f1']:>7.3f}"

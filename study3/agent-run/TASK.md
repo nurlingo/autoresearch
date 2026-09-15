@@ -38,17 +38,25 @@ unit in front of it.
 | `n_chunks` | how many ayah units the recording has |
 | `ayah_id` | six digits, e.g. `002219`; `None` on a formula unit |
 | `transcript`, `transcript_tokens` | what was recited, and the same split on whitespace |
-| `reference_text`, `reference_tokens` | the reference, hamza folded to bare alif and no vowels |
-| `reference_vocalized_text`, `reference_vocalized_tokens` | the same reference with hamza, madda and vowels intact |
-| `reference_spelling_text`, `reference_spelling_tokens` | the same reference in modern spelling: hamza written, no vowels |
+| `reference_text`, `reference_tokens` | the reference with hamza folded to bare alif: أ إ آ all written ا |
+| `reference_spelling_text`, `reference_spelling_tokens` | the same reference with hamza written: أيها, الأرض, أحل |
 
-The three reference views are aligned token for token, so
-`reference_tokens[i]`, `reference_vocalized_tokens[i]` and
-`reference_spelling_tokens[i]` are the same word. Spans index the **plain**
-`reference_tokens`. The other two views exist so you can tell an accepted
-spelling from a changed word: the folded view has already lost hamza and alif
-maqsura distinctions, and a difference that only exists there is usually
-notation, not pronunciation.
+**Use both.** They are aligned token for token — `reference_tokens[i]` and
+`reference_spelling_tokens[i]` are the same word — and your spans index the
+plain `reference_tokens`. But they disagree on 19% of tokens, and the
+disagreement is always hamza, which the plain view has thrown away.
+
+That matters because the two directions mean opposite things:
+
+- the reciter wrote bare alif where the reference writes hamza — notation
+  omitted, `spelling_benign`
+- the reciter wrote a *different* hamza than the reference — أن against إن,
+  say — a different word, `substitution_mistake`
+
+Against the plain reference both look identical, so the spelling view is the
+only way to tell them apart. Vowel marks are deliberately not supplied: an
+unwritten vowel is not evidence, and hamza above an alif does not by itself
+distinguish one vowel from another.
 
 A formula unit (`chunk_idx == -1`) carries the isti'adhah or basmala as its
 transcript and has empty reference fields.
@@ -171,5 +179,5 @@ recordings happen not to contain.
 Repetitions and repairs need you to look across the whole unit rather than at a
 single diff position: the same words appear twice, or a wrong attempt is
 followed by a right one. Accepted spellings need real orthographic knowledge — the
-vocalized and spelling reference views are supplied for exactly this, and no
-current solution reads either of them.
+spelling reference view is supplied for exactly this, and no current solution
+reads it.
