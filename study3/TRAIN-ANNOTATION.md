@@ -1,4 +1,8 @@
-# Human annotation of training cases
+# Human annotation of the working corpus
+
+Current state: [194 cases](CURRENT-STATE.md), combining historical gold/train on equal terms with six new autodetect drafts. The owner chose one transcript per identical-audio group and a target of 200. Single-ayah app recordings are excluded because their transcription convention differs. All 15 presented hamza events are approved; remaining drafts and interpretation questions are tracked privately.
+
+The 221 → 127 audit below remains valid for the **frozen experiment release**. Its annotation plan and starting progress are historical, not current corpus totals.
 
 ## Selection audit — 2026-09-10
 
@@ -43,7 +47,7 @@ the release directory. It prints aggregates; optional detailed witnesses must go
 to a private report outside the release. All inputs containing answers or source
 identities remain owner-side.
 
-## Training annotation plan
+## Historical training annotation plan — superseded by the combined corpus
 
 The owner will human-review the **127 training recordings / 888 units**, using the
 same event labels and word-span conventions as gold100. The three former approved
@@ -63,7 +67,7 @@ evaluate any training annotations an agent produces, without supplying feedback
 from them during development. This is annotation agreement on seen training inputs;
 algorithm generalization is still measured against the separate gold100 test.
 
-Finishing this review would yield **227 human-annotated recording cases** across
+Under that earlier plan, finishing the review would have yielded **227 human-annotated transcript cases** across
 127 training and 100 test cases. It would not create a 227-case unseen test set.
 Any later publication of training answers must be versioned and disclosed; future
 runs on those published answers would use a different information condition.

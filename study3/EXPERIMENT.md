@@ -1,5 +1,7 @@
 # Annotation-and-algorithm experiment — preparation
 
+**Current status (2026-09-15):** see [the current-state index](CURRENT-STATE.md). The working corpus has 194 cases with granular multi-location events. Frozen gold100, evaluator v2.1 and pilot numbers below retain their original contract.
+
 ## The research question
 
 How do different agents develop transcript-annotation algorithms under the same

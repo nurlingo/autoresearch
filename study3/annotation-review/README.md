@@ -1,6 +1,6 @@
 # Granular annotation review
 
-Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 452 events; the checkpoint below records the state before that audit. Granular grouping is applied consistently, including parallel-ayah passage replacements. A broader episode interpretation may be documented in a note, without changing event grouping. For opening fragments, a donor phrase alone is insufficient to establish a corrected substitution; require repeated matching context or other independent evidence of two attempts at the same reference target. Otherwise use insertion for extra text before an intact opening.
+Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 194 cases, 1,028 units and 458 events, including six new autodetect drafts; the checkpoint below records the state before that audit. Granular grouping is applied consistently, including parallel-ayah passage replacements. A broader episode interpretation may be documented in a note, without changing event grouping. For opening fragments, a donor phrase alone is insufficient to establish a corrected substitution; require repeated matching context or other independent evidence of two attempts at the same reference target. Otherwise use insertion for extra text before an intact opening.
 
 ## Checkpoint before the hamza audit — 2026-09-15
 
@@ -21,7 +21,7 @@ An event has one `label`, `hyp_locations` and `reference`. Each transcript locat
 - Missing wording left absent: `omission_mistake`. Extra wording: `insertion_mistake`. Initial position alone does not decide insertion versus corrected substitution; surrounding lexical context matters.
 - Contextual spelling, spelled-out opening letters, isti3adha and basmala retain their corresponding `_benign` labels.
 
-Summaries explain annotations; they do not infer unheard audio or whether an error came from a speaker or ASR. Spelling is benign when the accepted reading in that context is equivalent. Hamza-seat variants do not authorize arbitrary addition or deletion of pronounced hamza. An audit of distinctions lost by alif normalization is the next work item.
+Summaries explain annotations; they do not infer unheard audio or whether an error came from a speaker or ASR. Spelling is benign when the accepted reading in that context is equivalent. Hamza-seat variants do not authorize arbitrary addition or deletion of pronounced hamza. The audit is complete and all 15 presented hamza events are owner-approved. Remaining work is listed in [CURRENT-STATE.md](../CURRENT-STATE.md).
 
 ## Reproducibility and access
 

@@ -1,5 +1,7 @@
 # Study 3 preparation
 
+**Current status (2026-09-15):** see [the current-state index](CURRENT-STATE.md). The working corpus has 194 cases with granular multi-location events. Frozen gold100, evaluator v2.1 and pilot numbers below retain their original contract.
+
 This directory prepares the annotation-and-algorithm experiment described in
 [METHODOLOGY-STUDY3.md](../METHODOLOGY-STUDY3.md). It includes the executable v2.1 evaluator and baseline adapters; the isolated
 agent experiment is not yet packaged. The historical `stage2/` harness uses a different contract.

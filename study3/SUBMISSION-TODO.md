@@ -1,4 +1,8 @@
-# MusIML submission checklist — 2026-09-09
+# MusIML submission checklist
+
+**Current audit (2026-09-15):** see [CURRENT-STATE.md](CURRENT-STATE.md). The new 194-case working corpus is not a frozen competition release. Eight informal pilot runs are already reported; repeated experiments and new-format scoring remain outstanding. Submission/acceptance is not verified by this checklist.
+
+## Historical submission preparation — 2026-09-09
 
 [Official call](https://www.musiml.org/events/2026-NeurIPS/index.html): final deadline
 September 10, 2026. Track 3 asks for a competition **proposal** in at most two pages,
@@ -10,8 +14,7 @@ We are applying, not running a competition. The call requires no dates, organize
 sandbox or participant support, so those belong to acceptance, not submission, and
 are listed separately below. Unchecked items are not claimed as accomplished.
 
-**Everything the call requires is done.** Dataset, sample, metrics and baselines are
-frozen and validated; the paper is two pages.
+The original dataset, sample, metrics and baselines were prepared and frozen. Outstanding confirmation, attribution and author-submission items remain listed below; preparation alone does not establish completion of every submission requirement.
 
 ## Paper 1 — final-solution event annotation competition (Track 3)
 
@@ -84,11 +87,13 @@ The call asks for none of these; they are what running the competition would nee
 - [ ] Decide uniformly whether annotation delivery is optional or required for every compared agent.
 - [ ] Approve common teaching examples and freeze all evaluation choices before runs.
 - [ ] Prepare isolated agent workspaces without gold or answer-bearing repository/history access.
-- [ ] Run agents; preserve code, costs, logs and any generated annotations and revisions.
+- [x] Run eight informal pilots; the paper reports their results.
+- [ ] Run the preregistered repeated comparison and preserve all artifacts.
 - [ ] Freeze each final method and score it privately; no gold-driven edits/retries.
-- [ ] Report agent comparison, uncertainty and observed annotation strategies; update paper tables.
+- [x] Report informal pilot results and observed annotation strategies in the paper.
+- [ ] Report repeated-run uncertainty under a fixed protocol.
 - [ ] Review any machine annotations proposed for reuse; label their provenance accurately.
-- [ ] Recompile, review and submit. No new agent results are claimed before runs occur.
+- [ ] Complete author submission/acceptance follow-up; actual status requires confirmation.
 
 A full human-labelled training set is not required. If later measuring annotation
 accuracy directly, review a separate audit subset; a human-supervised baseline is

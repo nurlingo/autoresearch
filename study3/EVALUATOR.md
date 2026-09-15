@@ -1,5 +1,7 @@
 # Task B evaluator — taxonomy v0.19, evaluator v2.1
 
+**Current status (2026-09-15):** see [the current-state index](CURRENT-STATE.md). The working corpus has 194 cases with granular multi-location events. Frozen gold100, evaluator v2.1 and pilot numbers below retain their original contract.
+
 The evaluator reads private gold by path. Its source contains no gold records.
 The annotation set is fixed. MIN_SPAN=0.50 and anchor slack=1 are frozen; the
 secondary cost is reported at both 1:1 and 2:1 rather than frozen at one rate.
