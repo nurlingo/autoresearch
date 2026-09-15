@@ -42,9 +42,11 @@ chunk. `clean` is mutually exclusive with a nonempty chunk event list.
 ## Working procedure
 
 1. Read the whole chunk and reference before aligning individual words.
-2. Compare under agreed normalization. Ordinary hamza-bearing alif differences,
-   diacritics and punctuation alone do not create events. The exact executable
-   normalization table still needs freezing; do not add equivalences silently.
+2. For the current working review, follow the [hamza policy](annotation-review/HAMZA-POLICY.md).
+   The old clean reference loses meaningful distinctions: alif folding is only
+   candidate alignment, not a benign verdict. Consult the vocalized reference,
+   preserve explicit initial hamza/madda/wasl distinctions, and flag underspecified
+   spelling. Frozen experiments retain their original comparison contract.
 3. Look for attempts, restarts and repairs. Classify their outcome before
    labelling leftover replacements, omissions and insertions.
 4. Attach exact transcript/reference words and spans to every event.

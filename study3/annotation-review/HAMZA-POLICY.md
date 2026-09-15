@@ -1,0 +1,23 @@
+# Hamza and contextual spelling — 2026-09-15
+
+This is the current working annotation policy, separate from the frozen experimental release and its scores.
+
+## Distinguish alignment from equivalence
+
+The legacy clean reference folds أ, إ and آ to ا. It is useful for locating candidate correspondences but cannot establish that a written difference is benign. The application's `quran.json` also has vocalized `titles.ar`; use that evidence at the same ayah/word positions. Preserve original transcript and clean-reference fields and add a hamza-preserving reference view. A lexical alignment produced by lossy normalization is not a pronunciation verdict.
+
+1. Preserve explicit **initial أ versus إ**, including after attached particles. They can distinguish different word forms/vowels. Above-alif hamza alone does not distinguish /a/ from /u/; do not infer an unwritten vowel.
+2. Preserve **madda**. Do not generally identify آ with ا or أ. Contextually accepted orthography needs an explicit justification.
+3. Preserve **wasl versus qat3** as a reading distinction. But an unvowelled plain ا in a transcript may simply omit hamza notation. It does not prove the writer intended wasl. Flag such cases as underspecified until the annotation convention or reviewer resolves them; do not manufacture pronunciation evidence.
+4. **Medial/final hamza seat variants** can be benign when they represent the same hamza and do not change an explicitly supplied vowel or other pronounced segment. This is a contextual word correspondence, not a global ء/ئ/ؤ/أ/إ replacement table. Initial above/below hamza must not disappear through this rule.
+5. Previously accepted silent letters or connected-reading spellings remain contextual. Missing written wasl in connected recitation does not imply that qat3 may also be deleted. Explicitly changing a pronounced consonant or vowel remains a mistake.
+
+The [Quranic Arabic Corpus orthography model](https://corpus.quran.com/java/orthographymodel.jsp) represents hamza-above, hamza-below, madda, wasl and vowel marks separately. Its [phonetic documentation](https://corpus.quran.com/documentation/phonetic.jsp) also emphasizes contextual pronunciation. The specific annotation decisions here are our working rubric, not assertions that every orthographic difference proves an audio error.
+
+## Completed audit
+
+All 188 working recordings were scanned against the vocalized reference at aligned word positions. Eight initial above/below-hamza occurrences in six recordings were hidden by the old folding. Seven new substitution events were added; one existing contiguous substitution was enlarged. One final-seat correspondence was made an explicit, flagged candidate spelling event. Five bare-alif spellings and one previously accepted madda spelling remain flagged without automatic mistake labels. Thirteen recordings in total have normalization flags.
+
+The same update applies the owner's passage-grouping and boundary decisions. The working edition now has 442 events, including 40 repetition events with 83 explicitly linked occurrences. Unit count and recording text are unchanged; one reviewed boundary moves two words between adjacent ayahs.
+
+Actual case IDs, transcripts and annotation answers remain in the private review bundle. The public repository contains the policy and aggregate findings only. Neither frozen gold nor agent training inputs nor the evaluator was changed. A future release must provide a sufficiently faithful reference to the agent as well as the scorer; otherwise the new distinctions would be impossible to infer from the distributed clean reference alone.

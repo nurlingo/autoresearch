@@ -1,4 +1,8 @@
-# Granular annotation review checkpoint — 2026-09-15
+# Granular annotation review
+
+Current update: [hamza policy and audit](HAMZA-POLICY.md). The working edition now has 442 events; the checkpoint below records the state before that audit. Granular grouping is the default, with an exception for a coherent passage replaced by a recognizable parallel-ayah passage. Such a replacement is one substitution event linking both versions, without additional internal repetition events. Context-supported abandoned openings can be corrected substitutions; initial position alone does not determine the label.
+
+## Checkpoint before the hamza audit — 2026-09-15
 
 The private working corpus contains 188 distinct recordings, selected from 227 transcript candidates by retaining one transcript per identical-audio group. Its current review edition has 1,022 units and 439 localized events. It combines historical gold and development cases; it does not redefine the frozen experimental split.
 
