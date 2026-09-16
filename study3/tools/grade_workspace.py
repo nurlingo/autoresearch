@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""Grader. Holds the answers, runs outside the agent workspace.
+"""Owner-side grader: isolated input-only inference, then trusted scoring.
 
-Loads the workspace's solution.py, runs it over every case, scores against the
-private corpus with eval21, and prints aggregate metrics and per-label F1.
-It never prints a case id, a transcript or an expected answer.
+Never imports submitted code in this process. Gold paths are owner arguments,
+not environment variables passed into a development agent.
 """
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
-import os
+import hashlib
 import sys
 from pathlib import Path
 
@@ -18,53 +16,51 @@ HERE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(HERE))
 import eval21  # noqa: E402
 
-CORPUS = os.environ.get("FMR_CORPUS")
+from predict_isolated import predict_isolated, read_solution, IsolationError
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, required=True)
-    ap.add_argument("--corpus", type=Path, default=Path(CORPUS) if CORPUS else None)
+    ap.add_argument("--corpus", type=Path, required=True)
+    ap.add_argument("--expected-solution-sha256")
+    ap.add_argument("--split", choices=["train", "gold"], default="gold")
+    ap.add_argument("--timeout", type=float, default=60)
+    ap.add_argument("--predictions-out", type=Path)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--preflight", action="store_true", help="allow incomplete data or an unfrozen solution for setup checks")
     a = ap.parse_args()
-    if not a.corpus:
-        return print("grader: no corpus configured") or 2
-
     corpus = eval21.load_corpus(a.corpus)
-    sol_path = a.workspace / "solution.py"
-    spec = importlib.util.spec_from_file_location("agent_solution", sol_path)
-    mod = importlib.util.module_from_spec(spec)
+    eval21.validate_corpus(corpus)
+    if not a.preflight and (len(corpus) != 100 or any(r.get("review_status") != "approved" for r in corpus)
+                           or not a.expected_solution_sha256):
+        ap.error("measured grading requires 100 approved cases and --expected-solution-sha256; use --preflight for setup checks")
+    reference_path = HERE / "quran-reference.json"
+    frozen_path = a.workspace / "frozen-manifest.json"
+    if not frozen_path.exists() and not a.preflight:
+        ap.error("measured grading requires frozen-manifest.json from freeze_solution.py")
+    if frozen_path.exists():
+        frozen = json.loads(frozen_path.read_text())
+        reference_path = Path(frozen["reference_path"])
+        required = [(a.corpus, frozen[a.split + "_sha256"]),
+                    (reference_path, frozen["reference_sha256"]),
+                    (HERE / "eval21.py", frozen["evaluator_sha256"])]
+        if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in required):
+            ap.error("frozen split/reference/evaluator hash mismatch")
+        if a.expected_solution_sha256 and frozen["solution_sha256"] != a.expected_solution_sha256:
+            ap.error("provided solution hash disagrees with frozen manifest")
+    source = read_solution(a.workspace / "solution.py")
+    if a.expected_solution_sha256 and hashlib.sha256(source).hexdigest() != a.expected_solution_sha256:
+        return print("solution hash does not match the frozen artifact") or 2
     try:
-        spec.loader.exec_module(mod)
-        sol = mod.Solution()
-    except Exception as exc:
-        print(f"solution.py failed to load: {type(exc).__name__}: {exc}")
-        return 1
-
-    preds, crashes = {}, 0
-    for rec in corpus:
-        rows = []
-        for u in rec["units"]:
-            chunk = {
-                "case_id": rec["case_id"], "chunk_idx": u["chunk_idx"],
-                "n_chunks": sum(1 for x in rec["units"] if x["chunk_idx"] >= 0),
-                "ayah_id": u.get("ayah_id"), "transcript": u["transcript"],
-                "transcript_tokens": list(u["transcript_tokens"]),
-                "reference_text": u["reference_text"],
-                "reference_tokens": list(u["reference_tokens"]),
-            }
-            try:
-                events = sol.detect_events(chunk) or []
-            except Exception:
-                crashes += 1
-                events = []
-            for e in events:
-                if isinstance(e, dict):
-                    rows.append({"chunk_idx": u["chunk_idx"], "label": e.get("label"),
-                                 "hyp_span": e.get("hyp_span"), "ref_span": e.get("ref_span")})
-        preds[rec["case_id"]] = rows
-
+        result = predict_isolated(a.workspace / "solution.py", corpus, reference_path, timeout=a.timeout, source=source)
+    except IsolationError as exc:
+        return print(f"grader: {exc}") or 1
+    preds, crashes = result["predictions"], result["crashes"]
+    if a.predictions_out:
+        a.predictions_out.write_text(json.dumps(preds, ensure_ascii=False) + "\n")
     s = eval21.score(corpus, preds)
+    s["execution"] = {"crashes": crashes, **result["provenance"]}
     if a.json:
         print(json.dumps(s, ensure_ascii=False, indent=2))
         return 0

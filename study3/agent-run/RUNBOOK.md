@@ -1,102 +1,104 @@
-# Running an autoresearch iteration on the 194-case corpus
+# Autoresearch: train development, final gold validation
 
-## What the agent sees, and what it does not
+The frozen split is **100 train / 100 gold**, version `granular-100x100-v1.0`. All 200 cases are approved, including the five gap-targeted additions. Measured preparation refuses to proceed until there are **100 approved cases in each split**. Use `--preflight` only for setup checks; no measured run has been launched.
 
-The workspace holds inputs and a scorer. The answers stay in the private corpus
-and the grader runs **outside** the workspace, printing aggregate metrics and
-per-label F1 — never a case id, a transcript or an expected answer.
+## Runtime setup
 
-That separation is the defence against memorisation. Study 1 found Codex
-hardcoding 19–41 ayah ids per run, and the harness was what enabled it: the
-failure report printed the expected answers, so the agent optimised against a
-list rather than the problem. Here there is no such list to read.
-
-## Prepare
+Start Docker Desktop. The inference image is pinned by digest; the development image below pins the base and Claude Code version to the locally verified CLI, 2.1.267. Building does not call a model or use credentials.
 
 ```sh
-CORPUS=~/Developer/namaz/follow_my_reading/backend/tests/fixtures/bot_review/train_review/granular-corpus/recordings.jsonl
-QURAN=~/Developer/namaz/follow_my_reading/backend/tests/fixtures/bot_review/inventory_20260908/train_strict66_snapshot/quran-reference.json
-STUDY3=~/Developer/namaz/ar-runs/musiml-annotation-review/study3
-RUN=~/ar-runs4/$(date +%y%m%d)-<agent>-<model>
-
-python3 $STUDY3/tools/prepare_agent_run.py \
-    --corpus "$CORPUS" --quran "$QURAN" --out "$RUN" --budget "30 minutes"
+docker pull python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+docker build -f study3/agent-run/Dockerfile.claude \
+    -t study3-claude:2.1.267 study3/agent-run
 ```
 
-Verify before starting — the workspace must contain exactly six files and no
-answers:
+Record the resulting image ID; package-manager dependencies can change on a later rebuild. For exact reuse, keep/export that built image, rather than treating its mutable tag or a future rebuild as identical. The launcher resolves and records the immutable local image ID. Other agents can use an image containing their pinned CLI and Python 3 through the same launcher.
+
+## Owner preparation
+
+Run from the trusted owner environment. Set a new workspace path each time. The budget below is an example, not an agreed experiment budget.
 
 ```sh
-find "$RUN" -type f | sort
-grep -rl '"events"' "$RUN" || echo "no answers in workspace"
+STUDY3="$HOME/Developer/namaz/ar-runs/musiml-annotation-review/study3"
+PRIVATE_CORPUS="$HOME/Developer/namaz/follow_my_reading/backend/tests/fixtures/bot_review/train_review/granular-corpus/frozen/granular-100x100-v1.0"
+TRAIN_CORPUS="$PRIVATE_CORPUS/split-train.jsonl"
+GOLD_CORPUS="$PRIVATE_CORPUS/split-gold.jsonl"
+RUN="$HOME/ar-runs4/train-run-001"
+
+python3 "$STUDY3/tools/prepare_agent_run.py" \
+    --corpus "$TRAIN_CORPUS" --gold "$GOLD_CORPUS" \
+    --out "$RUN" --budget "30 minutes"
 ```
 
-## Isolate
+The finalized split passes the count/approval gate. Point `PRIVATE_CORPUS` at the private `frozen/granular-100x100-v1.0/` snapshot to pin the data version. For an explicitly unmeasured setup check, append `--preflight` and choose a fresh directory. Never substitute the combined `recordings.jsonl` for train.
 
-The agent gets its own HOME so its config, credentials and history do not leak
-in or out, and no other checkout is reachable.
+Preparation checks case/recording-ID separation, event-bearing ayah overlap, reference consistency and constructed-example overlap with gold. It exports only train inputs, copies the faithful reference, makes the guide self-contained and includes the current constructed examples. Seven files are created: `TASK.md`, `ANNOTATION-GUIDE.md`, `TEACHING-EXAMPLES.md`, `solution.py`, `score.py` and the two `data/` JSON files. `.feedback/` starts empty.
+
+The private `RUN.owner.json` is adjacent to, **outside**, the workspace. It records source hashes, evaluator/reference versions, budget and an exact prepared-file allowlist. The launcher checks the allowlist and hashes before mounting the directory. Gold is read only during owner-side split auditing, never copied to the agent workspace. Gold and train annotation sources must remain outside the workspace.
+
+## Train feedback service — trusted owner terminal
 
 ```sh
-mkdir -p "$RUN-home"
-export FMR_CORPUS="$CORPUS"
-export FMR_GRADER="$STUDY3/tools/grade_workspace.py"
+python3 "$STUDY3/tools/serve_train_feedback.py" \
+    --manifest "$RUN.owner.json" --max-requests 100
 ```
 
-`score.py` in the workspace calls the grader through `FMR_GRADER`; the corpus
-path is never written into the workspace.
+Fix the request allowance before comparing runs. This process loads only the hash-checked train annotations. The agent's `python3 score.py` sends a request through `.feedback/`; it cannot choose a corpus or execute host commands. Each request copies `solution.py` into a fresh inference container, runs it against train inputs, validates its predictions and returns aggregate/per-label train metrics. Exceptions/invalid outputs are not silently treated as clean answers. The broker never relays submitted stdout or private paths.
 
-**Claude Code**
-```sh
-cd "$RUN" && HOME="$RUN-home" FMR_CORPUS="$FMR_CORPUS" FMR_GRADER="$FMR_GRADER" \
-  claude --model <model> --permission-mode bypassPermissions \
-         -p "$(cat TASK.md)" 2>&1 | tee "$RUN.log"
-```
+## Development agent — another owner terminal
 
-**Codex**
-```sh
-cd "$RUN" && HOME="$RUN-home" FMR_CORPUS="$FMR_CORPUS" FMR_GRADER="$FMR_GRADER" \
-  codex exec --model <model> --sandbox workspace-write "$(cat TASK.md)" 2>&1 | tee "$RUN.log"
-```
+Set the model/provider configuration in the owner shell. Credentials are passed only by explicit allowed environment names. Do not pass an entire environment file, host HOME or credential directory.
 
-Record the wall clock — `date +%T` before and after — and keep the log. For a
-model comparison, freeze the budget and the model list before starting and run
-each model the same number of times.
-
-Stronger isolation, if the machine allows it: run the same command inside a
-container with only `$RUN` mounted and no network. The corpus stays outside the
-mount; only the grader path crosses in.
-
-## Score and audit
+For Claude with an API key, substitute the intended provider's exact model ID:
 
 ```sh
-FMR_CORPUS="$CORPUS" python3 $STUDY3/tools/grade_workspace.py --workspace "$RUN"
-FMR_CORPUS="$CORPUS" python3 $STUDY3/tools/grade_workspace.py --workspace "$RUN" --json > "$RUN.score.json"
-
-python3 $STUDY3/tools/audit_solution.py "$RUN/solution.py" --corpus "$CORPUS" --quran "$QURAN"
+python3 "$STUDY3/tools/launch_agent_container.py" \
+    --manifest "$RUN.owner.json" --image study3-claude:2.1.267 \
+    --seconds 1800 --env ANTHROPIC_API_KEY -- \
+    sh -lc 'mkdir -p "$HOME"; exec claude --model "<model-id>" --permission-mode bypassPermissions -p "$(cat TASK.md)"'
 ```
 
-The audit exits non-zero on hardcoded ayah ids, case ids, multi-word literals
-that appear in corpus transcripts, or file/network access. Single unusual words
-are reported as a note, not a failure — letter names and Uthmani ت-spellings are
-legitimate linguistic tables.
+For a configured proxy, pass the applicable `--env ANTHROPIC_BASE_URL` and `--env ANTHROPIC_AUTH_TOKEN` instead/as required by that provider. The model identifier and authentication are run configuration, not assumptions made by this helper. Save terminal output to an owner-side log outside the agent workspace. The launcher records the image ID, exact command, time limit and credential **names**, never credential values.
 
-Compare several solutions at once:
+Only the prepared train directory is mounted. The host HOME, owner manifest, gold, authoring checkout and Docker socket are unavailable. A temporary container HOME avoids prior session memory. The CLI's permissive tool mode operates inside this container boundary.
+
+Development networking is enabled for model APIs. This is **not** a domain-level internet/retrieval restriction; if a comparison requires API-only access, configure an egress proxy and declare its allowlist before runs. No claim of previously unseen public inputs follows from local filesystem isolation.
+
+## Freeze the solution
+
+The supported executable deliverable is a self-contained `solution.py` using the Python standard library. Any learned constants must be included there; no extra helper/model files are mounted for inference. Preserve separately any machine annotations and development logs for analysis.
+
+After the development container exits, stop its feedback service and freeze the selected solution into a fresh private directory outside the agent workspace:
 
 ```sh
-python3 $STUDY3/tools/run_solutions.py --corpus "$CORPUS" \
-    --solutions ~/ar-runs4/*/solution.py --out /tmp/preds
+FROZEN="$HOME/ar-runs4/final-run-001"
+python3 "$STUDY3/tools/freeze_solution.py" \
+    --workspace "$RUN" --manifest "$RUN.owner.json" --out "$FROZEN"
 ```
 
-## What the number means
+The command prints the solution SHA-256 and saves a read-only source copy plus `frozen-manifest.json`. Select the solution using train evidence only. Fix model versions, budgets, repeats and selection rules before running a comparison.
 
-Scoring every iteration against all 194 cases makes the final figure a
-**fitting score, not an estimate of generalization**. The agent is choosing its
-method by that number, so it is optimistic by construction, and the gap grows
-the more iterations it runs.
+## Final private gold validation
 
-Two things keep it honest. The grader reveals no case, so the agent has to
-improve the method rather than the answers; and the audit catches the
-identifiers that memorisation needs. Neither proves generalization. The only
-thing that does is re-scoring the frozen solution on recordings that were never
-in the workspace — hold some out before the next freeze, and treat the 194-case
-number as the training curve it is.
+Read the printed SHA-256 (or `solution_sha256` in the frozen manifest) and supply it explicitly:
+
+```sh
+python3 "$STUDY3/tools/grade_workspace.py" \
+    --workspace "$FROZEN" --corpus "$GOLD_CORPUS" \
+    --expected-solution-sha256 "<frozen-sha256>" \
+    --predictions-out "$FROZEN/gold-predictions.json" --json \
+    > "$FROZEN/gold-score.json"
+```
+
+Measured grading requires 100 approved records, the expected code hash and the frozen manifest. It verifies the selected split, reference and evaluator hashes; `--split gold` is the default (`--split train` is available for owner-side checks). Input-only gold units enter a fresh inference container with network disabled, a read-only filesystem, no capabilities, a non-root user, and limits on memory, processes, time and output. Annotation answers stay in the trusted owner process, which scores returned predictions afterward. Submitted code is never imported there.
+
+Per-case predictions and frozen owner manifests stay private. Report final aggregate gold metrics after development; do not revise or select solutions based on them. Record any technical rerun and retain the original artifacts.
+
+## Verification and interpretation
+
+```sh
+python3 -m unittest discover -s study3/tests -p test_eval21.py -v
+STUDY3_DOCKER_TESTS=1 python3 -m unittest discover -s study3/tests -p test_isolated_run.py -v
+```
+
+The current evaluator is v2.3: label-aware micro F1 is primary; exact label-aware F1, localization/per-label/macro F1 and 1:1/2:1 review costs are diagnostics. It retains the per-unit, one-eligible-occurrence adapter. That does not evaluate recovery of every linked attempt in the human annotations. Train agreement measures fit; final gold evaluates the frozen method on held-out recording cases, subject to shared clean text and prior-public-exposure limitations. See [EVALUATOR.md](../EVALUATOR.md).

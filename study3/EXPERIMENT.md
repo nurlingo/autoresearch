@@ -1,146 +1,56 @@
-# Annotation-and-algorithm experiment — preparation
+# Agent development on train, final validation on gold
 
-**Current status (2026-09-15):** see [the current-state index](CURRENT-STATE.md). The working corpus has 194 cases with granular multi-location events. Frozen gold100, evaluator v2.1 and pilot numbers below retain their original contract.
+## Current plan — 2026-09-16
 
-## The research question
+**100 annotated train recordings and 100 annotated gold recordings are approved and frozen** as `granular-100x100-v1.0` (1,038 units; 469 events). Development uses train only; final validation uses hidden gold. No measured experiment has been run on this edition. [CURRENT-STATE.md](CURRENT-STATE.md) records verified counts and readiness gaps.
 
-How do different agents develop transcript-annotation algorithms under the same
-data, rubric, tools and budget, and how well do their frozen methods agree with
-independent human annotations? Agents may create their own training annotations.
-The gold100 test bundle remains fixed and hidden from development agents. Shared
-clean Quran units can occur in training; no claim of entirely unseen test inputs.
+The comparison is between agents under the same rubric, inputs, tools and budget. Annotation is an available development strategy: an agent may annotate, train a model, write rules or combine them. Preserve annotations it creates, but do not silently make annotate-first a requirement. If annotation delivery becomes mandatory, fix that requirement uniformly before comparing runs.
 
-## Separation of roles
+## Who sees what
 
-| Role | Available material | Feedback |
+| Role | Inputs and access | Feedback |
 |---|---|---|
-| Human preparation | Private exports, gold100, overlap audit | Review and approve partition/calibration |
-| Development agent | Approved guide/examples, separate practice and development inputs, Quran reference, tools | Practice answers and development checks only |
-| Final frozen algorithm | Reviewed gold input units during owner-controlled evaluation | No edits, external retrieval or return channel to the development agent |
-| Private evaluator | Gold annotations and frozen-code predictions | Final aggregate metrics after the run |
+| Owner preparing the dataset | Both annotated splits, provenance and review notes | Human review and data checks |
+| Development agent | Answer-free train units, faithful Quran reference, rubric, constructed examples and permitted tools | Train-only aggregate/per-label metrics if the isolated feedback service is enabled |
+| Frozen inference process | Input-only gold units and frozen solution artifacts | Produces predictions; no answers or development-agent return channel |
+| Trusted final evaluator | Gold annotations and saved predictions | Final aggregate scores after development ends |
 
-The code returned by the agent necessarily processes gold input at final scoring;
-the developing agent must not inspect it or receive gold feedback. Removing labels
-from gold is insufficient. `make_inputs.py` is for the owner-controlled evaluation
-stage. Do not run an agent with `--gold`, the private reviewer bundle, or the
-full source checkout mounted. The current scripts prepare/score data; they do
-not themselves implement runtime isolation.
+Under the current run design, human train annotations are grader targets, not files given to the agent. Train feedback is supervised development even when only aggregates are returned; disclose it in the experiment description. Revealing train labels directly would be a different condition to choose in advance. Gold inputs, selection membership, answers, review histories and scores remain unavailable during development.
 
-## Candidate inventory, 2026-09-09
+Prepared inputs use the current hamza-preserving reference and human-reviewed ayah assignments. Ayah detection and splitting are outside the score. The current adapter invokes `detect_events` once per unit; the fuller recording-level annotation format and this restricted inference interface must not be conflated.
 
-There are 321 source recordings and 321 available transcripts: 258 old plus
-63 new. Of the new transcripts, 62 were stored in production and one was obtained
-with a local ASR call on 2026-09-09; the production export and database were not
-changed. That last transcript appears to contain salawat/dua rather than ayahs,
-with Urdu-style characters, and needs human review before task inclusion.
+## Data separation
 
-Holding gold100 aside leaves **221 transcript candidates = 158 old + 63 new**.
-The three former approved reserves are included in the 158 old candidates:
-their transcript-only copies now join this pool, while original approved
-annotations remain private archives. Gold100 and its reviewer bundle are unchanged.
+Retain one useful transcript per distinct recording/audio take, preserving source provenance privately. Different recordings of a common clean ayah are eligible. Exclude exact copies of event-bearing ayah cases across train/gold; generic opening formulas and shared Quran references are allowed. The current audit found no repeated recording IDs and no shared event-bearing ayah transcripts. Shared clean text, speaker dependence and prior public source exposure limit generalization claims.
 
-Training release v1.0 contains **127 cases / 888 units**: 83 old and 44 new
-recordings. Of the 221 candidates, 36 complete gold copies, 11 event-bearing
-gold chunk copies, 20 unresolved cases, one non-Quran case and 26 redundant
-training cases are excluded. Shared clean ayahs and different error variants
-remain eligible. See [release preparation](release/README.md) for exact rules,
-provenance and limitations. The source archive and private attribution are intact.
-The train-only review sample contains 23 cases and 381 units, exceeding 10% of
-combined train+gold by either count. Sample interpretation still needs confirmation.
+Do not move a case used for development into gold and describe it as unseen. Any subsequent split or rubric change requires a new version and fresh hashes. Old `release/` files and gold100 are frozen historical artifacts, not the new split.
 
-## Duplicate policy
+Single-ayah app recordings remain outside this collection at the owner's direction. The target is 200 useful autodetect cases, not 200 rows filled by repeated transcripts or a different transcription convention.
 
-Exclude complete gold copies and copies of gold chunks that contain annotated
-events, including benign/corrected events. Permit shared clean ayahs and different
-error variants; the reference itself is public. This protects event-case separation
-without discarding every long recording that contains a common clean ayah.
-Shared Quran references, generic formulas, and the same ayah with materially
-different mistake patterns are not automatically leakage. Do not impose an unseen-
-ayah split unless that is the intended generalization claim.
+## Development and final selection
 
-Within development, keep one representative per equivalent text case by default;
-retain provenance and multiplicity privately. This improves coverage per unit of
-annotation cost. Keeping duplicates can represent repeated production patterns,
-but overweights common cases and wastes annotation budget; use declared weights
-if frequency is the intended objective. Do not silently delete the source archive.
+1. Freeze train/gold membership, normalization, reference, event schema and evaluator. Use the repaired v2.3 [evaluator](EVALUATOR.md); its single-location-per-event adapter remains explicit. Full occurrence reconstruction is a separate task change.
+2. Inspect the current adapted teaching examples and verify comprehension on constructed practice data outside gold.
+3. Record model/runtime versions, prompts, dependencies, tools, time/token/cost budget, feedback allowance, repetitions and final-solution selection rule.
+4. Run development in an allowlisted environment. If iterative scoring is provided, use only train labels in a separate trusted service. A directory boundary, prompt restriction or isolated HOME does not protect private files.
+5. Save all run logs, code, configuration, learned artifacts and any generated annotations. Choose and hash the final solution using train evidence only.
+6. End development. Execute the frozen method in isolation on input-only gold and score its saved predictions privately. No edits or model selection based on gold results.
+7. Report the outcome of every predeclared run, including failures. Document technical reruns and repeated-run variation.
 
-The old inputs already have public Task A answers, and some have legacy Task B
-machine labels. Hiding our annotations cannot undo prior public exposure. Build
-an allowlisted development environment and state this limitation explicitly.
-A group used for development must not later be called unseen final-test material.
+The [runbook](agent-run/RUNBOOK.md) prepares train-only inputs, including a self-contained guide and constructed examples. Submitted code now runs in a restricted input-only Docker container; trusted scoring happens afterward. A separate train-only feedback service and development-container launcher keep private annotations outside the agent runtime. Development networking permits model API access; inference networking is disabled.
 
-## Proposed competition scope
+## What we measure
 
-Paper 1 can propose a method-agnostic annotation task: entrants receive approved
-label definitions/examples, the Quran reference and separately reviewed ayah-split
-unlabelled development transcripts. They decide how to annotate, train, develop
-and validate their method; humans, agents and hand-written algorithms are allowed.
-Only the final frozen solution is scored. Intermediate iterations, development
-annotations and autoresearch logs are not required for competition ranking.
-The owner runs the submitted solution on gold100 inputs and scores it privately.
-The selected gold test bundle and answers are not supplied during development.
-Shared clean units and prior public inputs are disclosed limitations. Ayah splitting
-is provided so identification errors do not contaminate annotation evaluation.
+Primary: **label-aware micro F1** on final gold predictions. An event needs the correct label and acceptable transcript/reference spans. Report per-label support and F1, macro F1, localization F1, invalid outputs and mistake review costs at 1:1 and 2:1. Exact-span label-aware F1 is repaired in v2.3. All ten labels occur in both working splits, but some have only one or two examples.
 
-Entrants choose their own development checks; organizers need not score iterations
-or operate a development leaderboard. Any supplied practice answers are separate
-from gold100. Repeated gold leaderboard queries would turn the final set into development data.
-Primary scoring is label-aware event F1; exact-span F1 and the provisional 2:1
-review cost are supporting metrics. Annotation artifacts may be requested for
-optional analysis, but are not independently graded without another human audit.
+The current v2.3 adapter accepts one hypothesis location per event, even when the human annotation links several attempts. It does not independently measure complete multi-location annotation recovery. Settle that scope before comparing agents or describing annotation fidelity in the paper.
 
-Paper 1 has been rewritten around final-solution annotation scoring. Track 3
-requires a ready-to-use dataset, a 10% review sample, defined metrics and evaluated
-baselines ([official call](https://www.musiml.org/events/2026-NeurIPS/index.html)).
-The review sample comes entirely from training and is sized to exceed 10% of
-train plus gold by both recording and unit count. Its unlabelled, train-only
-interpretation still needs confirmation. Gold inputs and answers remain private.
-The release and outstanding work are described in [SUBMISSION-TODO.md](SUBMISSION-TODO.md).
+Human annotations now exist for train too. After freezing a run, its saved machine annotations can be compared directly with reviewed train annotations under a compatible representation. If the agent received train score feedback, this is in-sample agreement, not an independent generalization result. A good algorithm score does not establish that its intermediate annotations were correct or used. Preserve machine-generated provenance and review before reuse.
 
-## Paper 2 — comparison between agents
+## Relationship to the papers
 
-The comparison is between agents, not between mandatory and optional annotation
-workflows. Give every agent the same unlabelled training inputs, rubric, approved
-examples, tools and total budget. They may annotate, train a model, write rules,
-or combine these strategies. Require final code and logs; save any annotations
-and revisions they choose to create. Score frozen solutions privately on gold100.
-No agent-comparison runs have occurred yet.
+The proposed competition judges entrants' final solutions; it need not require autoresearch, an annotation phase or organizer-scored iterations. Our agent experiment may provide train-only feedback as a declared experimental condition. Those are different roles, even if they share a dataset and rubric.
 
-Use a common instruction to all agents: "Develop a method that outputs the supplied
-event labels and spans. You may create and revise training annotations. Preserve
-any generated annotations, code, experiment results and costs for analysis."
-Whether annotations were produced, how much data was labelled and whether those
-labels were used are observations about strategy, not separately scored outcomes.
-Choose agent versions, tools and budget before running, repeat runs where feasible,
-and report run variation as well as final scores. Do not give gold feedback for
-algorithm revision or cherry-pick methods through repeated gold queries.
+Eight informal pilot runs are already reported in the Track 1 paper under evaluator v2.1 and the older 162-event gold set. They are not evidence from this 100/100 split, and a repeated comparison on the new freeze is not complete. Keep old results tied to their versions. Paper changes remain for discussion; see [the audit/discussion note](../docs/STUDY3-PAPER-DISCUSSION.md).
 
-If annotation delivery is later required for reuse, apply that requirement equally
-to all compared agents; that remains an agent comparison, with a shared artifact
-requirement. There is no need to human-label the whole training pool. Record the
-chosen protocol before starting rather than changing it after seeing scores.
-
-A high-scoring method provides evidence that the overall development process can
-produce useful predictions. Its training annotations do not thereby become gold:
-the code may ignore them, repair them or succeed despite systematic errors in them.
-Retain them as machine-generated, unreviewed artifacts with provenance. Direct
-annotation agreement requires a separate human audit, which can use a subset
-rather than the entire pool. Review before treating annotations as reliable reused
-labels. A human-supervised baseline is an optional additional experiment.
-
-## Before a measured run
-
-1. Finish related-case review and freeze a group-level partition: teaching,
-   practice, unlabelled development, and any separately reserved future test.
-2. Approve Arabic teaching examples and practice feedback; freeze normalization,
-   threshold/anchor rules and the secondary cost preference independently of gold.
-3. Fix the model, tools, time/token/cost budget and comparison conditions.
-4. Build and inspect a fresh allowlisted runtime. Exclude gold, source exports,
-   production identifiers, private notes, previous sessions and answer-bearing
-   history; block retrieval of the published benchmark during development.
-5. Require final code, run logs and any development annotations/revisions produced.
-   Freeze the code, then score privately. Do not optimize it using gold feedback.
-
-Final algorithm performance is evidence about the combined process, not proof of
-annotation accuracy or the causal benefit of annotating. Paper 2 will report the
-agent comparison and observed strategies; no new agent results are claimed yet.
+The historical 221-to-127 training selection audit remains in [TRAIN-ANNOTATION.md](TRAIN-ANNOTATION.md); the historical release and review sample are separate archived artifacts (the old `release/` directory is not present in this checkout). They do not define the next run's membership or count.

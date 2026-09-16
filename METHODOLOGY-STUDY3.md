@@ -1,17 +1,18 @@
 # Study 3 — annotation-assisted transcript checking
 
+**Current status (2026-09-16):** [200 approved cases: 100 train / 100 gold](study3/CURRENT-STATE.md), frozen as `granular-100x100-v1.0`. Use [the current experiment protocol](study3/EXPERIMENT.md) for train-only development and final hidden-gold validation. The gold100/127-train counts, single-span examples and pilot numbers below describe the historical frozen release, not the working corpus.
+
 Status as of **2026-09-09**: **100/100 selected recording cases are human-approved**,
-covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additional
-approved recordings are reserves outside the scored set. Taxonomy v0.19 and
+covering 314 ayah chunks and 274 ayahs across 38 surahs. Three additionally approved recordings were outside the scored set; their answer-free copies subsequently joined the development candidate pool. Taxonomy v0.19 and
 recording format v0.6 describe the completed annotation snapshot. The input
 choice is settled: supply reviewed ayah chunks and references. The event matcher
 is frozen (MIN_SPAN=0.50, anchor slack=1); the executable comparison
 normalization and the experiment design still need to be frozen.
 Evaluator v2.1 and corrected baseline adapters have been tested and scored;
-no agent experiment has run. See [the scorecard](study3/EVALUATOR.md) and
+eight informal pilot runs are now reported in the Track 1 paper; the preregistered comparison remains future work. See [the scorecard](study3/EVALUATOR.md) and
 [baseline results](study3/BASELINES-v19.md).
 
-This document supersedes the earlier Study 3 plan. The old 20-recording,
+This historical methodology superseded the earlier Study 3 plan; the September 16 protocol linked above now governs the next run. The old 20-recording,
 99-chunk machine-labeled pilot is a separate artifact, not these 100 approved
 recordings. The MusIML branch retains that pilot and its original executable
 harness for historical reproducibility; neither implements this protocol.
@@ -20,8 +21,7 @@ harness for historical reproducibility; neither implements this protocol.
 
 Can an agent annotate an unlabelled development pool under a supplied rubric,
 then develop an algorithm that generalizes to independently reviewed data?
-The agent is responsible for both development annotations and algorithm
-construction. The final executable algorithm is the scored deliverable.
+In the completed informal pilot, annotations were optional. A future protocol must explicitly decide whether delivering development annotations is required alongside algorithm construction. The final executable algorithm is the scored deliverable.
 
 The annotation unit is the **whole recording**, including opening formulas
 and all human-reviewed ayah splits. Review preserves the ASR transcript exactly
@@ -43,7 +43,7 @@ identification and splitting are outside this score. Source split history,
 reviewer notes, events and verdicts are private answer-side data. Corrections
 to source assignments are explicit and preserve the raw transcript.
 
-## 2. Corpus construction and current evidence
+## 2. Historical corpus construction and evidence
 
 The local source export contains 258 recordings: 220 distinct exact full
 transcripts, 218 normalized full transcripts, and 214 normalized recitation
@@ -150,7 +150,7 @@ Evaluate the frozen final algorithm privately after the run. Report event-label
 and localization quality, missed mistakes, false flags on clean/benign/corrected
 cases, and per-label results. Matching must prevent one broad prediction from
 claiming multiple distinct gold events, and must explicitly handle zero-length
-omission anchors and both-attempt spans. The current primary metric is label-aware micro F1, with exact-span F1 alongside
+omission anchors and both-attempt spans. The historical primary metric is label-aware micro F1, with exact-span F1 alongside
 it and a raw-count mistake cost as a secondary metric. MIN_SPAN=0.50 and anchor
 slack=1 are frozen; the secondary cost is reported at both 1:1 and 2:1 rather
 than frozen at one rate. Baselines have been rerun against
@@ -179,7 +179,7 @@ For a competition claiming unseen-input final ranking, acquire and review a
 separate set of previously unreleased recordings before launch. Production
 availability, permitted reuse, de-identification, and the actual number of
 usable new submissions must be checked; historic volume figures are not a
-verified new test set. The completed 100-recording set is the current private
+verified new test set. The completed 100-recording set was the private
 annotation benchmark, not evidence that such a new collection already exists.
 
 ## 6. Next steps

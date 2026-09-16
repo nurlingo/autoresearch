@@ -8,7 +8,6 @@ unit of every case and collects the predictions per case for eval21.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -16,43 +15,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(HERE))
 import eval21  # noqa: E402
-
-
-def load_solution(path: Path):
-    spec = importlib.util.spec_from_file_location(f"sol_{path.parent.name.replace('-', '_')}", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod.Solution()
-
-
-def predict(sol, corpus):
-    preds, crashes = {}, 0
-    for rec in corpus:
-        rows = []
-        for u in rec["units"]:
-            ref_tokens = u["reference_tokens"]
-            chunk = {
-                "review_id": rec["case_id"],
-                "chunk_idx": u["chunk_idx"],
-                "n_chunks": sum(1 for x in rec["units"] if x["chunk_idx"] >= 0),
-                "ayah_id": u.get("ayah_id"),
-                "transcript": u["transcript"],
-                "transcript_tokens": list(u["transcript_tokens"]),
-                "reference_text": " ".join(ref_tokens),
-                "reference_tokens": list(ref_tokens),
-            }
-            try:
-                events = sol.detect_events(chunk) or []
-            except Exception:
-                crashes += 1
-                events = []
-            for e in events:
-                if not isinstance(e, dict):
-                    continue
-                rows.append({"chunk_idx": u["chunk_idx"], "label": e.get("label"),
-                             "hyp_span": e.get("hyp_span"), "ref_span": e.get("ref_span")})
-        preds[rec["case_id"]] = rows
-    return preds, crashes
+from predict_isolated import predict_isolated
 
 
 def main() -> int:
@@ -72,12 +35,13 @@ def main() -> int:
     for sp in a.solutions:
         name = sp.parent.name
         try:
-            sol = load_solution(sp)
-        except Exception as exc:
-            print(f"{name:<34}  load failed: {exc}")
+            result = predict_isolated(sp, corpus)
+        except Exception:
+            print(f"{name:<34}  isolated execution failed")
             continue
-        preds, crashes = predict(sol, corpus)
+        preds, crashes = result["predictions"], result["crashes"]
         s = eval21.score(corpus, preds)
+        s["execution"] = {"crashes": crashes, **result["provenance"]}
         c = s["counts"]
         print(f"{name:<34}{s['micro_f1']:>7.3f}{s['strict_micro_f1']:>7.3f}{s['macro_f1']:>7.3f}"
               f"{s['loc_f1']:>7.3f}{s['review_cost']:>9.1f}{s['clean_flag_rate']:>10.4f}"

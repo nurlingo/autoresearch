@@ -1,6 +1,22 @@
 # MusIML submission checklist
 
-**Current audit (2026-09-15):** see [CURRENT-STATE.md](CURRENT-STATE.md). The new 194-case working corpus is not a frozen competition release. Eight informal pilot runs are already reported; repeated experiments and new-format scoring remain outstanding. Submission/acceptance is not verified by this checklist.
+**Current audit (2026-09-16):** [100 train / 100 gold](CURRENT-STATE.md), frozen as `granular-100x100-v1.0`. The dataset snapshot is frozen; model runs remain to be performed. Eight historical pilots are reported; no results on the new frozen 100/100 corpus are claimed. Paper changes are for discussion, and actual submission/acceptance is not verified here.
+
+## Current experiment readiness
+
+- [ ] Add two train and three gold recordings, preserving distinct recording identity.
+- [x] Record explicit owner approval of the two existing drafts; all 195 active cases approved.
+- [x] Owner approved all five gap-targeted additions, including the gold omission repair; 200 cases approved.
+- [x] Freeze the 100/100 JSONL split, faithful reference, rubric, examples and hashes.
+- [x] Rebuild the current viewer and archive obsolete temporary exports.
+- [x] Generate the private `granular-100x100-v1.0` freeze bundle.
+- [x] Fix exact-label scoring, malformed-span validation and reference-ayah matching in v2.3; retain and document the single-location adapter.
+- [x] Separate isolated prediction execution from trusted scoring; test train-only feedback and the development-container launcher.
+- [ ] Fix agent versions, budgets, repeat counts and final-selection rules.
+- [ ] Run train development, freeze final code, then perform private gold validation.
+- [ ] Discuss manuscript/release updates using new results and the [paper discussion note](../docs/STUDY3-PAPER-DISCUSSION.md).
+
+Everything below records the older submission/release, not completion of the new experiment.
 
 ## Historical submission preparation — 2026-09-09
 

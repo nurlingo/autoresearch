@@ -1,0 +1,10 @@
+# Matches the installed Claude CLI version at the September 16 setup audit.
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
+ARG CLAUDE_VERSION=2.1.267
+RUN apt-get update && apt-get install -y --no-install-recommends python3 git ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install --global @anthropic-ai/claude-code@${CLAUDE_VERSION} \
+    && npm cache clean --force
+# macOS's default owner UID; numeric --user also works for other owner UIDs.
+RUN useradd --uid 501 --no-create-home --home-dir /tmp/agent-home study-agent
+WORKDIR /workspace

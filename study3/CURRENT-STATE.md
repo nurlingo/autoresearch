@@ -1,140 +1,79 @@
-# Current study state — 2026-09-15
+# Current study state — 2026-09-16
 
-Use this page for current progress. Historical snapshots and published pilot numbers describe their own frozen data/format, not the expanding working corpus.
+The dataset is approved and frozen as **`granular-100x100-v1.0`**, with **100 train and 100 hidden gold recordings**. All five gap-targeted additions were approved by the owner on September 16. No measured agent experiment has been launched on this edition.
 
-| Artifact | Current state |
-|---|---|
-| Frozen evaluation | gold100: 100 cases, 348 units, 162 events; original single-span contract |
-| Frozen development release | 127 answer-free cases, 888 units; reviewer sample 23 cases / 381 units |
-| Working annotation corpus | **195 cases, 1,029 units, 458 events** — 97 `r*` (173 events) and 98 `train-*` (285 events) |
-| Working source-review statuses | All 193 cases and 454 events owner-approved, 2026-09-15, after a manual pass over every case |
-| Granular representation | Recording-level events with multiple locations; every recording and unit has a summary |
-| Repetition convention | All matching occurrences linked; 43 events / 89 locations |
-| Hamza adjudication | All 15 presented events in 13 existing cases approved: seven benign spelling and eight substitution events. Three further word-boundary spelling events were withdrawn — see below |
-| Remaining interpretation questions | None in the corpus |
-| Taxonomy gap | One case held out for want of `insertion_corrected`; see below |
-| Corpus target | 100 train + 100 gold. **Two more train and three more gold**, selected by missing label |
+## Verified frozen corpus
 
-## New inventory and six-case extension
+| Split | Recordings | Units | Events | Approval |
+|---|---:|---:|---:|---|
+| Train | 100 | 697 | 290 | All approved |
+| Gold | 100 | 341 | 179 | All approved |
+| Combined | 200 | 1,038 | 469 | All approved |
 
-Read-only production check: 330 bot/autodetect recordings with 305 stored transcripts, and 25,776 single-ayah app recordings with 25,599 transcripts. Against the September 8 inventory, there are nine additional bot IDs and 357 newer single-ayah rows; all additions have stored transcripts.
+There are 984 ayah chunks and 54 opening-formula units. All recordings have natural-language summaries and no open review questions. Both splits contain all ten labels.
 
-The owner selected **autodetect only** for this corpus. Single-ayah app transcripts have a different vocalization/transcription convention and are not pooled with them. Six useful autodetect cases were added as drafts, one exact stored transcript per recording. One of them, a full-length 2:219 that shared 81% of its tokens with another in the same batch, was dropped on review; it was also the one vocalized transcript in the batch, so the corpus no longer contains a harakat-bearing autodetect transcript. The five kept were renumbered into the train series as train-128..132 and approved. Three other new bot candidates were left outside this batch because they repeat already-covered text/cases. The target is not filled by adding redundant cases or mixing recording families.
+| Sparse label | Train events | Gold events |
+|---|---:|---:|
+| `omission_corrected` | 7 | 2 |
+| `letters_benign` | 2 | 4 |
+| `insertion_mistake` | 6 | 3 |
+| `substitution_corrected` | 8 | 5 |
+| `spelling_benign` | 55 | 11 |
 
-Original objects for the selected recordings were downloaded and their SHA-256 hashes agree with the database. Storage metadata was checked against the existing corpus; no identical-byte audio group was found. This does not prove that differently encoded/clipped recordings are independent takes. Recorded `duration_sec` was not treated as measured audio length; durations come from the audio probe.
+These additions improve coverage, but rare-label estimates remain based on small counts. The unsupported repaired-insertion case and withdrawn candidate remain outside this edition; unused earlier proposals remain historical alternatives.
 
-The temporary six single-ayah candidates were removed from active files, manifest and review bundle after the owner's clarification. Their read-only export remains private archival material.
+## Authoritative files and split audit
 
-## Reference contract
+The private `train_review/granular-corpus/` directory contains current `recordings.jsonl`, `split-train.jsonl`, `split-gold.jsonl`, `corpus.json`, `current-cases/`, and `index.html`. The versioned snapshot is `frozen/granular-100x100-v1.0/`, including the data, reference, rubric, teaching examples, evaluator/runtime source and SHA-256 manifest. Use its split files for measured runs. The freeze is private and must never be mounted into the agent workspace.
 
-The reference keeps its hamza, and one definition now holds everywhere:
-`titles.ar` with vowel marks, tatweel and waqf signs removed, and nothing else.
-That text is the corpus `reference_text` (973 ayah units),
-`study3/quran-reference.json` built from `content/quran.json` (6,231 ayahs), and
-the application's own `titles.clean` (6,362 ayahs) — which no longer folds
-hamza, because every consumer of it already folds hamza itself. The earlier
-folded form is retained per unit as `reference_folded_text` so the legacy
-coordinates stay traceable; both tokenize identically, so no span moved.
+All 200 recording IDs are unique. Split rows reproduce the combined corpus exactly. There are 52 distinct exact `(ayah_id, transcript)` pairs shared between splits, all clean on both sides, and three permitted generic opening-formula strings. No event-bearing ayah transcript is shared. New source IDs/audio hashes and downloaded originals were checked against the prior active inventory. This does not establish speaker independence or detect all differently encoded copies of an audio take.
 
-Folding أ إ آ to bare ا is what hid eight real substitutions from the audit and
-what makes 54% of a transcript's apparent differences turn out to be nothing at
-all. An agent scored against the folded text cannot tell a missing hamza mark
-from a different word, so it is no longer scored against it.
+The earlier 195-case version is preserved in `archive/20260916-before-100x100-freeze/`. Other old aggregate exports/backups and `cases/` are historical source evidence; current individual exports are in `current-cases/`. Do not use old builders or proposal files to overwrite the approved annotations. The dated [database inventory](RECORDING-INVENTORY.md) records selection provenance without publishing source identities.
 
-`titles.clean` in the application's `quran.json` has been rebuilt so that it is
-exactly `titles.ar` with vowel marks, tatweel and waqf signs removed and أ إ آ ٱ
-folded to ا. It previously disagreed with `titles.ar` in 94 ayahs: six tokenized
-differently, and 78 ayah-segment entries had never had their hamza folded at all,
-so the field meant two different things depending on the entry. It now agrees
-with `content/quran.json` on all 6,231 shared ayahs and drifts from its own
-`titles.ar` nowhere.
+## Reference and annotation contract
 
-The tokenization disagreement had reached this corpus in one place,
-of which one reaches this corpus: an ayah where the mushaf writes بعد ما as two
-words and `clean` had joined it. Three `spelling_benign` events annotated reciters
-saying the canonical two-word form against that joined reference. Since the
-reference was the artifact and the reciters were right, those three events were
-withdrawn rather than kept. The other
-word-boundary decisions in the hamza adjudication are unaffected.
+Use `study3/quran-reference.json`: **6,236 entries**, preserving hamza, madda and alif maqsura. The builder derives text from the application's `titles.ar` by removing vowel marks, tatweel and waqf signs. Every current ayah unit's `reference_text` matches the checked-in reference. The old folded reference in `release/` and earlier inventory snapshots is for historical experiments only.
 
-## Taxonomy gap: a repaired insertion
+Current transcripts are devowelled; source provenance is retained privately. A change to normalization or tokenization needs a versioned rebuild and span validation. Do not silently normalize the arrays passed to a solution and then index those modified arrays.
 
-v0.19 has `substitution_corrected` and `omission_corrected` but no corrected form
-for an insertion, and one recording needs one. In 2:221 the reciter says
-ويبين الله, abandons الله and restarts at ويبين, continuing correctly. ويبين was
-never wrong, so `substitution_corrected` would claim a repair that did not
-happen; `insertion_mistake` records the extra word but loses the repair, and
-scores it against a reciter who fixed it.
+The [guide](ANNOTATION-GUIDE.md), [event representation](annotation-review/README.md) and [hamza policy](annotation-review/HAMZA-POLICY.md) document the current rules: granular attempts and repeated context; every repetition occurrence linked; contextual spelling; initial أ/إ distinguished; missing hamza notation on plain alif benign. Redundant spelling events caused by the old reference joining canonical words were withdrawn.
 
-The recording is held in `deferred-taxonomy-gaps.jsonl` with the label it needs,
-outside the corpus, so no case in the scored data carries a label the evaluator
-does not know. Nine `insertion_mistake` events remain in the corpus and none is
-self-repaired: seven add a particle or a phrase and carry on, two add words
-before an intact opening. So this is the first instance in 195 recordings.
+Single-ayah app recordings remain excluded at the owner's request because their transcription convention differs. Continue with suitable autodetect recordings and one useful transcript per distinct recording/audio take. The September 15 production inventory is a dated snapshot, not a live count.
 
-Deciding it means weighing one attested case against an eleventh label that the
-evaluator, the guide, the agent instructions and eight frozen solutions would all
-have to account for. The natural moment is alongside the next corpus freeze,
-when scores are rebaselined anyway.
+## Next autoresearch run
 
-## Withdrawn annotations
+The agent receives train inputs, the faithful Quran reference, the rubric and the current adaptation of constructed teaching examples. It may create annotations and develop an algorithm. Preserve any generated annotations for analysis; a strong algorithm score does not certify those annotations individually.
 
-A recording prepared for the holdout was annotated wrongly by the
-assistant and removed rather than patched. Its inputs — transcript, split and the
-three reference views — are kept in `unannotated-pending.jsonl` with no events at
-all, so re-annotation starts from the recording rather than from a bad reading of
-it. Source recording `cf681047-e3ba-40d1-9eec-292b82069336`.
+Development feedback, if provided, uses **train annotations only**. Gold inputs, answers, case membership, review notes and scores remain outside the development environment. Freeze code and configuration before the owner runs final gold inference and scoring; no gold-driven revision or selection. For a comparison, fix models, budgets, repeats and selection rules first.
 
-## Split hygiene
+See [EXPERIMENT.md](EXPERIMENT.md) and the corrected [runbook](agent-run/RUNBOOK.md). Input stripping and a separate HOME are not runtime isolation. The grader now executes submitted code in an input-only Docker container and scores returned predictions in a trusted owner process. A separate train feedback service has no gold access. The development container mounts only prepared train material and receives only explicitly selected model-API credentials. Its networking permits API calls and is not an internet-retrieval filter.
 
-Checked after the latest train additions. 52 ayah units carry an identical transcript on
-both sides of the split, and **every one of them is clean on both sides** — a
-correctly recited ayah yields the same text whoever recites it, which the
-partition policy permits explicitly. No unit carrying an annotated event is
-duplicated across the split.
+## Evaluator readiness
 
-One case was caught by this check and removed: a training recording whose
-transcript and event were identical to a case in the holdout. An event-bearing unit present on both sides is exactly what
-the policy excludes, and it would have let a solution match a holdout case from
-something it had seen in training.
+`eval21.py` is evaluator **v2.3**, despite its filename. Primary: label-aware micro F1 at MIN_SPAN 0.50 on both transcript/reference spans, with empty-anchor slack 1. Exact F1 now requires matching labels too. Invalid span types, lengths, bounds and event shapes are rejected; reference matching checks ayah identity. Oracle/empty checks pass on both splits and adversarial synthetic tests cover the fixes.
 
-## Current rubric
+The per-unit adapter still credits one eligible occurrence of a multi-location event. Other-ayah anchors cannot be scored as though their reference belonged to the current unit; the restored occurrence can be used instead. This preserves the existing prediction interface, not a claim to grade reconstruction of every linked attempt. A recording-level prediction task would be a separate contract change.
 
-- Granular events remain consistent across parallel-passage replacements. More natural episode interpretations may be notes, without changing grouping.
-- Opening fragments are insertions unless repeated matching context or another independent anchor establishes two attempts at one reference target. A recognizable donor phrase alone is insufficient.
-- Plain alif in place of written hamza is `spelling_benign`. Contextual medial/final seat variants can be benign; explicit initial أ versus إ remains distinct. An individually accepted madda spelling does not establish a global madda equivalence.
-- Reference display preserves hamza using vocalized `titles.ar` from the same application source. Legacy clean-reference text and original word coordinates remain traceable.
+Docker tests verify private-file/environment isolation, no inference network or Docker socket, output handling and timeouts. A real 98-case preflight round trip through the train-only feedback service passed before finalization. The final 100/100 dataset passes measured preparation, span/reference validation and oracle/empty scoring checks; preparation alone does not launch an experiment. Preparation refuses a measured run unless both splits have 100 approved cases; `--preflight` exists for setup tests only. A Claude Code 2.1.267 image, matching the locally installed CLI version, was built; no model call or agent research run was launched.
 
-See [the representation](annotation-review/README.md) and [hamza policy](annotation-review/HAMZA-POLICY.md).
+## Historical results and paper discussion
 
-## What has run, and what has not
+The frozen experiment used gold100 (100 cases, 348 units, 162 events), train release v1.0 (127 cases, 888 units), and evaluator v2.1 (`eval19.py`). These are separate artifacts, not the current 100/100 freeze. Eight informal pilots appear in the Track 1 paper; they are not results on the current corpus. The six-run aggregate excludes a later run and a failing run.
 
-The Track 1 paper already reports **eight informal 20-minute pilot runs**, seven with no invalid predictions and one with invalid events. Its six-run aggregate analysis intentionally excludes the later Fable run and the failing run. These are single runs, not a preregistered repeated comparison. Seven did not use the training pool; Fable applied its finished detector to it as a check. A mandatory annotate-first experiment has not been demonstrated.
+The papers and frozen releases are unchanged in this audit. Proposed changes are listed in [the discussion note](../docs/STUDY3-PAPER-DISCUSSION.md). Submission/acceptance cannot be established from this repository alone.
 
-Those results use frozen evaluator v2.1 and the original 162 events. They have not been recomputed on the granular working corpus. The existing evaluator cannot score multiple locations or cross-chunk events under the new contract.
+## Before the measured run
 
-## Completed / next
+- [x] Record owner approval of both existing drafts, completing review of all 195 active cases.
+- [x] Owner approved all five gap-targeted additions; merge two train and three gold cases.
+- [x] Freeze the approved 100/100 allocation and source provenance; measured preparation verifies counts, recording IDs, event-bearing overlaps and reference consistency.
+- [x] Rebuild the current viewer; archive stale exports/backups without discarding review history.
+- [x] Fix evaluator issues, preserve the adapter scope and add synthetic regressions.
+- [x] Implement isolated inference, train-only feedback, a restricted development-container launcher and frozen-solution hashing; test without model calls.
+- [x] Adapt twenty constructed teaching examples to the current reference/grouping; validate spans and oracle scores. Original approvals apply to the historical examples; the current adaptation is explicitly assistant-validated.
+- [ ] Inspect the refreshed teaching examples and check comprehension outside gold before the measured comparison.
+- [ ] Set exact model/API configuration, time/token/cost budget, repeats, feedback limit and selection rule; record image IDs and commands.
+- [ ] Run train development, freeze each selected solution, then perform final private gold validation without gold-driven revisions.
+- [ ] Discuss paper revisions using new results; preserve historical tables with their original versions.
 
-- [x] Audit selection, preserve original transcripts, and keep one representative per identical-audio group.
-- [x] Prepare granular events, summaries, approval provenance and an offline reviewer.
-- [x] Apply owner-approved hamza decisions and retain faithful reference evidence.
-- [x] Check live production inventory read-only; add six verified autodetect drafts.
-- [x] Review the additions and resolve the earlier interpretation questions.
-- [x] Add production recordings to the holdout. Of three prepared, one is kept:
-      it supplies a label the holdout previously lacked. One is held for a
-      taxonomy gap and one was withdrawn for a bad annotation, both recorded below.
-- [ ] Collect three more train and one more gold recording to reach 100 each.
-      Choose for the labels the corpus lacks, not for volume: `omission_corrected`
-      is absent from the holdout entirely and cannot be measured there,
-      `letters_benign` is absent from train and cannot be learned from it, and
-      `insertion_mistake` has two events in the holdout. The last batch of six
-      added no benign events at all.
-- [x] Obtain owner review of all annotations: 193 cases and 454 events approved 2026-09-15.
-- [x] Implement/test a multi-location evaluator: `study3/eval21.py`, oracle 1.000 and empty 0.000 on both splits.
-- [ ] Refresh constructed teaching examples and comprehension checks for the current rubric, without using private examples.
-- [ ] Freeze a new corpus version, reference contract and grouped train/test allocation before new experiments.
-- [ ] Rerun baselines/agents on that version; retain old tables as historical results.
-- [ ] Check the intended Track 1 submission version/page budget: the current PDF has eight pages, as it already did before this audit.
-- [ ] Confirm actual submission/acceptance status and any remaining review-sample/attribution obligations with the authors. The repository alone does not establish submission.
-
-Answers, source identities, audio and review bundles remain private. The full authoring repository is not an agent workspace. Updating documentation does not alter the frozen release, published pilot results or anonymous submission copy.
+Answers, source identities, audio and review bundles remain private. This page contains aggregate status only. No measured agent experiment has been launched on this edition.

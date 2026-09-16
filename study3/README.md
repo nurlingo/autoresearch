@@ -1,63 +1,28 @@
 # Study 3 preparation
 
-**Current status (2026-09-15):** see [the current-state index](CURRENT-STATE.md). The working corpus has 194 cases with granular multi-location events. Frozen gold100, evaluator v2.1 and pilot numbers below retain their original contract.
+**Current status (2026-09-16):** [200 approved cases: 100 train / 100 gold](CURRENT-STATE.md), frozen as `granular-100x100-v1.0`. Use [the current experiment protocol](EXPERIMENT.md) for train-only development and final hidden-gold validation. The gold100/127-train counts, single-span examples and pilot numbers below describe the historical frozen release, not the working corpus.
 
-This directory prepares the annotation-and-algorithm experiment described in
-[METHODOLOGY-STUDY3.md](../METHODOLOGY-STUDY3.md). It includes the executable v2.1 evaluator and baseline adapters; the isolated
-agent experiment is not yet packaged. The historical `stage2/` harness uses a different contract.
+Start with the [current-state index](CURRENT-STATE.md), [experiment protocol](EXPERIMENT.md), [runbook](agent-run/RUNBOOK.md) and [evaluator audit](EVALUATOR.md). The working evaluator is v2.3 (`eval21.py`); the historical evaluator is v2.1 (`eval19.py`). Current helpers provide train-only preparation, isolated inference, a train feedback service and a restricted development-container launcher.
 
-1. Review the [annotation guide](ANNOTATION-GUIDE.md) and
-   [20 constructed Arabic teaching cases](calibration/teaching-draft.md).
-2. Approve/revise the teaching answers, then assemble a separate practice batch
-   without answers in its input file. Test comprehension and revise the guide
-   before a measured run. Do not use gold cases for this exercise.
-3. Review [EVALUATOR.md](EVALUATOR.md) and [BASELINES-v19.md](BASELINES-v19.md).
-   Version 2.1 validates labels/spans and reports tolerant plus exact-span F1.
-   Freeze matching tolerances, budgets and feedback before the agent run.
-4. Prepare a separate unlabelled development pool; freeze model/tool budgets,
-   comparison conditions, permitted feedback and final evaluation procedure.
+The private working corpus has 200 distinct recordings and 469 granular events, with natural-language summaries and linked locations for attempts and repeats. All 200 cases are now owner-approved. See [the representation](annotation-review/README.md) and [train review status](TRAIN-ANNOTATION.md).
 
-The teaching cases are deliberately constructed transcript variants of the
-public Quran reference, not recordings or evidence of naturally occurring
-errors. Their reference ayah IDs
-were checked outside the private evaluation set and the three then-reserved cases.
-Exact normalized chunk comparisons are recorded privately; further phrase-overlap
-review remains pending. Common Quran words and generic opening formulas are
-not exclusive dataset material.
+The agent develops on answer-free train inputs, using the [rubric](ANNOTATION-GUIDE.md), faithful `quran-reference.json` and refreshed constructed examples. Any feedback is train-only. Freeze the solution before isolated final gold inference and private scoring. Save any machine annotations produced; final algorithm quality does not certify them independently.
 
-The agent must save its development annotations, annotation revisions, algorithm,
-and run log. Final private gold scoring evaluates the resulting algorithm;
-self-annotation accuracy and its causal benefit need separate evidence.
+The entire authoring repository is not an agent bundle. Keep gold inputs and answers, case membership, source exports, review notes and history outside the development environment. The grader runs submitted code in a separate input-only Docker container and scores predictions afterward; the development container mounts only its prepared train workspace.
 
-The entire authoring repository is not an agent bundle. Build a fresh allowlist
-containing approved instructions/examples, Quran references, the separate
-unlabelled development inputs and necessary tools. Exclude gold inputs and
-answers, source exports, review history, attribution manifests and gold feedback.
+## Historical experimental artifacts
 
-See the [recording inventory](RECORDING-INVENTORY.md) for the read-only production
-check: 63 additional bot submissions, with 62 stored transcripts and preliminary
-duplicate screening. Private production exports are not included here.
+The historical training release has 127 cases / 888 units, with a train-only review sample of 23 cases / 381 units. Its corresponding gold100 has 100 cases / 348 units / 162 events. Eight informal pilots in the paper use that older contract; they are not scores on the new 100/100 split. The [221-to-127 audit](TRAIN-ANNOTATION.md) remains historical selection evidence.
 
-[EXPERIMENT.md](EXPERIMENT.md) explains the agent comparison and gold isolation.
-The [training release](release/README.md) contains 127 recording cases / 888 input
-units; its train-only review sample contains 23 cases / 381 units. Shared clean
-ayahs and different error variants are allowed; complete gold copies and copies of
-event-bearing gold chunks are excluded. The [submission checklist](SUBMISSION-TODO.md)
-tracks what the call requires against what only matters if the proposal is accepted.
-[Teaching examples](calibration/teaching-review.html) are constructed cases, all twenty
-approved by the owner.
+The twenty [constructed teaching cases](calibration/teaching-review.html) were approved for the earlier contract. A [current adaptation](calibration/teaching-current.md) updates references and granular grouping and is explicitly assistant-validated. They are constructed examples, not recorded recitations.
 
-## Human annotation of the training set
-
-The [selection audit and review plan](TRAIN-ANNOTATION.md) independently confirm
-221 candidates → 127 retained cases. The owner is preparing human annotations for
-training as well as gold100: three prior approvals carry over and 124 training
-cases await review. Answers and the review queue stay private; agent inputs remain
-unlabelled. This will permit direct evaluation of agents' training annotations.
+The [submission checklist](SUBMISSION-TODO.md) tracks historical preparation separately from current work. Manuscript changes remain for discussion in [the audit note](../docs/STUDY3-PAPER-DISCUSSION.md).
 
 ## Corrections to frozen training release v1.0
 
-`release/` is byte-frozen and its `SHA256SUMS` are authoritative, so these two
+The historical `release/` bundle is not present in this checkout. Its archived
+`SHA256SUMS` are authoritative; the following notes describe the frozen bundle,
+so these two
 corrections are recorded here rather than by editing the bundle. Neither affects
 the data; a repair would require a new version and fresh hashes, not a silent
 file change.
@@ -69,16 +34,19 @@ file change.
   `2cf019e8...` for `quran.json`. That is the sha256 of the raw source file used
   during preparation (`tools/build_train_release.py` hashes the `--quran` bytes),
   and it does not match any committed revision of the application's
-  `backend/quran.json`, whose current bytes hash to `cda42941...`. The reference
+  `backend/quran.json`, whose bytes at that audit hashed to `cda42941...`. The reference
   text itself is unaffected: deriving `{id: titles.clean}` from the application
   file reproduces `release/quran-reference.json` on all 6231 entries with no key
   or text differences. The discrepancy is confined to parts of the source file
   the reference does not use.
 
-## Quran reference provenance and redistribution
+## Historical release reference provenance and redistribution
 
 Established 2026-09-09 against the application's `backend/quran.json` and Tanzil's
 published `simple-clean` text.
+
+The following counts and transformations concern `release/quran-reference.json`,
+not the current 6,236-entry hamza-preserving `study3/quran-reference.json`.
 
 **Chain.** `release/quran-reference.json` is `{ayah_id: titles.clean}` derived from
 the application's `backend/quran.json`; deriving it reproduces the released file on
@@ -117,3 +85,11 @@ alif maqsura folded — not verbatim Tanzil text. Before redistributing:
 ## Current annotation review
 
 See [the granular review checkpoint](annotation-review/README.md) for the combined private corpus, multi-location events and per-transcript summaries. The frozen experiment remains separate.
+
+## Documentation map and cleanup
+
+Use `CURRENT-STATE.md` for counts/readiness, `EXPERIMENT.md` for the protocol, `agent-run/RUNBOOK.md` for commands, and `EVALUATOR.md` for scoring. `ANNOTATION-GUIDE.md` and `annotation-review/HAMZA-POLICY.md` define the rubric. The focused paper discussion note records changes to discuss without editing manuscripts.
+
+The temporary September 16 documentation audit was consolidated into those pages and removed. Twenty-one stale private aggregate/report exports and scratch backups were archived with hashes; canonical data and approval history were preserved.
+
+Keep `METHODOLOGY-STUDY3.md`, `docs/STUDY3-ANNOTATION.md`, the 221-to-127 selection audit, `BASELINES-v19.md`, the historical submission checklist and the original teaching files as explicitly historical evidence. They explain earlier paper/release results; deleting them would make those results harder to reproduce. The word `draft` in the original teaching filenames is historical, not their approval status. Use `calibration/teaching-current.md` for the adapted current examples.

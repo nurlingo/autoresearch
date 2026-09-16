@@ -1,0 +1,1370 @@
+{
+  "status": "assistant-validated adaptation of approved constructed examples",
+  "reference": "../quran-reference.json",
+  "examples": [
+    {
+      "case_id": "t01",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Exact reference match.",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090001",
+          "transcript": "لا أقسم بهذا البلد",
+          "transcript_tokens": [
+            "لا",
+            "أقسم",
+            "بهذا",
+            "البلد"
+          ],
+          "reference_text": "لا أقسم بهذا البلد",
+          "reference_tokens": [
+            "لا",
+            "أقسم",
+            "بهذا",
+            "البلد"
+          ],
+          "event_ids": []
+        }
+      ],
+      "events": []
+    },
+    {
+      "case_id": "t02",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Missing beginning",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090004",
+          "transcript": "الإنسان في كبد",
+          "transcript_tokens": [
+            "الإنسان",
+            "في",
+            "كبد"
+          ],
+          "reference_text": "لقد خلقنا الإنسان في كبد",
+          "reference_tokens": [
+            "لقد",
+            "خلقنا",
+            "الإنسان",
+            "في",
+            "كبد"
+          ],
+          "event_ids": [
+            "t02:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t02:e001",
+          "label": "omission_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                0
+              ],
+              "words": ""
+            }
+          ],
+          "reference": {
+            "ayah_id": "090004",
+            "span": [
+              0,
+              2
+            ],
+            "words": "لقد خلقنا"
+          },
+          "note": "The two initial reference words are absent."
+        }
+      ]
+    },
+    {
+      "case_id": "t03",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Missing interior word",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090014",
+          "transcript": "أو إطعام في يوم مسغبة",
+          "transcript_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "مسغبة"
+          ],
+          "reference_text": "أو إطعام في يوم ذي مسغبة",
+          "reference_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "ذي",
+            "مسغبة"
+          ],
+          "event_ids": [
+            "t03:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t03:e001",
+          "label": "omission_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                4,
+                4
+              ],
+              "words": ""
+            }
+          ],
+          "reference": {
+            "ayah_id": "090014",
+            "span": [
+              4,
+              5
+            ],
+            "words": "ذي"
+          },
+          "note": "ذي is missing between يوم and مسغبة."
+        }
+      ]
+    },
+    {
+      "case_id": "t04",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Missing ending",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090017",
+          "transcript": "ثم كان من الذين آمنوا وتواصوا بالصبر",
+          "transcript_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر"
+          ],
+          "reference_text": "ثم كان من الذين آمنوا وتواصوا بالصبر وتواصوا بالمرحمة",
+          "reference_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالمرحمة"
+          ],
+          "event_ids": [
+            "t04:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t04:e001",
+          "label": "omission_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                7,
+                7
+              ],
+              "words": ""
+            }
+          ],
+          "reference": {
+            "ayah_id": "090017",
+            "span": [
+              7,
+              9
+            ],
+            "words": "وتواصوا بالمرحمة"
+          },
+          "note": "The last two reference words are absent, even if the recording stops here."
+        }
+      ]
+    },
+    {
+      "case_id": "t05",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "One unresolved replacement",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090006",
+          "transcript": "يقول أهلكت ذهبا لبدا",
+          "transcript_tokens": [
+            "يقول",
+            "أهلكت",
+            "ذهبا",
+            "لبدا"
+          ],
+          "reference_text": "يقول أهلكت مالا لبدا",
+          "reference_tokens": [
+            "يقول",
+            "أهلكت",
+            "مالا",
+            "لبدا"
+          ],
+          "event_ids": [
+            "t05:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t05:e001",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                2,
+                3
+              ],
+              "words": "ذهبا"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090006",
+            "span": [
+              2,
+              3
+            ],
+            "words": "مالا"
+          },
+          "note": "ذهبا replaces مالا."
+        }
+      ]
+    },
+    {
+      "case_id": "t06",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Adjacent replacements grouped",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090006",
+          "transcript": "يقول أهلكت كنزا كثيرا",
+          "transcript_tokens": [
+            "يقول",
+            "أهلكت",
+            "كنزا",
+            "كثيرا"
+          ],
+          "reference_text": "يقول أهلكت مالا لبدا",
+          "reference_tokens": [
+            "يقول",
+            "أهلكت",
+            "مالا",
+            "لبدا"
+          ],
+          "event_ids": [
+            "t06:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t06:e001",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                2,
+                4
+              ],
+              "words": "كنزا كثيرا"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090006",
+            "span": [
+              2,
+              4
+            ],
+            "words": "مالا لبدا"
+          },
+          "note": "Two continuous replaced words form one event."
+        }
+      ]
+    },
+    {
+      "case_id": "t07",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Two mistakes separated by correct words",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090008",
+          "transcript": "هل نجعل له أذنين",
+          "transcript_tokens": [
+            "هل",
+            "نجعل",
+            "له",
+            "أذنين"
+          ],
+          "reference_text": "ألم نجعل له عينين",
+          "reference_tokens": [
+            "ألم",
+            "نجعل",
+            "له",
+            "عينين"
+          ],
+          "event_ids": [
+            "t07:e001",
+            "t07:e002"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t07:e001",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                1
+              ],
+              "words": "هل"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090008",
+            "span": [
+              0,
+              1
+            ],
+            "words": "ألم"
+          },
+          "note": "هل replaces الم."
+        },
+        {
+          "event_id": "t07:e002",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                3,
+                4
+              ],
+              "words": "أذنين"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090008",
+            "span": [
+              3,
+              4
+            ],
+            "words": "عينين"
+          },
+          "note": "اذنين replaces عينين. The correct words between the changes separate the events."
+        }
+      ]
+    },
+    {
+      "case_id": "t08",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Extra words",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090009",
+          "transcript": "ولسانا وعينين وشفتين",
+          "transcript_tokens": [
+            "ولسانا",
+            "وعينين",
+            "وشفتين"
+          ],
+          "reference_text": "ولسانا وشفتين",
+          "reference_tokens": [
+            "ولسانا",
+            "وشفتين"
+          ],
+          "event_ids": [
+            "t08:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t08:e001",
+          "label": "insertion_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                1,
+                2
+              ],
+              "words": "وعينين"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090009",
+            "span": [
+              1,
+              1
+            ],
+            "words": ""
+          },
+          "note": "وعينين is extra material, not a matching repeated phrase or a restatement."
+        }
+      ]
+    },
+    {
+      "case_id": "t09",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Matching phrase repeated",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "091001",
+          "transcript": "والشمس وضحاها والشمس وضحاها",
+          "transcript_tokens": [
+            "والشمس",
+            "وضحاها",
+            "والشمس",
+            "وضحاها"
+          ],
+          "reference_text": "والشمس وضحاها",
+          "reference_tokens": [
+            "والشمس",
+            "وضحاها"
+          ],
+          "event_ids": [
+            "t09:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t09:e001",
+          "label": "repetition_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                2
+              ],
+              "words": "والشمس وضحاها"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                2,
+                4
+              ],
+              "words": "والشمس وضحاها"
+            }
+          ],
+          "reference": {
+            "ayah_id": "091001",
+            "span": [
+              0,
+              2
+            ],
+            "words": "والشمس وضحاها"
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t10",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Wrong then correct",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "091002",
+          "transcript": "والشمس إذا تلاها والقمر إذا تلاها",
+          "transcript_tokens": [
+            "والشمس",
+            "إذا",
+            "تلاها",
+            "والقمر",
+            "إذا",
+            "تلاها"
+          ],
+          "reference_text": "والقمر إذا تلاها",
+          "reference_tokens": [
+            "والقمر",
+            "إذا",
+            "تلاها"
+          ],
+          "event_ids": [
+            "t10:e001",
+            "t10:e002"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t10:e001",
+          "label": "substitution_corrected",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                1
+              ],
+              "words": "والشمس"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                3,
+                4
+              ],
+              "words": "والقمر"
+            }
+          ],
+          "reference": {
+            "ayah_id": "091002",
+            "span": [
+              0,
+              1
+            ],
+            "words": "والقمر"
+          },
+          "note": "Repeated matching clause context establishes the two attempts."
+        },
+        {
+          "event_id": "t10:e002",
+          "label": "repetition_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                1,
+                3
+              ],
+              "words": "إذا تلاها"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                4,
+                6
+              ],
+              "words": "إذا تلاها"
+            }
+          ],
+          "reference": {
+            "ayah_id": "091002",
+            "span": [
+              1,
+              3
+            ],
+            "words": "إذا تلاها"
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t11",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Correct then wrong on restatement",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "091003",
+          "transcript": "والنهار إذا جلاها والليل إذا جلاها",
+          "transcript_tokens": [
+            "والنهار",
+            "إذا",
+            "جلاها",
+            "والليل",
+            "إذا",
+            "جلاها"
+          ],
+          "reference_text": "والنهار إذا جلاها",
+          "reference_tokens": [
+            "والنهار",
+            "إذا",
+            "جلاها"
+          ],
+          "event_ids": [
+            "t11:e001",
+            "t11:e002"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t11:e001",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                1
+              ],
+              "words": "والنهار"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                3,
+                4
+              ],
+              "words": "والليل"
+            }
+          ],
+          "reference": {
+            "ayah_id": "091003",
+            "span": [
+              0,
+              1
+            ],
+            "words": "والنهار"
+          },
+          "note": "First correct, then wrong; final attempt remains wrong."
+        },
+        {
+          "event_id": "t11:e002",
+          "label": "repetition_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                1,
+                3
+              ],
+              "words": "إذا جلاها"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                4,
+                6
+              ],
+              "words": "إذا جلاها"
+            }
+          ],
+          "reference": {
+            "ayah_id": "091003",
+            "span": [
+              1,
+              3
+            ],
+            "words": "إذا جلاها"
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t12",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Omission restored on restart",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090014",
+          "transcript": "أو إطعام في يوم مسغبة أو إطعام في يوم ذي مسغبة",
+          "transcript_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "مسغبة",
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "ذي",
+            "مسغبة"
+          ],
+          "reference_text": "أو إطعام في يوم ذي مسغبة",
+          "reference_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "ذي",
+            "مسغبة"
+          ],
+          "event_ids": [
+            "t12:e001",
+            "t12:e002",
+            "t12:e003"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t12:e001",
+          "label": "omission_corrected",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                4,
+                4
+              ],
+              "words": ""
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                9,
+                10
+              ],
+              "words": "ذي"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090014",
+            "span": [
+              4,
+              5
+            ],
+            "words": "ذي"
+          },
+          "note": ""
+        },
+        {
+          "event_id": "t12:e002",
+          "label": "repetition_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                4
+              ],
+              "words": "أو إطعام في يوم"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                5,
+                9
+              ],
+              "words": "أو إطعام في يوم"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090014",
+            "span": [
+              0,
+              4
+            ],
+            "words": "أو إطعام في يوم"
+          },
+          "note": ""
+        },
+        {
+          "event_id": "t12:e003",
+          "label": "repetition_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                4,
+                5
+              ],
+              "words": "مسغبة"
+            },
+            {
+              "chunk_idx": 0,
+              "span": [
+                10,
+                11
+              ],
+              "words": "مسغبة"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090014",
+            "span": [
+              5,
+              6
+            ],
+            "words": "مسغبة"
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t13",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Complete spoken letter names",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "026001",
+          "transcript": "طا سين ميم",
+          "transcript_tokens": [
+            "طا",
+            "سين",
+            "ميم"
+          ],
+          "reference_text": "طسم",
+          "reference_tokens": [
+            "طسم"
+          ],
+          "event_ids": [
+            "t13:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t13:e001",
+          "label": "letters_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                3
+              ],
+              "words": "طا سين ميم"
+            }
+          ],
+          "reference": {
+            "ayah_id": "026001",
+            "span": [
+              0,
+              1
+            ],
+            "words": "طسم"
+          },
+          "note": "The three spoken letter names express طسم in order."
+        }
+      ]
+    },
+    {
+      "case_id": "t14",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Incomplete spoken letter names",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "026001",
+          "transcript": "طا سين",
+          "transcript_tokens": [
+            "طا",
+            "سين"
+          ],
+          "reference_text": "طسم",
+          "reference_tokens": [
+            "طسم"
+          ],
+          "event_ids": [
+            "t14:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t14:e001",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                2
+              ],
+              "words": "طا سين"
+            }
+          ],
+          "reference": {
+            "ayah_id": "026001",
+            "span": [
+              0,
+              1
+            ],
+            "words": "طسم"
+          },
+          "note": "The one-token reference sequence طسم lacks its final ميم in the hypothesis; use the one-token substitution convention."
+        }
+      ]
+    },
+    {
+      "case_id": "t15",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Contextual word boundary is benign",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "004078",
+          "transcript": "أين ما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وإن تصبهم حسنة يقولوا هذه من عند الله وإن تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا",
+          "transcript_tokens": [
+            "أين",
+            "ما",
+            "تكونوا",
+            "يدرككم",
+            "الموت",
+            "ولو",
+            "كنتم",
+            "في",
+            "بروج",
+            "مشيدة",
+            "وإن",
+            "تصبهم",
+            "حسنة",
+            "يقولوا",
+            "هذه",
+            "من",
+            "عند",
+            "الله",
+            "وإن",
+            "تصبهم",
+            "سيئة",
+            "يقولوا",
+            "هذه",
+            "من",
+            "عندك",
+            "قل",
+            "كل",
+            "من",
+            "عند",
+            "الله",
+            "فمال",
+            "هؤلاء",
+            "القوم",
+            "لا",
+            "يكادون",
+            "يفقهون",
+            "حديثا"
+          ],
+          "reference_text": "أينما تكونوا يدرككم الموت ولو كنتم في بروج مشيدة وإن تصبهم حسنة يقولوا هذه من عند الله وإن تصبهم سيئة يقولوا هذه من عندك قل كل من عند الله فمال هؤلاء القوم لا يكادون يفقهون حديثا",
+          "reference_tokens": [
+            "أينما",
+            "تكونوا",
+            "يدرككم",
+            "الموت",
+            "ولو",
+            "كنتم",
+            "في",
+            "بروج",
+            "مشيدة",
+            "وإن",
+            "تصبهم",
+            "حسنة",
+            "يقولوا",
+            "هذه",
+            "من",
+            "عند",
+            "الله",
+            "وإن",
+            "تصبهم",
+            "سيئة",
+            "يقولوا",
+            "هذه",
+            "من",
+            "عندك",
+            "قل",
+            "كل",
+            "من",
+            "عند",
+            "الله",
+            "فمال",
+            "هؤلاء",
+            "القوم",
+            "لا",
+            "يكادون",
+            "يفقهون",
+            "حديثا"
+          ],
+          "event_ids": [
+            "t15:e001"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t15:e001",
+          "label": "spelling_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                0,
+                2
+              ],
+              "words": "أين ما"
+            }
+          ],
+          "reference": {
+            "ayah_id": "004078",
+            "span": [
+              0,
+              1
+            ],
+            "words": "أينما"
+          },
+          "note": "Proposed teaching equivalence: اين ما / اينما in this clause. Human approval is required; this is not an approved expansion of normalization."
+        }
+      ]
+    },
+    {
+      "case_id": "t16",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Istiadhah outside the ayah",
+      "units": [
+        {
+          "chunk_idx": -1,
+          "ayah_id": null,
+          "transcript": "أعوذ بالله من الشيطان الرجيم",
+          "transcript_tokens": [
+            "أعوذ",
+            "بالله",
+            "من",
+            "الشيطان",
+            "الرجيم"
+          ],
+          "reference_text": "",
+          "reference_tokens": [],
+          "event_ids": [
+            "t16:e001"
+          ]
+        },
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090013",
+          "transcript": "فك رقبة",
+          "transcript_tokens": [
+            "فك",
+            "رقبة"
+          ],
+          "reference_text": "فك رقبة",
+          "reference_tokens": [
+            "فك",
+            "رقبة"
+          ],
+          "event_ids": []
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t16:e001",
+          "label": "isti3adha_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": -1,
+              "span": [
+                0,
+                5
+              ],
+              "words": "أعوذ بالله من الشيطان الرجيم"
+            }
+          ],
+          "reference": {
+            "ayah_id": null,
+            "span": [
+              0,
+              0
+            ],
+            "words": ""
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t17",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Basmala outside the ayah",
+      "units": [
+        {
+          "chunk_idx": -1,
+          "ayah_id": null,
+          "transcript": "بسم الله الرحمن الرحيم",
+          "transcript_tokens": [
+            "بسم",
+            "الله",
+            "الرحمن",
+            "الرحيم"
+          ],
+          "reference_text": "",
+          "reference_tokens": [],
+          "event_ids": [
+            "t17:e001"
+          ]
+        },
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090013",
+          "transcript": "فك رقبة",
+          "transcript_tokens": [
+            "فك",
+            "رقبة"
+          ],
+          "reference_text": "فك رقبة",
+          "reference_tokens": [
+            "فك",
+            "رقبة"
+          ],
+          "event_ids": []
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t17:e001",
+          "label": "basmala_benign",
+          "hyp_locations": [
+            {
+              "chunk_idx": -1,
+              "span": [
+                0,
+                4
+              ],
+              "words": "بسم الله الرحمن الرحيم"
+            }
+          ],
+          "reference": {
+            "ayah_id": null,
+            "span": [
+              0,
+              0
+            ],
+            "words": ""
+          },
+          "note": ""
+        }
+      ]
+    },
+    {
+      "case_id": "t18",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Whole intervening ayah omitted",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090012",
+          "transcript": "وما أدراك ما العقبة",
+          "transcript_tokens": [
+            "وما",
+            "أدراك",
+            "ما",
+            "العقبة"
+          ],
+          "reference_text": "وما أدراك ما العقبة",
+          "reference_tokens": [
+            "وما",
+            "أدراك",
+            "ما",
+            "العقبة"
+          ],
+          "event_ids": []
+        },
+        {
+          "chunk_idx": 1,
+          "ayah_id": "090013",
+          "transcript": "",
+          "transcript_tokens": [],
+          "reference_text": "فك رقبة",
+          "reference_tokens": [
+            "فك",
+            "رقبة"
+          ],
+          "event_ids": [
+            "t18:e001"
+          ]
+        },
+        {
+          "chunk_idx": 2,
+          "ayah_id": "090014",
+          "transcript": "أو إطعام في يوم ذي مسغبة",
+          "transcript_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "ذي",
+            "مسغبة"
+          ],
+          "reference_text": "أو إطعام في يوم ذي مسغبة",
+          "reference_tokens": [
+            "أو",
+            "إطعام",
+            "في",
+            "يوم",
+            "ذي",
+            "مسغبة"
+          ],
+          "event_ids": []
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t18:e001",
+          "label": "omission_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 1,
+              "span": [
+                0,
+                0
+              ],
+              "words": ""
+            }
+          ],
+          "reference": {
+            "ayah_id": "090013",
+            "span": [
+              0,
+              2
+            ],
+            "words": "فك رقبة"
+          },
+          "note": "The reviewed intended continuous passage includes this entirely missing ayah."
+        }
+      ]
+    },
+    {
+      "case_id": "t19",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Repeated word already in the reference is clean",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090017",
+          "transcript": "ثم كان من الذين آمنوا وتواصوا بالصبر وتواصوا بالمرحمة",
+          "transcript_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالمرحمة"
+          ],
+          "reference_text": "ثم كان من الذين آمنوا وتواصوا بالصبر وتواصوا بالمرحمة",
+          "reference_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالمرحمة"
+          ],
+          "event_ids": []
+        }
+      ],
+      "events": []
+    },
+    {
+      "case_id": "t20",
+      "provenance": "constructed; adapted from approved historical teaching example; current adaptation assistant-validated",
+      "summary": "Two different errors in one ayah",
+      "units": [
+        {
+          "chunk_idx": 0,
+          "ayah_id": "090017",
+          "transcript": "ثم كان الذين آمنوا وتواصوا بالصبر وتواصوا بالرحمة",
+          "transcript_tokens": [
+            "ثم",
+            "كان",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالرحمة"
+          ],
+          "reference_text": "ثم كان من الذين آمنوا وتواصوا بالصبر وتواصوا بالمرحمة",
+          "reference_tokens": [
+            "ثم",
+            "كان",
+            "من",
+            "الذين",
+            "آمنوا",
+            "وتواصوا",
+            "بالصبر",
+            "وتواصوا",
+            "بالمرحمة"
+          ],
+          "event_ids": [
+            "t20:e001",
+            "t20:e002"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "event_id": "t20:e001",
+          "label": "omission_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                2,
+                2
+              ],
+              "words": ""
+            }
+          ],
+          "reference": {
+            "ayah_id": "090017",
+            "span": [
+              2,
+              3
+            ],
+            "words": "من"
+          },
+          "note": ""
+        },
+        {
+          "event_id": "t20:e002",
+          "label": "substitution_mistake",
+          "hyp_locations": [
+            {
+              "chunk_idx": 0,
+              "span": [
+                7,
+                8
+              ],
+              "words": "بالرحمة"
+            }
+          ],
+          "reference": {
+            "ayah_id": "090017",
+            "span": [
+              8,
+              9
+            ],
+            "words": "بالمرحمة"
+          },
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

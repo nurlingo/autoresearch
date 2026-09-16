@@ -1,18 +1,19 @@
 # Annotation findings and decisions — 2026-09-08
 
+**Current status (2026-09-16):** [200 approved cases: 100 train / 100 gold](../study3/CURRENT-STATE.md), frozen as `granular-100x100-v1.0`. Use [the current experiment protocol](../study3/EXPERIMENT.md) for train-only development and final hidden-gold validation. The gold100/127-train counts, single-span examples and pilot numbers below describe the historical frozen release, not the working corpus.
+
 **Completed review: 100/100 selected recording cases approved**, 314 ayah
 chunks and 274 ayahs across 38 surahs. Taxonomy **v0.19**, recording format
 **v0.6**. Three additional approved recordings remain outside the scored set;
 on 2026-09-09 their transcript-only copies joined the unlabelled candidate pool.
 Their original annotations remain private. No selected annotation decisions remain unresolved. These are
-annotation findings. Evaluator v2.1 baseline results are now available; no
-annotation-and-algorithm agent experiment has run.
+annotation findings. Evaluator v2.1 baseline results are now available; eight informal agent pilot runs are reported in the Track 1 paper. No preregistered repeated comparison or mandatory annotate-first experiment is complete.
 
 Shared documentation contains aggregate results and synthetic examples.
 Selected recording identities, transcripts, answer spans, reviewer notes and
 dismissed interpretations remain in the separate private review workspace.
 
-## Approved labels and counts
+## Historical approved labels and counts
 
 | Label | Meaning | Approved count |
 |---|---|---:|

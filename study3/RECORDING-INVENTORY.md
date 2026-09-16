@@ -1,13 +1,23 @@
 # Recording inventory
 
-## Current read-only check — 2026-09-15
+## Current read-only check — 2026-09-16 07:14 UTC
 
-| Family | Total recordings | Stored transcripts | New since prior inventory |
-|---|---:|---:|---:|
-| Bot/autodetect | 330 | 305 | 9 IDs, all with transcripts |
-| Single-ayah app | 25,776 | 25,599 | 357 newer rows, all with transcripts |
+| Family | Total recordings | Stored transcripts | Change since September 15 snapshot |
+|---|---:|---:|---|
+| Bot/autodetect | 356 | 330 | 26 new IDs; 25 have transcripts |
+| Single-ayah app | 25,784 | 25,607 | +8 rows and +8 transcripts; excluded from this dataset |
 
-Six autodetect cases have been added as drafts, bringing the working corpus from 188 to 194. Each has one stored transcript and verified original audio bytes. Single-ayah cases are excluded at the owner’s direction because their transcription convention differs. Six further suitable autodetect cases are needed for 200. See [current state](CURRENT-STATE.md). No production rows were changed.
+Of the 26 new autodetect recordings, two are already active dataset cases, now explicitly owner-approved. Twenty-four are outside the active corpus, of which 23 have stored transcripts. This includes a previously dismissed duplicate, a deferred taxonomy case and an annotation withdrawn for fresh review; new inventory rows are not automatically new useful cases.
+
+The first five-case recommendation was superseded after the owner prioritized rare-label gaps. Five assistant-labelled candidates were subsequently owner-approved and merged: spoken letters and a corrected substitution for train; an uncorrected insertion, a benign hamza-seat spelling and a corrected omission for gold. They complete 100 train / 100 gold. A subsequent read-only targeted search found the exact newer transcript supplied by the owner, filling the omission-repair slot. It was submitted at 12:59:55 database time, after the 07:14 UTC inventory snapshot; the totals above remain the dated snapshot, not a fresh full count. Previously deferred/withdrawn cases are not automatically reinstated to fill this gap.
+
+All five are included in the private `granular-100x100-v1.0` freeze. Exact reference spans and stored transcript preservation were validated; no event-bearing ayah text collides with the opposite active split. Source IDs and database audio hashes are distinct from all 195 active recordings. Original audio for the earlier five-case proposal was already downloaded and hash-verified; the revised review bundle tracks its additional source audio separately.
+
+Recording identities, transcripts, exports, audio and annotations remain in private `inventory_20260916/`, with the historical candidate proposals in `gap-targeted-drafts.jsonl` and `gap-targeted-review.html`. Single-ayah app recordings stay excluded. Production rows and storage objects were not changed.
+
+## Previous checkpoint — 2026-09-15
+
+The previous snapshot had 330 autodetect recordings / 305 transcripts and 25,776 single-ayah recordings / 25,599 transcripts. The intermediate six-case extension and 194-case corpus were later superseded by additions, withdrawals and split updates; see [CURRENT-STATE.md](CURRENT-STATE.md).
 
 ## Historical check — 2026-09-08
 

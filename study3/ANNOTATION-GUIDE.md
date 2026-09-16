@@ -1,7 +1,9 @@
-# Transcript event annotation — teaching draft
+# Transcript event annotation — current working guide
 
-Status: draft for human review, based on taxonomy v0.19. The teaching examples
-and operational details below are not yet a frozen experiment contract.
+Status (2026-09-16): ten-label rubric with approved review decisions. The twenty
+constructed examples were approved for the historical contract. A current
+assistant-validated adaptation updates reference spelling and granular grouping;
+its provenance is explicit in TEACHING-EXAMPLES.md.
 
 ## What you annotate
 
@@ -16,8 +18,11 @@ available as unlabelled text. Source corrections and gold review notes are not
 part of the input. The executable envelope is documented in EVALUATOR.md; experiment settings
 and tolerant matching choices still need to be frozen.
 
-Reference text comes verbatim from `quran.json` → `titles.clean`. Normalization
-is a comparison operation; never rewrite the saved transcript or reference.
+Current `reference_text` comes from vocalized `titles.ar` with vowel marks,
+tatweel and waqf signs removed, preserving hamza, madda and alif maqsura. The
+full reference is `study3/quran-reference.json`. Current transcripts are also
+devowelled. Use the supplied token arrays unchanged when reporting spans;
+source text and legacy folded reference remain traceable privately.
 
 ## Labels
 
@@ -29,7 +34,7 @@ is a comparison operation; never rewrite the saved transcript or reference.
 | `insertion_mistake` | Extra transcript words are neither a repeat nor part of a recognizable repair/restatement. |
 | `repetition_benign` | A reference-matching phrase is repeated. Select the original and all extra copies against one reference copy. |
 | `substitution_corrected` | A wrong attempt is followed by its reference-matching repair. Select both attempts. |
-| `omission_corrected` | An incomplete attempt is restarted and the missing material restored. Select both attempts. |
+| `omission_corrected` | Skipped material is later restored, within or across ayahs. Link the initial empty anchor and the later words. |
 | `letters_benign` | Spoken letter names express the complete reference letter sequence. |
 | `spelling_benign` | An explicitly accepted contextual spelling difference remains after normalization. Explain it; do not excuse arbitrary letter changes. |
 | `isti3adha_benign` | An istiadhah is used outside the assigned ayah. |
@@ -44,7 +49,7 @@ chunk. `clean` is mutually exclusive with a nonempty chunk event list.
 1. Read the whole chunk and reference before aligning individual words.
 2. For the current working review, follow the [hamza policy](annotation-review/HAMZA-POLICY.md).
    The old clean reference loses meaningful distinctions: alif folding is only
-   candidate alignment, not a benign verdict. Consult the vocalized reference,
+   candidate alignment, not a benign verdict. Use the supplied hamza-preserving reference,
    preserve explicit initial hamza/madda/wasl distinctions, and mark omitted
    hamza notation on plain alif as spelling_benign under the owner-approved convention. Frozen experiments retain their original comparison contract.
 3. Look for attempts, restarts and repairs. Classify their outcome before
@@ -71,10 +76,16 @@ Correct words, gaps and distinct attempt boundaries separate events. A word
 containing a changed connective is selected as a whole; explain the differing
 letters in the note. Character spans are not required.
 
-A repeat spans original plus copies. A repair spans wrong plus corrected
-attempts. A correct-to-incorrect restatement spans both attempts and receives
-`substitution_mistake`; note their order. Context inside such a span is not all
-erroneous. Do not additionally annotate the same span as an insertion/repetition.
+In the human data, `hyp_locations` links original plus copies for a repeat,
+wrong plus correct words for a repair, or correct plus wrong words for an
+unresolved restatement. Repeated correct context is a separate repetition event;
+do not cover it all with a broad substitution span. A corrected omission links
+the initial empty anchor to the restored words. See the
+[recording-level representation](annotation-review/README.md).
+
+The current algorithm adapter instead returns one hypothesis location per event.
+That is an evaluation limitation, not a change to the human annotation format;
+see [EVALUATOR.md](EVALUATOR.md) before interpreting its score.
 
 Missing initial/final material is an omission even at a recording boundary.
 A wholly absent ayah is an empty supplied chunk only after human adjudication
@@ -87,8 +98,10 @@ A context-independent comparison equivalence receives no event. A residual
 spelling equivalence requiring explicit contextual acceptance receives
 `spelling_benign`; wasl belongs in the explanation, not the label name.
 
-The teaching draft includes a proposed word-boundary example. It requires
-approval and does not authorize joining arbitrary words. There is no blanket
+The historically approved teaching examples include contextual word-boundary
+spelling. Recheck their reference against the current version: a difference
+caused by an incorrect reference is not an event. No example authorizes joining
+arbitrary words. There is no blanket
 equivalence between all final letters, between ة and ت, or between a missing
 connective and its presence. Letter-name sequences have their own label; an
 incomplete sequence for a one-token reference is a substitution with the
@@ -96,8 +109,8 @@ missing letter identified in the note.
 
 ## Before this becomes the agent guide
 
-Approve the Arabic examples, add counterexamples for every accepted contextual
-spelling category, and freeze the comparison normalization. Coordinates use every original
+Inspect the current adaptation of the constructed examples, add counterexamples
+where useful, and freeze the comparison normalization. Coordinates use every original
 whitespace token, including standalone punctuation tokens; comparison may ignore
 punctuation without deleting tokens from the index arrays. The earlier ambiguous
 wording is superseded for the executable contract; existing gold indices remain

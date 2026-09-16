@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""Evaluator v2.2 — scores the granular multi-location corpus.
+"""Evaluator v2.3 — scores the granular multi-location corpus.
 
 v2.1 assumed one hypothesis span per event. The working corpus annotates a
 recording-level event with every place it occurs: all occurrences of a repeat,
-both attempts of a repair, and occasionally spans in two adjacent ayahs. 71 of
-458 events have more than one location and three cross a chunk boundary, so
-v2.1 cannot score this corpus at all.
+both attempts of a repair, and occasionally spans across chunk boundaries.
+The v2.3 fixes preserve v2.2's per-unit interface and thresholds.
 
 Contract kept from v2.1: solutions still return per-unit events
 {label, hyp_span, ref_span}, half-open over that unit's original whitespace
 tokens. Nothing a solution emits has to change.
 
 What generalizes is the credit rule. Gold says "this event happened, in these
-places". A prediction that names the event and lands on ANY of those places is
+places". A prediction that names the event and lands on an eligible occurrence in the reference ayah is
 right about the event, so it matches — once. It cannot then match a second
 gold event, and a second prediction cannot match the same one. Extra
 predictions are false positives, unmatched gold events false negatives.
@@ -54,7 +53,8 @@ def span_sim(a, b) -> float:
 
 def pair_sim(pred, gold_loc, gold_ref) -> float:
     """Both sides must overlap: one accurate side cannot carry a wrong one."""
-    if pred["chunk_idx"] != gold_loc["chunk_idx"]:
+    if (pred["chunk_idx"] != gold_loc["chunk_idx"]
+            or pred.get("reference_ayah_id") != gold_ref.get("ayah_id")):
         return 0.0
     h = span_sim(pred["hyp_span"], gold_loc["span"])
     r = span_sim(pred["ref_span"], gold_ref["span"])
@@ -67,7 +67,7 @@ def best_sim(pred, gold_event) -> float:
     ref_span = ref.get("span") or [0, 0]
     best = 0.0
     for loc in (gold_event.get("hyp_locations") or []):
-        s = pair_sim(pred, loc, {"span": ref_span})
+        s = pair_sim(pred, loc, {"span": ref_span, "ayah_id": ref.get("ayah_id")})
         if s > best:
             best = s
     return best
@@ -92,8 +92,88 @@ def match(preds, gold_events, *, strict=False):
     return out
 
 
+def valid_span(value, size):
+    return (isinstance(value, list) and len(value) == 2
+            and all(type(x) is int for x in value)
+            and 0 <= value[0] <= value[1] <= size)
+
+
+def valid_shape(label, h, r):
+    empty_h, empty_r = h[0] == h[1], r[0] == r[1]
+    if label == "omission_mistake":
+        return empty_h and not empty_r
+    if label == "omission_corrected":
+        return not empty_r  # initial anchor or restored words
+    if label in {"insertion_mistake", "basmala_benign", "isti3adha_benign"}:
+        return not empty_h and empty_r
+    return not empty_h and not empty_r
+
+
+def valid_prediction(p, units):
+    if not isinstance(p, dict):
+        return False
+    label, idx = p.get("label"), p.get("chunk_idx")
+    if not isinstance(label, str) or label not in LABELS or type(idx) is not int or idx not in units:
+        return False
+    u = units[idx]
+    h, r = p.get("hyp_span"), p.get("ref_span")
+    return (valid_span(h, len(u["transcript_tokens"]))
+            and valid_span(r, len(u["reference_tokens"]))
+            and valid_shape(label, h, r))
+
+
+def validate_corpus(corpus):
+    """Reject malformed trusted annotations instead of silently mis-scoring them."""
+    seen = set()
+    for rec in corpus:
+        cid = rec.get("case_id")
+        if not isinstance(cid, str) or cid in seen:
+            raise ValueError("missing or duplicate corpus case_id")
+        seen.add(cid)
+        units = {}
+        for u in rec["units"]:
+            idx = u["chunk_idx"]
+            if type(idx) is not int or idx in units:
+                raise ValueError("invalid or duplicate corpus chunk_idx")
+            if not all(isinstance(u.get(k), list) and all(isinstance(t, str) for t in u[k])
+                       for k in ("transcript_tokens", "reference_tokens")):
+                raise ValueError("invalid corpus token arrays")
+            units[idx] = u
+        for e in rec.get("events", []):
+            if e.get("label") not in LABELS or not e.get("hyp_locations"):
+                raise ValueError("invalid corpus event")
+            ref = e.get("reference") or {}
+            targets = [u for u in units.values() if u.get("ayah_id") == ref.get("ayah_id")]
+            if not targets or not any(valid_span(ref.get("span"), len(u["reference_tokens"])) for u in targets):
+                raise ValueError("invalid corpus reference")
+            can_emit = False
+            for loc in e["hyp_locations"]:
+                idx = loc.get("chunk_idx")
+                if type(idx) is not int or idx not in units:
+                    raise ValueError("invalid corpus event location")
+                u = units[idx]
+                if (not valid_span(loc.get("span"), len(u["transcript_tokens"]))
+                        or not valid_shape(e["label"], loc["span"], ref["span"])):
+                    raise ValueError("invalid corpus event span/shape")
+                if "words" in loc and loc["words"] != " ".join(u["transcript_tokens"][slice(*loc["span"])]):
+                    raise ValueError("corpus hypothesis words do not match coordinates")
+                can_emit |= u.get("ayah_id") == ref.get("ayah_id")
+            if not can_emit:
+                raise ValueError("event has no occurrence expressible by the per-unit adapter")
+            if "words" in ref and not any(ref["words"] == " ".join(u["reference_tokens"][slice(*ref["span"])]) for u in targets):
+                raise ValueError("corpus reference words do not match coordinates")
+
+
 def score(corpus, predictions):
     """predictions: {case_id: [ {chunk_idx,label,hyp_span,ref_span}, ... ]}"""
+    validate_corpus(corpus)
+    if not isinstance(predictions, dict):
+        raise ValueError("predictions must be an object keyed by case_id")
+    case_ids = {r["case_id"] for r in corpus}
+    if set(predictions) - case_ids:
+        raise ValueError("predictions contain unknown case IDs")
+    if any(not isinstance(rows, list) for rows in predictions.values()):
+        raise ValueError("each case prediction must be an event list")
     TP = FP = FN = 0
     loc_tp = strict_tp = 0
     n_pred = n_gold = 0
@@ -104,28 +184,24 @@ def score(corpus, predictions):
     for rec in corpus:
         gold = list(rec.get("events") or [])
         preds = list(predictions.get(rec["case_id"], []))
-        sizes = {u["chunk_idx"]: (len(u["transcript_tokens"]), len(u["reference_tokens"]))
-                 for u in rec["units"]}
+        units_by_idx = {u["chunk_idx"]: u for u in rec["units"]}
         ok = []
         for p in preds:
-            if (p.get("label") not in LABELS or p.get("chunk_idx") not in sizes
-                    or not isinstance(p.get("hyp_span"), list)
-                    or not isinstance(p.get("ref_span"), list)):
+            if not valid_prediction(p, units_by_idx):
                 invalid += 1
                 continue
-            nh, nr = sizes[p["chunk_idx"]]
-            h, r = p["hyp_span"], p["ref_span"]
-            if not (0 <= h[0] <= h[1] <= nh and 0 <= r[0] <= r[1] <= nr):
-                invalid += 1
-                continue
-            ok.append(p)
+            # Reference identity comes from the supplied unit, never from a
+            # solution's claimed metadata. Cross-ayah gold can be matched only
+            # at an occurrence whose unit has the corresponding reference.
+            ok.append({**p, "reference_ayah_id": units_by_idx[p["chunk_idx"]].get("ayah_id")})
 
         n_pred += len(ok) + (len(preds) - len(ok))
         n_gold += len(gold)
 
         pairs = match(ok, gold)
         loc_tp += len(pairs)
-        strict_tp += len(match(ok, gold, strict=True))
+        strict_tp += sum(ok[i]["label"] == gold[j]["label"]
+                         for i, j, _ in match(ok, gold, strict=True))
         matched_p = {i for i, _, _ in pairs}
         matched_g = {j for _, j, _ in pairs}
 
@@ -174,7 +250,7 @@ def score(corpus, predictions):
     flags = sum(per[l]["fp"] for l in MISTAKE)
     units = sum(len(rec["units"]) for rec in corpus) or 1
     return {
-        "evaluator_version": "2.2",
+        "evaluator_version": "2.3",
         "micro_f1": round(micro, 4), "precision": round(p, 4), "recall": round(r, 4),
         "macro_f1": round(sum(f1s) / len(f1s), 4) if f1s else 0.0,
         "strict_micro_f1": round(strict_f1, 4),
@@ -191,6 +267,19 @@ def score(corpus, predictions):
                           "f1": round(prf(per[l]["tp"], per[l]["fp"], per[l]["fn"])[2], 3)}
                       for l in LABELS},
     }
+
+
+def unique_object(pairs):
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError("duplicate JSON key")
+        obj[key] = value
+    return obj
+
+
+def load_predictions(path: Path):
+    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
 
 
 def load_corpus(path: Path):
@@ -244,7 +333,7 @@ def main() -> int:
         print(f"empty in: micro {e['micro_f1']:.3f}  (expect 0.000)")
         return 0 if o["micro_f1"] == 1.0 and e["micro_f1"] == 0.0 else 1
 
-    preds = json.loads(a.pred.read_text(encoding="utf-8")) if a.pred else {}
+    preds = load_predictions(a.pred) if a.pred else {}
     s = score(corpus, preds)
     if a.json:
         print(json.dumps(s, ensure_ascii=False, indent=2))
