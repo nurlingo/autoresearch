@@ -78,6 +78,26 @@ python3 "$STUDY3/tools/freeze_solution.py" \
 
 The command prints the solution SHA-256 and saves a read-only source copy plus `frozen-manifest.json`. Select the solution using train evidence only. Fix model versions, budgets, repeats and selection rules before running a comparison.
 
+## Confirm the run executed before spending a gold evaluation
+
+Every gold reading erodes the holdout, because deciding which run to report is
+itself a selection. Check that the run followed the protocol *before* grading
+it, using evidence that does not involve gold:
+
+```sh
+python3 -c "import json;d=json.load(open('<manifest>.launch.json'));\
+print({k:d[k] for k in ('elapsed_seconds','budget_used','exit_code','hit_time_budget')})"
+grep -c '═══ continuation pass' "<manifest>.run.log"   # iterations actually made
+```
+
+A run that used a small fraction of its budget did not do what was asked, and
+its gold number should not be spent or reported. Exclude it on that basis --
+stated before the score is known -- freeze it anyway, and record why.
+
+This is an outcome-independent criterion. Excluding a run because the protocol
+failed is sound; excluding one because the number disappointed is not, and the
+two are indistinguishable afterwards unless the reason is written down first.
+
 ## Final private gold validation
 
 Read the printed SHA-256 (or `solution_sha256` in the frozen manifest) and supply it explicitly:
