@@ -70,7 +70,8 @@ def main():
     # A measured run that leaves no trace cannot be audited afterwards: how long
     # the agent worked, how many passes it made, and whether it stopped early or
     # was cut off are all questions the transcript answers and mtimes do not.
-    log_path = args.log or args.manifest.with_suffix('.run.log')
+    stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
+    log_path = args.log or args.manifest.with_suffix(f'.{stamp}.run.log')
     record = {'image': image, 'command': command, 'seconds': args.seconds,
         'credential_names': args.env, 'network': 'enabled for model API',
         'mode': manifest['mode'], 'log': str(log_path),
@@ -79,7 +80,7 @@ def main():
     launch_record.write_text(json.dumps(record, indent=2) + '\n')
 
     started = time.monotonic()
-    timed_out = False
+    timed_out = interrupted = False
     with open(log_path, 'wb') as log:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -99,6 +100,12 @@ def main():
             timed_out, status = True, 124
             print('\nAgent time budget reached; stop and freeze the saved solution.',
                   file=sys.stderr)
+        except KeyboardInterrupt:
+            # Stopping a run by hand is ordinary. Tear the container down, record
+            # the run as interrupted, and report it -- not a traceback.
+            interrupted, status = True, 130
+            print('\nInterrupted; stopping the agent and recording the run.',
+                  file=sys.stderr)
         finally:
             subprocess.run(['docker', 'rm', '-f', name],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
@@ -109,7 +116,7 @@ def main():
     elapsed = round(time.monotonic() - started, 1)
     record.update(ended_at=datetime.now(timezone.utc).isoformat(timespec='seconds'),
                   elapsed_seconds=elapsed, exit_code=status, hit_time_budget=timed_out,
-                  budget_used=round(elapsed / args.seconds, 3))
+                  interrupted=interrupted, budget_used=round(elapsed / args.seconds, 3))
     launch_record.write_text(json.dumps(record, indent=2) + '\n')
     # The launcher's own reporting goes to stderr: stdout is the agent's output
     # stream, and a caller piping it (the tests parse score.py's JSON straight
