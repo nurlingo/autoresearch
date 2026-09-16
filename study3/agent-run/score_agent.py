@@ -15,6 +15,11 @@ import json
 import sys
 from pathlib import Path
 
+# Do not leave __pycache__ in the workspace: the launcher hashes every prepared
+# file before starting a run, and a stray .pyc makes a clean workspace look
+# tampered with.
+sys.dont_write_bytecode = True
+
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import eval21  # shipped alongside this script; standard library only

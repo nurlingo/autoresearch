@@ -32,9 +32,15 @@ def main():
     manifest = json.loads(args.manifest.read_text())
     workspace = Path(manifest['workspace']).resolve()
     if args.manifest.resolve().is_relative_to(workspace): ap.error('owner manifest must be outside the workspace')
+    # Directories the tooling itself writes into a prepared workspace. They are
+    # not part of what was prepared, so they neither have to match the manifest
+    # nor may they be trusted; every file that IS in the manifest is still
+    # re-hashed below. __pycache__ appears as soon as anyone runs score.py,
+    # which the agent is expected to do.
+    transient = {'.feedback', '__pycache__'}
     expected = manifest['workspace_file_sha256']
     actual = {str(p.relative_to(workspace)) for p in workspace.rglob('*')
-              if p.is_file() and '.feedback' not in p.relative_to(workspace).parts}
+              if p.is_file() and not transient & set(p.relative_to(workspace).parts)}
     if actual != set(expected): ap.error('workspace file allowlist changed before launch')
     for name, digest in expected.items():
         path = workspace / name
