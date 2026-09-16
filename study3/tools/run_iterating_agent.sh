@@ -69,7 +69,18 @@ DRIVER
 
 # The launcher gets headroom over the loop's own budget so a final pass is not
 # killed mid-write; if the loop overruns anyway, the launcher still cuts it off.
-exec python3 "$STUDY3/tools/launch_agent_container.py" \
+# A sleeping Mac freezes the agent while the container's wall clock keeps
+# counting, so the loop's deadline passes with most of the budget unused -- a
+# Fable run lost 1906 of 2928 seconds this way. caffeinate -is holds off idle
+# and system sleep for exactly as long as the launcher runs.
+# (No array here: an empty "${arr[@]}" is an unbound-variable error under
+# set -u in the bash 3.2 macOS ships, and elsewhere caffeinate does not exist.)
+KEEP_AWAKE=
+if command -v caffeinate >/dev/null 2>&1; then
+  KEEP_AWAKE="caffeinate -is"
+fi
+
+exec $KEEP_AWAKE python3 "$STUDY3/tools/launch_agent_container.py" \
   --manifest "$MANIFEST" \
   --image "$IMAGE" \
   --env "$CRED" \

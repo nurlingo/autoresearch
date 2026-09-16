@@ -114,7 +114,18 @@ def main():
             reader.join(timeout=5)
 
     elapsed = round(time.monotonic() - started, 1)
-    record.update(ended_at=datetime.now(timezone.utc).isoformat(timespec='seconds'),
+    ended = datetime.now(timezone.utc)
+    # macOS monotonic time stops while the host sleeps; wall time does not. The
+    # difference is time the agent was frozen but its in-container deadline was
+    # still running, so a large value means the run did not get its budget.
+    wall = (ended - datetime.fromisoformat(record['started_at'])).total_seconds()
+    suspended = max(0, round(wall - elapsed))
+    record['host_suspended_seconds'] = suspended
+    if suspended > 60:
+        print(f'\nWARNING: host was suspended for {suspended}s during this run; the '
+              f'agent had about {elapsed:.0f}s of working time, not the budget. Do not '
+              f'grade it as a measured run.', file=sys.stderr)
+    record.update(ended_at=ended.isoformat(timespec='seconds'),
                   elapsed_seconds=elapsed, exit_code=status, hit_time_budget=timed_out,
                   interrupted=interrupted, budget_used=round(elapsed / args.seconds, 3))
     launch_record.write_text(json.dumps(record, indent=2) + '\n')

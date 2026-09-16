@@ -117,3 +117,38 @@ frozen solutions re-audit clean.
 
 Audit notes: `الف`, `سين`, `صاد`, `لام` -- muqatta'at letter names, which the
 rules permit as linguistic tables.
+
+---
+
+## Run 3 — 2026-09-16 — Fable 5.1 — **EXCLUDED, host slept; gold not read**
+
+| | |
+|---|---|
+| workspace | `260917-fable51` |
+| solution | `f9509aac13c77b27a120d74ab32c09366acd2b6e741aa828dbd316366ad03653` |
+| wall-clock span | 2928s |
+| awake | 1022s |
+| host suspended | 1906s |
+| passes | 1 initial + 3 continuations |
+
+**Excluded because the Mac went to idle sleep** at 20:41:52 UTC, about fifteen
+minutes in, during continuation pass 3 (`pmset -g log`: *Entering Sleep state
+due to 'Idle Sleep'*). The container was frozen with it, but the loop's deadline
+is read from the container's wall clock, which jumped forward on wake. The loop
+concluded the budget was spent after roughly seventeen minutes of real work,
+against thirty for Opus in run 2. The two are not comparable, so the held-out
+split was not read.
+
+The criterion is environmental and fixed before any held-out result: the run
+did not receive its budget. Train was graded, because it costs the holdout
+nothing and confirms the agent's report: micro F1 **0.9585**, exact-span 0.9412,
+macro 0.9342. Audit clean; notes `اذا`, `ال` are a spelling variant and the
+article.
+
+Checked retroactively, run 2 lost 27s of wall time to launch overhead, not
+sleep, and stands.
+
+Harness fixes: `run_iterating_agent.sh` holds `caffeinate -is` for the life of
+the launch, and the launcher records `host_suspended_seconds` -- wall-clock span
+minus monotonic time, which stops while macOS sleeps -- and warns against
+grading a run where it exceeds a minute.
