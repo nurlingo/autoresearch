@@ -65,7 +65,8 @@ def main() -> int:
         print(json.dumps(s, ensure_ascii=False, indent=2))
         return 0
     c = s["counts"]
-    print(f"cases {c['cases']}   units {c['units']}   gold events {c['gold_events']}")
+    print(f"cases {c['cases']}   units {c['units']}   "
+          f"annotated events {c['gold_events']}   [{a.split} split]")
     print()
     print(f"  micro F1 (primary)  {s['micro_f1']:.4f}")
     print(f"  exact-span F1       {s['strict_micro_f1']:.4f}")
@@ -76,7 +77,7 @@ def main() -> int:
     print(f"  predicted {c['predicted_events']}   invalid {c['invalid_predictions']}"
           + (f"   crashes {crashes}" if crashes else ""))
     print()
-    print("  per label            gold  pred     F1")
+    print(f"  per label       {a.split:>9}  pred     F1")
     for l, d in s["per_label"].items():
         if d["gold"] or d["pred"]:
             print(f"  {l:<22}{d['gold']:>5}{d['pred']:>6}{d['f1']:>7.2f}")

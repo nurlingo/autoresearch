@@ -6,11 +6,15 @@ only by explicit environment-name allowlist. No host HOME, Docker socket, owner
 manifest, gold or checkout is available inside the container.
 """
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import subprocess
+import threading
+import sys
+import time
 import uuid
 
 
@@ -25,6 +29,7 @@ def main():
         'ANTHROPIC_API_KEY', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_BASE_URL',
         'CLAUDE_CODE_OAUTH_TOKEN', 'OPENAI_API_KEY', 'OPENAI_BASE_URL'])
     ap.add_argument('--seconds', type=int, required=True)
+    ap.add_argument('--log', type=Path, help='transcript path (default: <manifest>.run.log)')
     ap.add_argument('command', nargs=argparse.REMAINDER)
     args = ap.parse_args()
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
@@ -62,19 +67,52 @@ def main():
         cmd.extend(['--env', key])
     # Networking serves model APIs; this is not an internet-retrieval filter.
     cmd.extend([image, *command])
+    # A measured run that leaves no trace cannot be audited afterwards: how long
+    # the agent worked, how many passes it made, and whether it stopped early or
+    # was cut off are all questions the transcript answers and mtimes do not.
+    log_path = args.log or args.manifest.with_suffix('.run.log')
     record = {'image': image, 'command': command, 'seconds': args.seconds,
-        'credential_names': args.env, 'network': 'enabled for model API', 'mode': manifest['mode']}
-    args.manifest.with_suffix('.launch.json').write_text(json.dumps(record, indent=2) + '\n')
-    process = subprocess.Popen(cmd)
-    try:
-        return process.wait(timeout=args.seconds)
-    except subprocess.TimeoutExpired:
-        print('Agent time budget reached; stop and freeze the saved solution.')
-        return 124
-    finally:
-        subprocess.run(['docker', 'rm', '-f', name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
-        if process.poll() is None: process.kill()
-        process.wait(timeout=5)
+        'credential_names': args.env, 'network': 'enabled for model API',
+        'mode': manifest['mode'], 'log': str(log_path),
+        'started_at': datetime.now(timezone.utc).isoformat(timespec='seconds')}
+    launch_record = args.manifest.with_suffix('.launch.json')
+    launch_record.write_text(json.dumps(record, indent=2) + '\n')
+
+    started = time.monotonic()
+    timed_out = False
+    with open(log_path, 'wb') as log:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        def pump():
+            """Drain output on a thread. Reading inline would block until the
+            agent closed its pipe, which is exactly the case the time budget
+            exists to bound -- a hung run would never be cut off."""
+            for line in process.stdout:
+                sys.stdout.buffer.write(line); sys.stdout.buffer.flush()
+                log.write(line); log.flush()
+
+        reader = threading.Thread(target=pump, daemon=True)
+        reader.start()
+        try:
+            status = process.wait(timeout=args.seconds)
+        except subprocess.TimeoutExpired:
+            timed_out, status = True, 124
+            print('\nAgent time budget reached; stop and freeze the saved solution.')
+        finally:
+            subprocess.run(['docker', 'rm', '-f', name],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
+            if process.poll() is None: process.kill()
+            process.wait(timeout=5)
+            reader.join(timeout=5)
+
+    elapsed = round(time.monotonic() - started, 1)
+    record.update(ended_at=datetime.now(timezone.utc).isoformat(timespec='seconds'),
+                  elapsed_seconds=elapsed, exit_code=status, hit_time_budget=timed_out,
+                  budget_used=round(elapsed / args.seconds, 3))
+    launch_record.write_text(json.dumps(record, indent=2) + '\n')
+    print(f'\nRan {elapsed:.0f}s of a {args.seconds}s budget '
+          f'({record["budget_used"]:.0%}); exit {status}. Transcript: {log_path}')
+    return status
 
 
 if __name__ == '__main__':
