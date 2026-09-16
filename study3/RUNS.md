@@ -120,7 +120,7 @@ rules permit as linguistic tables.
 
 ---
 
-## Run 3 — 2026-09-16 — Fable 5.1 — **EXCLUDED, host slept; gold not read**
+## Run 3 — 2026-09-16 — Fable 5.1 — **EXCLUDED, host slept; gold read afterwards on request**
 
 | | |
 |---|---|
@@ -152,3 +152,35 @@ Harness fixes: `run_iterating_agent.sh` holds `caffeinate -is` for the life of
 the launch, and the launcher records `host_suspended_seconds` -- wall-clock span
 minus monotonic time, which stops while macOS sleeps -- and warns against
 grading a run where it exceeds a minute.
+
+**Gold read afterwards, on the owner's request (gold reading 3).** Recorded
+here before the rerun, so that the rerun's number cannot be chosen against it.
+The rerun, `260917-fable51-r2`, is the Fable result that will be reported,
+whichever of the two scores higher. This one stays excluded: its criterion was
+fixed before it was read.
+
+| | train | gold | Δ |
+|---|---|---|---|
+| micro F1 | 0.9585 | **0.9448** | −0.014 |
+| exact-span F1 | 0.9412 | 0.9282 | −0.013 |
+| macro F1 | 0.9342 | 0.9117 | −0.023 |
+| localization F1 | 0.9654 | 0.9503 | −0.015 |
+
+| label | gold n | gold F1 |
+|---|---:|---:|
+| substitution_mistake | 67 | 0.92 |
+| omission_mistake | 25 | 0.96 |
+| repetition_benign | 18 | 0.97 |
+| spelling_benign | 11 | 1.00 |
+| isti3adha / basmala / letters | 28 / 16 / 4 | 1.00 |
+| substitution_corrected | 5 | 0.80 |
+| omission_corrected | 2 | 0.80 |
+| insertion_mistake | 3 | 0.67 |
+
+Worth recording as an observation, not a result: on seventeen minutes of work
+and three continuation passes, this solution scores above the fully-budgeted
+Opus run on gold (0.9448 against 0.9157), with a smaller train/gold gap (−0.014
+against −0.031). Fewer kept changes means less selection on train, which fits a
+smaller gap; the rerun will show whether the extra time closes, holds or widens
+it.
+
