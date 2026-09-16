@@ -97,7 +97,8 @@ def main():
             status = process.wait(timeout=args.seconds)
         except subprocess.TimeoutExpired:
             timed_out, status = True, 124
-            print('\nAgent time budget reached; stop and freeze the saved solution.')
+            print('\nAgent time budget reached; stop and freeze the saved solution.',
+                  file=sys.stderr)
         finally:
             subprocess.run(['docker', 'rm', '-f', name],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
@@ -110,8 +111,12 @@ def main():
                   elapsed_seconds=elapsed, exit_code=status, hit_time_budget=timed_out,
                   budget_used=round(elapsed / args.seconds, 3))
     launch_record.write_text(json.dumps(record, indent=2) + '\n')
+    # The launcher's own reporting goes to stderr: stdout is the agent's output
+    # stream, and a caller piping it (the tests parse score.py's JSON straight
+    # out of it) must not receive our summary mixed in.
     print(f'\nRan {elapsed:.0f}s of a {args.seconds}s budget '
-          f'({record["budget_used"]:.0%}); exit {status}. Transcript: {log_path}')
+          f'({record["budget_used"]:.0%}); exit {status}. Transcript: {log_path}',
+          file=sys.stderr)
     return status
 
 
