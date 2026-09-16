@@ -54,9 +54,66 @@ per-label report that labelled every split's reference column "gold".
 
 ---
 
-## Run 2 — pending
+## Run 2 — 2026-09-16 — Opus 5 — **REPORTED**
 
-Same corpus, same workspace regime, same TASK.md. Differences are harness-level
-only and were decided without reference to run 1's gold result: an in-container
-continuation loop so the budget is actually spent, and a transcript to confirm
-it was.
+| | |
+|---|---|
+| workspace | `260917-opus5` |
+| solution | `e0505f5cdf74430007e42cc3ab1479820319b32aad1b597491e8f6c847647569` |
+| budget | 1800s loop inside a 1980s launcher limit |
+| actually used | 1779s (90%), not interrupted, no timeout |
+| passes | 1 initial + 23 continuations |
+| changes | 47 attempted, 20 kept, 27 reverted |
+| transcript | `260917-opus5.owner.20260916-194802.run.log` |
+
+Same corpus, workspace regime and TASK.md as run 1. The differences are in the
+harness only, and were decided without reference to run 1's gold result: an
+in-container continuation loop so the budget is actually spent, and a transcript
+with timing so that can be confirmed. Protocol was confirmed from the launch
+record and transcript before gold was read.
+
+| | train | gold | Δ |
+|---|---|---|---|
+| micro F1 | 0.9463 | **0.9157** | −0.031 |
+| exact-span F1 | 0.9185 | 0.8933 | −0.025 |
+| macro F1 | 0.9489 | 0.9050 | −0.044 |
+| localization F1 | 0.9775 | 0.9270 | −0.051 |
+
+| label | train n | train F1 | gold n | gold F1 |
+|---|---:|---:|---:|---:|
+| substitution_mistake | 106 | 0.94 | 67 | 0.88 |
+| omission_mistake | 47 | 0.98 | 25 | 0.94 |
+| spelling_benign | 55 | 0.91 | 11 | 0.91 |
+| repetition_benign | 29 | 0.94 | 18 | 0.84 |
+| isti3adha_benign | 17 | 1.00 | 28 | 1.00 |
+| basmala_benign | 13 | 1.00 | 16 | 1.00 |
+| substitution_corrected | 8 | 0.93 | 5 | 0.91 |
+| omission_corrected | 7 | 0.92 | 2 | 1.00 |
+| insertion_mistake | 6 | 0.86 | 3 | 0.57 |
+| letters_benign | 2 | 1.00 | 4 | 1.00 |
+
+**Reading it.** The gain over run 1 on gold, 0.8621 → 0.9157, comes from
+iteration within the same task, not from anything learned about gold. The
+−0.031 train/gold gap is the expected cost of the loop's selection rule: 47
+candidate changes were each kept only if they raised train micro F1, and that is
+selection on train, however principled each individual change. The gap is
+small, and the largest per-label drops are on the two biggest labels, not the
+rare ones.
+
+Labels with fewer than ten gold events -- `substitution_corrected` 5,
+`insertion_mistake` 3, `omission_corrected` 2, `letters_benign` 4 -- cannot be
+estimated at this support; one event moves `insertion_mistake` by roughly 0.2.
+Report them with their counts, not as findings.
+
+**The agent's own account needs two corrections.** Its closing summaries say
+"thirteen kept changes out of 47"; its own per-pass tables mark twenty kept. And
+it stated at every pass that the file had no file access, which is true, while
+the audit reported `FAIL file or network access: open`. The audit was wrong:
+it matched the bare word `open` in a comment about the Arabic open tā' (تاء
+مفتوحة). The syntax tree confirms imports are `difflib` and `re` only, with no
+I/O call anywhere. The audit's I/O check is now AST-based and still catches a
+real `open()`, `Path.read_text()`, `import os`, `__import__` and `eval`. Both
+frozen solutions re-audit clean.
+
+Audit notes: `الف`, `سين`, `صاد`, `لام` -- muqatta'at letter names, which the
+rules permit as linguistic tables.

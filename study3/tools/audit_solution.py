@@ -10,12 +10,50 @@ the Quran reference — that is a copy of an input, not a fact about Arabic.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 from pathlib import Path
 
 ARABIC = re.compile(r"[؀-ۿ]{2,}")
 STRINGS = re.compile(r"['\"]([^'\"\n]{2,})['\"]")
+
+
+IO_CALLS = {"open", "exec", "eval", "compile", "__import__", "breakpoint", "input"}
+IO_MODULES = {"os", "io", "sys", "pathlib", "shutil", "socket", "subprocess", "urllib",
+              "http", "requests", "ctypes", "importlib", "pickle", "marshal", "tempfile"}
+IO_METHODS = {"read_text", "read_bytes", "write_text", "write_bytes", "urlopen", "fdopen"}
+
+
+def io_access(src):
+    """I/O the code actually performs, read from the syntax tree.
+
+    A word search flagged the comment "spelled with an open ta" -- the Arabic
+    letter -- as file access. Names in comments and strings are not calls; what
+    counts is an import of an I/O module, a call to an I/O builtin, or a call to
+    a file/network method, wherever in the program it appears.
+    """
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return ["unparseable source"]
+    found = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            found.update(f"import {a.name}" for a in node.names
+                         if a.name.split(".")[0] in IO_MODULES)
+        elif isinstance(node, ast.ImportFrom):
+            if (node.module or "").split(".")[0] in IO_MODULES:
+                found.add(f"from {node.module} import")
+        elif isinstance(node, ast.Call):
+            f = node.func
+            if isinstance(f, ast.Name) and f.id in IO_CALLS:
+                found.add(f"{f.id}()")
+            elif isinstance(f, ast.Attribute) and f.attr in IO_METHODS:
+                found.add(f".{f.attr}()")
+            elif isinstance(f, ast.Attribute) and f.attr == "open":
+                found.add(".open()")
+    return sorted(found)
 
 
 def main() -> int:
@@ -63,7 +101,7 @@ def main() -> int:
     soft = [("single words not in the Quran reference (usually linguistic, check them)",
              len(novel), novel[:12])] if novel else []
 
-    io = sorted(set(re.findall(r"\b(open|read_text|urlopen|requests|socket|subprocess)\b", src)))
+    io = io_access(src)
     if io:
         findings.append(("file or network access", len(io), io))
 
