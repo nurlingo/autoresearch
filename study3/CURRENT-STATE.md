@@ -1,18 +1,18 @@
 # Current study state — 2026-09-16
 
-The dataset is approved and frozen as **`granular-100x100-v1.0`**, with **100 train and 100 hidden gold recordings**. All five gap-targeted additions were approved by the owner on September 16. No measured agent experiment has been launched on this edition.
+The dataset is approved and frozen as **`granular-100x100-v1.0`**, with **100 train and 100 hidden test recordings**. All five gap-targeted additions were approved by the owner on September 16. No measured agent experiment has been launched on this edition.
 
 ## Verified frozen corpus
 
 | Split | Recordings | Units | Events | Approval |
 |---|---:|---:|---:|---|
 | Train | 100 | 697 | 290 | All approved |
-| Gold | 100 | 341 | 179 | All approved |
+| Test | 100 | 341 | 179 | All approved |
 | Combined | 200 | 1,038 | 469 | All approved |
 
 There are 984 ayah chunks and 54 opening-formula units. All recordings have natural-language summaries and no open review questions. Both splits contain all ten labels.
 
-| Sparse label | Train events | Gold events |
+| Sparse label | Train events | Test events |
 |---|---:|---:|
 | `omission_corrected` | 7 | 2 |
 | `letters_benign` | 2 | 4 |
@@ -24,7 +24,7 @@ These additions improve coverage, but rare-label estimates remain based on small
 
 ## Authoritative files and split audit
 
-The private `train_review/granular-corpus/` directory contains current `recordings.jsonl`, `split-train.jsonl`, `split-gold.jsonl`, `corpus.json`, `current-cases/`, and `index.html`. The versioned snapshot is `frozen/granular-100x100-v1.0/`, including the data, reference, rubric, teaching examples, evaluator/runtime source and SHA-256 manifest. Use its split files for measured runs. The freeze is private and must never be mounted into the agent workspace.
+The private `train_review/granular-corpus/` directory contains current `recordings.jsonl`, `split-train.jsonl`, `split-test.jsonl`, `corpus.json`, `current-cases/`, and `index.html`. The versioned snapshot is `frozen/granular-100x100-v1.0/`, including the data, reference, rubric, teaching examples, evaluator/runtime source and SHA-256 manifest. Use its split files for measured runs. The freeze is private and must never be mounted into the agent workspace.
 
 All 200 recording IDs are unique. Split rows reproduce the combined corpus exactly. There are 52 distinct exact `(ayah_id, transcript)` pairs shared between splits, all clean on both sides, and three permitted generic opening-formula strings. No event-bearing ayah transcript is shared. New source IDs/audio hashes and downloaded originals were checked against the prior active inventory. This does not establish speaker independence or detect all differently encoded copies of an audio take.
 
@@ -44,9 +44,9 @@ Single-ayah app recordings remain excluded at the owner's request because their 
 
 The agent receives train inputs, the faithful Quran reference, the rubric and the current adaptation of constructed teaching examples. It may create annotations and develop an algorithm. Preserve any generated annotations for analysis; a strong algorithm score does not certify those annotations individually.
 
-Development feedback, if provided, uses **train annotations only**. Gold inputs, answers, case membership, review notes and scores remain outside the development environment. Freeze code and configuration before the owner runs final gold inference and scoring; no gold-driven revision or selection. For a comparison, fix models, budgets, repeats and selection rules first.
+Development feedback, if provided, uses **train annotations only**. Test inputs, answers, case membership, review notes and scores remain outside the development environment. Freeze code and configuration before the owner runs final test inference and scoring; no test-driven revision or selection. For a comparison, fix models, budgets, repeats and selection rules first.
 
-See [EXPERIMENT.md](EXPERIMENT.md) and the corrected [runbook](agent-run/RUNBOOK.md). Input stripping and a separate HOME are not runtime isolation. The grader now executes submitted code in an input-only Docker container and scores returned predictions in a trusted owner process. A separate train feedback service has no gold access. The development container mounts only prepared train material and receives only explicitly selected model-API credentials. Its networking permits API calls and is not an internet-retrieval filter.
+See [EXPERIMENT.md](EXPERIMENT.md) and the corrected [runbook](agent-run/RUNBOOK.md). Input stripping and a separate HOME are not runtime isolation. The grader now executes submitted code in an input-only Docker container and scores returned predictions in a trusted owner process. A separate train feedback service has no test access. The development container mounts only prepared train material and receives only explicitly selected model-API credentials. Its networking permits API calls and is not an internet-retrieval filter.
 
 ## Evaluator readiness
 
@@ -65,15 +65,15 @@ The papers and frozen releases are unchanged in this audit. Proposed changes are
 ## Before the measured run
 
 - [x] Record owner approval of both existing drafts, completing review of all 195 active cases.
-- [x] Owner approved all five gap-targeted additions; merge two train and three gold cases.
+- [x] Owner approved all five gap-targeted additions; merge two train and three test cases.
 - [x] Freeze the approved 100/100 allocation and source provenance; measured preparation verifies counts, recording IDs, event-bearing overlaps and reference consistency.
 - [x] Rebuild the current viewer; archive stale exports/backups without discarding review history.
 - [x] Fix evaluator issues, preserve the adapter scope and add synthetic regressions.
 - [x] Implement isolated inference, train-only feedback, a restricted development-container launcher and frozen-solution hashing; test without model calls.
 - [x] Adapt twenty constructed teaching examples to the current reference/grouping; validate spans and oracle scores. Original approvals apply to the historical examples; the current adaptation is explicitly assistant-validated.
-- [ ] Inspect the refreshed teaching examples and check comprehension outside gold before the measured comparison.
+- [ ] Inspect the refreshed teaching examples and check comprehension outside the test split before the measured comparison.
 - [ ] Set exact model/API configuration, time/token/cost budget, repeats, feedback limit and selection rule; record image IDs and commands.
-- [ ] Run train development, freeze each selected solution, then perform final private gold validation without gold-driven revisions.
+- [ ] Run train development, freeze each selected solution, then perform final private test validation without test-driven revisions.
 - [ ] Discuss paper revisions using new results; preserve historical tables with their original versions.
 
 Answers, source identities, audio and review bundles remain private. This page contains aggregate status only. No measured agent experiment has been launched on this edition.

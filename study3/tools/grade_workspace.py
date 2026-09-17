@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Owner-side grader: isolated input-only inference, then trusted scoring.
 
-Never imports submitted code in this process. Gold paths are owner arguments,
+Never imports submitted code in this process. Test-split paths are owner arguments,
 not environment variables passed into a development agent.
 """
 from __future__ import annotations
@@ -24,12 +24,15 @@ def main() -> int:
     ap.add_argument("--workspace", type=Path, required=True)
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--expected-solution-sha256")
-    ap.add_argument("--split", choices=["train", "gold"], default="gold")
+    # "gold" is the retired name for the test split, still accepted.
+    ap.add_argument("--split", choices=["train", "test", "gold"], default="test")
     ap.add_argument("--timeout", type=float, default=60)
     ap.add_argument("--predictions-out", type=Path)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--preflight", action="store_true", help="allow incomplete data or an unfrozen solution for setup checks")
     a = ap.parse_args()
+    if a.split == "gold":
+        a.split = "test"
     corpus = eval21.load_corpus(a.corpus)
     eval21.validate_corpus(corpus)
     if not a.preflight and (len(corpus) != 100 or any(r.get("review_status") != "approved" for r in corpus)
@@ -42,7 +45,12 @@ def main() -> int:
     if frozen_path.exists():
         frozen = json.loads(frozen_path.read_text())
         reference_path = Path(frozen["reference_path"])
-        required = [(a.corpus, frozen[a.split + "_sha256"]),
+        # Manifests frozen before the rename record the test split as gold_sha256.
+        split_digest = frozen.get(a.split + "_sha256") or (
+            frozen.get("gold_sha256") if a.split == "test" else None)
+        if split_digest is None:
+            ap.error(f"frozen manifest records no hash for the {a.split} split")
+        required = [(a.corpus, split_digest),
                     (reference_path, frozen["reference_sha256"]),
                     (HERE / "eval21.py", frozen["evaluator_sha256"])]
         if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in required):

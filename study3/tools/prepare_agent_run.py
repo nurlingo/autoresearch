@@ -62,25 +62,28 @@ def train_records(corpus):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, required=True, help="split-train.jsonl only")
-    ap.add_argument("--gold", type=Path, required=True, help="owner-only split audit; never exported")
+    ap.add_argument("--test", type=Path, help="held-out test split; owner-only audit, never exported")
+    ap.add_argument("--gold", type=Path, dest="test", help=argparse.SUPPRESS)  # retired name
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--quran", type=Path, default=HERE / "quran-reference.json")
     ap.add_argument("--budget", required=True)
     ap.add_argument("--preflight", action="store_true", help="allow incomplete/unapproved splits for setup tests")
     a = ap.parse_args()
+    if a.test is None:
+        ap.error("--test is required")
     if a.out.exists() or a.out.with_name(a.out.name + ".owner.json").exists():
         ap.error("output workspace/owner manifest already exists; choose a fresh path")
-    train, gold = eval21.load_corpus(a.corpus), eval21.load_corpus(a.gold)
-    for corpus in (train, gold): eval21.validate_corpus(corpus)
+    train, test = eval21.load_corpus(a.corpus), eval21.load_corpus(a.test)
+    for corpus in (train, test): eval21.validate_corpus(corpus)
     for key in ("case_id", "recording_id"):
-        x, y = {r[key] for r in train}, {r[key] for r in gold}
-        if len(x) != len(train) or len(y) != len(gold) or x & y:
+        x, y = {r[key] for r in train}, {r[key] for r in test}
+        if len(x) != len(train) or len(y) != len(test) or x & y:
             ap.error("split contains duplicate or shared recording/case identities")
-    if not a.preflight and (len(train) != 100 or len(gold) != 100 or
-            any(r.get("review_status") != "approved" for r in train + gold)):
-        ap.error("measured run requires 100 approved train and 100 approved gold cases; use --preflight for setup checks")
+    if not a.preflight and (len(train) != 100 or len(test) != 100 or
+            any(r.get("review_status") != "approved" for r in train + test)):
+        ap.error("measured run requires 100 approved train and 100 approved test cases; use --preflight for setup checks")
     indexed = {}
-    for r in gold:
+    for r in test:
         for u in r["units"]:
             if u.get("ayah_id"):
                 k = (u["ayah_id"], u["transcript"])
@@ -92,7 +95,7 @@ def main():
                 ap.error("event-bearing ayah transcript shared across splits")
     reference = json.loads(a.quran.read_text())
     if any(u["reference_text"] != reference.get(u["ayah_id"])
-           for r in train + gold for u in r["units"] if u.get("ayah_id")):
+           for r in train + test for u in r["units"] if u.get("ayah_id")):
         ap.error("supplied Quran reference does not match the corpus")
     (a.out / "data").mkdir(parents=True)
     rows = list(input_records(train))
@@ -111,7 +114,7 @@ def main():
         "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in annotated))
     # Hard stop: no held-out case may be named anywhere in the exported bytes.
     exported = (a.out / "data/corpus-train.jsonl").read_text()
-    named = sorted(g["case_id"] for g in gold
+    named = sorted(g["case_id"] for g in test
                    if re.search(rf"\b{re.escape(g['case_id'])}\b", exported))
     if named:
         ap.error(f"held-out case ids appear in the train export: {named[:5]}")
@@ -127,17 +130,17 @@ def main():
     task = (task.replace("{BUDGET}", a.budget).replace("{N_CASES}", str(len(train)))
                 .replace("{N_UNITS}", str(sum(len(r["units"]) for r in train)))
                 .replace("{N_EVENTS}", str(sum(len(r.get("events", [])) for r in train)))
-                .replace("{N_HOLDOUT}", str(len(gold))))
+                .replace("{N_HOLDOUT}", str(len(test))))
     if a.preflight: task = "PREFLIGHT WORKSPACE: not a measured experiment.\n\n" + task
     (a.out / "TASK.md").write_text(task)
     shutil.copyfile(HERE / "agent-run/score_agent.py", a.out / "score.py")
     (a.out / "solution.py").write_text("class Solution:\n    def detect_events(self, chunk):\n        return []\n")
     manifest = {"mode": "preflight" if a.preflight else "measured", "budget": a.budget,
         "workspace": str(a.out.resolve()), "train_path": str(a.corpus.resolve()),
-        "train_sha256": sha(a.corpus), "gold_sha256": sha(a.gold),
+        "train_sha256": sha(a.corpus), "test_sha256": sha(a.test),
         "reference_path": str(a.quran.resolve()), "reference_sha256": sha(a.quran),
         "evaluator_sha256": sha(HERE / "eval21.py"), "evaluator_version": "2.3",
-        "inference_image": IMAGE, "train_cases": len(train), "gold_cases": len(gold),
+        "inference_image": IMAGE, "train_cases": len(train), "test_cases": len(test),
         "workspace_file_sha256": {str(p.relative_to(a.out)): sha(p) for p in a.out.rglob("*") if p.is_file()}}
     owner = a.out.with_name(a.out.name + ".owner.json")
     owner.write_text(json.dumps(manifest, indent=2) + "\n"); owner.chmod(0o600)

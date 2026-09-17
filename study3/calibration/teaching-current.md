@@ -1,5 +1,5 @@
 # Current constructed teaching examples
-These are synthetic examples, never recordings or gold answers. The original twenty examples were approved; this adaptation updates reference spelling and granular grouping under the current rubric. The adaptation is assistant-validated. Do not count scores on exposed teaching answers as held-out evidence.
+These are synthetic examples, never recordings or test answers. The original twenty examples were approved; this adaptation updates reference spelling and granular grouping under the current rubric. The adaptation is assistant-validated. Do not count scores on exposed teaching answers as held-out evidence.
 
 t10 now repeats the clause context so the corrected substitution is anchored. t11 and t12 separate the changed words from correctly repeated context. t01 now matches the faithful reference exactly.
 

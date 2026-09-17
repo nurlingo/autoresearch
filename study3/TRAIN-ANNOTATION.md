@@ -1,6 +1,6 @@
 # Human annotation of the working corpus
 
-Current state: [200 distinct recordings](CURRENT-STATE.md), split into **100 train / 100 gold**, frozen as `granular-100x100-v1.0`. All 100 train and 100 gold cases are now owner-approved. One useful transcript is retained per recording; single-ayah app recordings remain excluded. The agent develops on train inputs with train-only feedback, then its frozen solution receives final private gold evaluation. Both splits are human annotation sets, but their answers stay outside the development workspace under this protocol.
+Current state: [200 distinct recordings](CURRENT-STATE.md), split into **100 train / 100 test**, frozen as `granular-100x100-v1.0`. All 100 train and 100 test cases are now owner-approved. One useful transcript is retained per recording; single-ayah app recordings remain excluded. The agent develops on train inputs with train-only feedback, then its frozen solution receives final private test evaluation. Both splits are human annotation sets, but their answers stay outside the development workspace under this protocol.
 
 The 221 → 127 audit below remains valid for the **frozen experiment release**. Its annotation plan and starting progress are historical, not current corpus totals.
 

@@ -37,7 +37,7 @@ ASR-origin explanation does not turn an unresolved substitution into an
 not by adding a second event verdict.
 
 The final algorithm receives **human-reviewed ayah splits, ayah IDs, and exact
-reference texts**, with opening text retained without its gold labels. Score
+reference texts**, with opening text retained without its labels. Score
 event labels and localization conditional on these supplied inputs; ayah
 identification and splitting are outside this score. Source split history,
 reviewer notes, events and verdicts are private answer-side data. Corrections
@@ -64,7 +64,7 @@ chunks without within-ayah events, 115 within-ayah events, and 47 opening-formul
 annotations. Three approved reserves are excluded from these counts. No
 selected annotation decisions remain open. These are coverage counts, not
 performance results or population proportions. Historical pilot labels are
-not imported as gold. See [annotation findings](docs/STUDY3-ANNOTATION.md).
+not imported as annotations. See [annotation findings](docs/STUDY3-ANNOTATION.md).
 
 The source-attribution audit checked all selected recording IDs and exact
 transcripts against both the CSV and original recording export. No IDs or
@@ -135,12 +135,12 @@ check rubric understanding before the measured run.
 The agent may annotate its development pool, train or optimize against those
 annotations, and revise its algorithm. Archive annotations, code, and run
 history for process analysis. Agreement with self-generated labels is **not**
-an independent accuracy measurement. Good final gold performance provides
+an independent accuracy measurement. Good final test performance provides
 indirect evidence for the usefulness of the overall process; it does not prove
 every development annotation was correct or establish annotation as the cause
 of any gain. A causal annotation-benefit claim would require a controlled arm.
 
-Freeze the gold set, rubric, input interface, scoring/matching rules, models,
+Freeze the test set, rubric, input interface, scoring/matching rules, models,
 run budgets, and hypotheses before executing the study. The supplied-split
 input choice is approved; remaining executable and scoring details stay open.
 Earlier named models, budgets, H1–H4, and uncertain-credit weights were
@@ -149,7 +149,7 @@ planning suggestions, not this protocol's preregistration.
 Evaluate the frozen final algorithm privately after the run. Report event-label
 and localization quality, missed mistakes, false flags on clean/benign/corrected
 cases, and per-label results. Matching must prevent one broad prediction from
-claiming multiple distinct gold events, and must explicitly handle zero-length
+claiming multiple distinct test events, and must explicitly handle zero-length
 omission anchors and both-attempt spans. The historical primary metric is label-aware micro F1, with exact-span F1 alongside
 it and a raw-count mistake cost as a secondary metric. MIN_SPAN=0.50 and anchor
 slack=1 are frozen; the secondary cost is reported at both 1:1 and 2:1 rather
@@ -165,7 +165,7 @@ this authoring checkout, review files, internal codebook examples, inventory
 hints, earlier annotation sessions, private tools, or git history containing
 answers. Use a fresh runtime with only allowed inputs mounted and no access to
 private answer sources. A gitignored folder or a prompt prohibition is not
-an isolation boundary. Return no gold feedback during the run.
+an isolation boundary. Return no test feedback during the run.
 
 **Exposure audit, 2026-09-08:** all 100 selected transcripts exactly match
 published Task A inputs. Twelve also exactly match at least one recording
@@ -184,7 +184,7 @@ annotation benchmark, not evidence that such a new collection already exists.
 
 ## 6. Next steps
 
-1. Version and protect the completed gold snapshot and approved reserves;
+1. Version and protect the completed test snapshot and approved reserves;
    preserve adjudication history if later corrections change membership.
 2. Enforce the audited duplicate/related-case groups when preparing development
    data, and verify permission for intended reuse or a new collection.
@@ -203,5 +203,5 @@ reserves' transcript-only copies are included in that pool. The preliminary
 text screen leaves 166 distinct
 groups after removing exact normalized held-out equivalents; 65 require closer
 overlap review. See [the experiment plan](study3/EXPERIMENT.md). No pool has been
-allocated or exposed to a development agent. Gold inputs stripped of answers
+allocated or exposed to a development agent. Test inputs stripped of answers
 remain evaluation inputs and must not be used as the development pool.

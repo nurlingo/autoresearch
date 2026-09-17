@@ -92,12 +92,12 @@ class Solution:
                     'reference_tokens': ['right'], 'event_ids': ['e']}],
                 'events': [{'label': 'substitution_mistake', 'hyp_locations': [
                     {'chunk_idx': 0, 'span': [0, 1]}], 'reference': {'ayah_id': 'A', 'span': [0, 1]}}]}
-        train, gold = base / 'train.jsonl', base / 'gold.jsonl'
+        train, test = base / 'train.jsonl', base / 'test.jsonl'
         train.write_text(json.dumps(record('synthetic-train')) + '\n')
-        gold.write_text(json.dumps(record('synthetic-holdout')) + '\n')
+        test.write_text(json.dumps(record('synthetic-holdout')) + '\n')
         run = base / 'run'
         prepare = [sys.executable, str(TOOLS / 'prepare_agent_run.py'), '--corpus', str(train),
-            '--gold', str(gold), '--quran', str(quran), '--out', str(run), '--budget', 'setup']
+            '--test', str(test), '--quran', str(quran), '--out', str(run), '--budget', 'setup']
         rejected = subprocess.run(prepare, capture_output=True, text=True)
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn('100 approved', rejected.stderr)

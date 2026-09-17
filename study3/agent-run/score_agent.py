@@ -101,7 +101,7 @@ def main() -> int:
     print(f"  precision / recall   {metrics['precision']:.4f} / {metrics['recall']:.4f}")
     print(f"  macro F1             {metrics['macro_f1']:.4f}")
     print(f"  strict micro F1      {metrics['strict_micro_f1']:.4f}")
-    print(f"\n  {'label':<24}{'gold':>6}{'pred':>6}{'F1':>8}")
+    print(f"\n  {'label':<24}{'train':>6}{'pred':>6}{'F1':>8}")
     for label, row in sorted(metrics["per_label"].items(), key=lambda x: -x[1]["gold"]):
         print(f"  {label:<24}{row['gold']:>6}{row['pred']:>6}{row['f1']:>8.3f}")
     return 0

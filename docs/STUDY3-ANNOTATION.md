@@ -83,7 +83,7 @@ do not estimate real-world error prevalence.
 
 ## Synthetic span examples
 
-These invented tokens illustrate the format and are not Quran/gold examples.
+These invented tokens illustrate the format and are not Quran/test examples.
 Reference tokens are `["A", "B"]`.
 
 | Transcript tokens | Label | hyp_span | ref_span |
@@ -99,7 +99,7 @@ incorrect restatement without a second verdict field.
 ## Experimental interpretation and remaining work
 
 The agent will annotate an unlabelled development pool and build an algorithm.
-Only final algorithm outputs have independent gold comparison. Development
+Only final algorithm outputs have independent test comparison. Development
 annotations remain unscored directly; successful final code is indirect
 process evidence, not proof that every self-generated annotation was correct.
 
@@ -110,7 +110,7 @@ report this exposure. A claim of unseen-input competition ranking requires a
 separate previously unreleased collection.
 
 The final algorithm receives **reviewed ayah splits, IDs and exact reference
-texts**, with opening text but without gold labels. Ayah detection is outside
+texts**, with opening text but without labels. Ayah detection is outside
 this event-annotation score. The executable interface, event matcher, scalar
 weights and run design still need to be frozen. Legacy pilot code and scores
 do not validate the completed set.

@@ -146,7 +146,7 @@ python3 score.py --json          # the same, as JSON
 
 It runs your `solution.py` over the train recordings and scores it with the
 evaluator you have. The primary measure is label-aware micro F1: a prediction
-counts only when its label matches and both spans overlap the gold event by at
+counts only when its label matches and both spans overlap the annotated event by at
 least half. Score as often as you like; it is your data and your evaluator.
 
 Do not access files outside this workspace.

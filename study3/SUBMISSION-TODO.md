@@ -4,16 +4,16 @@
 
 ## Current experiment readiness
 
-- [ ] Add two train and three gold recordings, preserving distinct recording identity.
+- [ ] Add two train and three test recordings, preserving distinct recording identity.
 - [x] Record explicit owner approval of the two existing drafts; all 195 active cases approved.
-- [x] Owner approved all five gap-targeted additions, including the gold omission repair; 200 cases approved.
+- [x] Owner approved all five gap-targeted additions, including the test omission repair; 200 cases approved.
 - [x] Freeze the 100/100 JSONL split, faithful reference, rubric, examples and hashes.
 - [x] Rebuild the current viewer and archive obsolete temporary exports.
 - [x] Generate the private `granular-100x100-v1.0` freeze bundle.
 - [x] Fix exact-label scoring, malformed-span validation and reference-ayah matching in v2.3; retain and document the single-location adapter.
 - [x] Separate isolated prediction execution from trusted scoring; test train-only feedback and the development-container launcher.
 - [ ] Fix agent versions, budgets, repeat counts and final-selection rules.
-- [ ] Run train development, freeze final code, then perform private gold validation.
+- [ ] Run train development, freeze final code, then perform private test validation.
 - [ ] Discuss manuscript/release updates using new results and the [paper discussion note](../docs/STUDY3-PAPER-DISCUSSION.md).
 
 Everything below records the older submission/release, not completion of the new experiment.
@@ -96,16 +96,16 @@ The call asks for none of these; they are what running the competition would nee
 ## Paper 2 — dataset/evaluator and comparison between agents (Track 1)
 
 - [x] Complete the annotation, rubric, evaluator audit and baseline analysis.
-- [x] Specify an agent-comparison experiment using the same train/gold split and total budget.
+- [x] Specify an agent-comparison experiment using the same train/test split and total budget.
 - [x] Treat annotation as an available strategy; save produced annotations for inspection/reuse.
 - [x] State that final algorithm scores do not independently validate training annotations.
 - [ ] Choose agents/models/versions, budget, tools, seeds/repeated runs and common instructions.
 - [ ] Decide uniformly whether annotation delivery is optional or required for every compared agent.
 - [ ] Approve common teaching examples and freeze all evaluation choices before runs.
-- [ ] Prepare isolated agent workspaces without gold or answer-bearing repository/history access.
+- [ ] Prepare isolated agent workspaces without the test split or answer-bearing repository/history access.
 - [x] Run eight informal pilots; the paper reports their results.
 - [ ] Run the preregistered repeated comparison and preserve all artifacts.
-- [ ] Freeze each final method and score it privately; no gold-driven edits/retries.
+- [ ] Freeze each final method and score it privately; no test-driven edits/retries.
 - [x] Report informal pilot results and observed annotation strategies in the paper.
 - [ ] Report repeated-run uncertainty under a fixed protocol.
 - [ ] Review any machine annotations proposed for reuse; label their provenance accurately.

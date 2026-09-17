@@ -14,7 +14,7 @@ Unwritten vowels and tajweed are outside this task.
 
 Inputs contain reviewed ayah chunks, ayah IDs and exact reference texts. Do not
 redetect ayahs or change their assignment. Opening formulas remain separately
-available as unlabelled text. Source corrections and gold review notes are not
+available as unlabelled text. Source corrections and test review notes are not
 part of the input. The executable envelope is documented in EVALUATOR.md; experiment settings
 and tolerant matching choices still need to be frozen.
 
@@ -113,10 +113,10 @@ Inspect the current adaptation of the constructed examples, add counterexamples
 where useful, and freeze the comparison normalization. Coordinates use every original
 whitespace token, including standalone punctuation tokens; comparison may ignore
 punctuation without deleting tokens from the index arrays. The earlier ambiguous
-wording is superseded for the executable contract; existing gold indices remain
-unchanged (no selected gold chunk contains a punctuation-only token).
+wording is superseded for the executable contract; existing test indices remain
+unchanged (no selected test chunk contains a punctuation-only token).
 Then verify comprehension on separate practice inputs. Teaching, practice,
-development and final evaluation are different roles; no gold answers or
+development and final evaluation are different roles; no test answers or
 selected-case hints belong in this guide or an agent runtime.
 
 ## Current working review: entrance cases and grouping

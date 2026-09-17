@@ -6,9 +6,9 @@ Start with the [current-state index](CURRENT-STATE.md), [experiment protocol](EX
 
 The private working corpus has 200 distinct recordings and 469 granular events, with natural-language summaries and linked locations for attempts and repeats. All 200 cases are now owner-approved. See [the representation](annotation-review/README.md) and [train review status](TRAIN-ANNOTATION.md).
 
-The agent develops on answer-free train inputs, using the [rubric](ANNOTATION-GUIDE.md), faithful `quran-reference.json` and refreshed constructed examples. Any feedback is train-only. Freeze the solution before isolated final gold inference and private scoring. Save any machine annotations produced; final algorithm quality does not certify them independently.
+The agent develops on answer-free train inputs, using the [rubric](ANNOTATION-GUIDE.md), faithful `quran-reference.json` and refreshed constructed examples. Any feedback is train-only. Freeze the solution before isolated final test inference and private scoring. Save any machine annotations produced; final algorithm quality does not certify them independently.
 
-The entire authoring repository is not an agent bundle. Keep gold inputs and answers, case membership, source exports, review notes and history outside the development environment. The grader runs submitted code in a separate input-only Docker container and scores predictions afterward; the development container mounts only its prepared train workspace.
+The entire authoring repository is not an agent bundle. Keep test inputs and answers, case membership, source exports, review notes and history outside the development environment. The grader runs submitted code in a separate input-only Docker container and scores predictions afterward; the development container mounts only its prepared train workspace.
 
 ## Historical experimental artifacts
 
@@ -66,7 +66,7 @@ released entries against Tanzil `simple-clean` (`txt-2`):
 All 6231 of our ayah ids exist in Tanzil. Five Tanzil ids do **not** appear in our
 reference — `002030`, `002185`, `002255`, `002285`, `002286` — because the source
 file stores those long/popular ayahs as phrase pieces under 9-digit ids, which the
-release builder's `len(id)==6` filter drops. Neither gold nor train references any
+release builder's `len(id)==6` filter drops. Neither test nor train references any
 of the five, and every ayah id used by either split resolves against the released
 reference, so this is a coverage note rather than a defect. **The released
 reference is not a complete Quran text** and should not be described as one.

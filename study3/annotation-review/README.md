@@ -1,6 +1,6 @@
 # Granular annotation review
 
-The current working edition has **200 distinct recordings / 1,038 units / 469 events**, split into 100 train and 100 gold cases. All 200 cases are now owner-approved; there are no open `review_questions` entries. See [CURRENT-STATE.md](../CURRENT-STATE.md) for the 100/100 freeze, split audit and remaining work.
+The current working edition has **200 distinct recordings / 1,038 units / 469 events**, split into 100 train and 100 test cases. All 200 cases are now owner-approved; there are no open `review_questions` entries. See [CURRENT-STATE.md](../CURRENT-STATE.md) for the 100/100 freeze, split audit and remaining work.
 
 ## Event representation
 
@@ -23,9 +23,9 @@ Summaries describe transcript evidence, not unheard audio or attribution of a di
 
 The authoritative private files are `train_review/granular-corpus/recordings.jsonl`, `split-train.jsonl` and `split-gold.jsonl`. Obsolete aggregate exports, reports and scratch backups have been archived privately; per-case exports and dated adjudication notes remain historical source evidence. The current viewer is rebuilt from the JSONL.
 
-Colleagues need a current private bundle to inspect actual cases. Gold answers, case membership and review history must not enter the development agent environment. The agent uses answer-free train inputs; final frozen code is evaluated against gold separately.
+Colleagues need a current private bundle to inspect actual cases. Test answers, case membership and review history must not enter the development agent environment. The agent uses answer-free train inputs; final frozen code is evaluated against test separately.
 
-Evaluator v2.3 (`eval21.py`) reads recording-level multi-location gold but accepts per-unit single-span predictions. It credits any one matching location per event and does not score recovery of all linked attempts. See [EVALUATOR.md](../EVALUATOR.md) for the verified fixes and retained adapter limitations.
+Evaluator v2.3 (`eval21.py`) reads recording-level multi-location annotations but accepts per-unit single-span predictions. It credits any one matching location per event and does not score recovery of all linked attempts. See [EVALUATOR.md](../EVALUATOR.md) for the verified fixes and retained adapter limitations.
 
 ## Historical checkpoint
 
