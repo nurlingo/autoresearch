@@ -42,7 +42,7 @@ def main():
     # nor may they be trusted; every file that IS in the manifest is still
     # re-hashed below. __pycache__ appears as soon as anyone runs score.py,
     # which the agent is expected to do.
-    transient = {'.feedback', '__pycache__'}
+    transient = {'.feedback', '__pycache__', '.scores.jsonl'}
     expected = manifest['workspace_file_sha256']
     actual = {str(p.relative_to(workspace)) for p in workspace.rglob('*')
               if p.is_file() and not transient & set(p.relative_to(workspace).parts)}

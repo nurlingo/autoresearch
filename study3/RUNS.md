@@ -1,11 +1,62 @@
 # Run log — granular-100x100-v1.0
 
-Every measured run against the held-out split, including excluded ones. Gold is
-read once per run recorded here; the count matters, because choosing which run
-to report is itself a selection over the holdout.
+Every attempt against this corpus version, partial and full, including excluded
+ones: what ran, what happened, what it scored, and why it counts or does not.
+Gold is read once per run recorded here, and the count matters, because choosing
+which run to report is itself a selection over the holdout.
 
 Corpus: 100 train / 100 gold, all owner-approved, 290 / 179 annotated events.
 Evaluator: eval21 v2.3. Workspace regime: annotated train split visible.
+Per-case gold detail is private (`granular-corpus/analysis-20260917/`); this file
+carries aggregates only.
+
+## All attempts at a glance
+
+| # | model | status | working time | passes | train | gold | gap |
+|---|---|---|---|---:|---:|---:|---:|
+| — | deployed `event_detection.py` | production baseline | earlier study | — | — | 0.7844 | — |
+| 1 | Opus 5 | excluded: single pass, protocol did not run | ~7 min | 1 | 0.7756 | 0.8621 | +0.087 |
+| 2 | Opus 5 | **reported** | 29.7 min | 1 + 23 | 0.9463 | **0.9157** | −0.031 |
+| 3 | Fable 5.1 | excluded: host slept; gold read afterwards on request | ~17 min | 1 + 3 | 0.9585 | 0.9448 | −0.014 |
+| 4 | Fable 5.1 | **reported** | 30.2 min | 1 + 31 | 0.9948 | **0.9051** | −0.090 |
+
+Gold has been read five times: runs 1–4, and the deployed baseline once for the
+deployment comparison below. Runs 2–4 were re-scored for the failure analysis;
+re-scoring a frozen solution adds no selection.
+
+## What took place
+
+The harness changed between attempts, and several of those changes were forced
+by failures found only by running it. In order:
+
+1. **Inputs-only workspace replaced by an annotated train split** (`800703a`).
+   The agent had been given 24 hand-made teaching events and a scalar score, and
+   never saw the 290 real annotations it was scored against. A first attempt at
+   exporting them leaked absolute private paths, production recording ids, review
+   metadata and notes naming held-out cases; the export became a field allowlist
+   that aborts if any held-out case id appears.
+2. **Run 1 stopped after one pass.** `claude -p` is a single non-interactive
+   pass, and "You have 30 minutes" in TASK.md was prose nothing enforced. No
+   transcript or timing existed to show it; only an mtime did.
+3. **Run records and a real time limit** (`bc36384`, `3ed23a3`). Transcripts,
+   start/end/elapsed/exit, and a fix to a budget that could not fire on a hung
+   run, because reading the agent's output inline blocked until it exited.
+4. **A continuation loop** (`5b9b34b`) so the budget is spent: one pass, then
+   `claude -c` passes inside the container, where session state survives. Testing
+   it with a stub found it would spin twenty thousand times in ten seconds if a
+   pass returned instantly with status 0; every pass is now floored.
+5. **Gold gated on protocol** (`7d320d2`): confirm from the launch record and
+   transcript that a run executed as specified before grading it on gold.
+6. **Run 3 lost half its time to sleep.** The Mac idle-slept for 1906 of 2928
+   seconds; the in-container deadline kept counting. `caffeinate` now holds for
+   the whole launch and the launcher records `host_suspended_seconds` (`6f9dcdd`).
+7. **Run 4 overfit.** Thirty-one passes of keep-if-train-improves drove train to
+   0.9948 and gold to 0.9051. The continuation prompt, written for this harness,
+   told the agent to keep a change only if train micro F1 rose and not to stop
+   early — both of which reward fitting once train has nothing left to teach, and
+   the second of which contradicts Study 1's own stopping rule.
+8. **Stopping rule and unseen-set framing** (this change): see
+   *Protocol for the next run*.
 
 ---
 
@@ -252,14 +303,156 @@ Audit clean. Notes are letter names, particles, and the article.
 | 2 | Opus 5 | 23 | 0.9463 | **0.9157** | −0.031 |
 | 4 | Fable 5.1 | 31 | 0.9948 | **0.9051** | −0.090 |
 
-Excluded runs, for the record: run 1 (Opus pilot, gold 0.8621), run 3 (Fable,
-host slept, gold 0.9448 read afterwards on request). Gold has been read four
-times.
+The reported Opus and Fable numbers are within what 179 gold events can
+separate. The result worth reporting is about the loop, not the models: its
+keep-if-train-improves rule rewards fitting once train stops being informative,
+and the run that drove train closest to 1.0 lost the most on held-out data — while
+the same model, stopped by accident after three continuation passes, scored
+0.9448.
 
-The comparison that matters for the method is not Opus against Fable, whose
-reported numbers are close and within what 179 gold events can separate. It is
-that the loop's own selection rule -- keep a change only if train improves --
-rewards fitting once train stops being informative, and that the model which
-drove train closer to 1.0 lost more on held-out data. A development split held
-out from train, or a stopping rule, would address that; neither was in this
-protocol.
+---
+
+## Where the solutions fail on gold
+
+Aggregates; per-case detail is private. Failure rows count a wrong-label match
+once as a false positive and once as a false negative.
+
+| solution | gold F1 | failure rows | recordings affected |
+|---|---:|---:|---:|
+| deployed | 0.7844 | 64 | 22 |
+| run 2, Opus | 0.9157 | 28 | 14 |
+| run 3, Fable partial | 0.9448 | 19 | 8 |
+| run 4, Fable | 0.9051 | 33 | 14 |
+
+The failures fall into five families, shared across solutions in different
+proportions:
+
+1. **Event granularity on long garbled passages.** When a reciter substitutes
+   the ending of a different ayah, or skips a clause and garbles the next,
+   gold groups by what the reciter was doing — one substitution over a
+   replaced passage, or an omission plus a substitution. Alignment-first
+   solutions group by token similarity, pairing locally similar words across the
+   passage into several small events, or merging an omission into a neighbouring
+   substitution. The largest source for runs 2 and 3: eleven of run 3's nineteen
+   rows come from three such recordings.
+2. **Kind of self-correction.** Repetition against corrected substitution, and
+   corrected substitution against corrected omission, decided within a few
+   tokens of a restart.
+3. **An extra word: insertion or failed attempt.** A stray word before the
+   target is sometimes gold's substitution linking two attempts, sometimes an
+   insertion.
+4. **Input robustness.** Muqatta'at letter names written with an attached Arabic
+   comma defeat exact matching. Run 3 turns one such token into a substitution;
+   run 4 turns a comma-separated letter sequence into an omission of the whole
+   opener. The recogniser emits punctuation, so this recurs in production.
+5. **Fitted rules that do not transfer (run 4).** Fifteen spurious predictions,
+   ten of them `omission_mistake` against one for run 3: a five-letter opener run
+   3 handled and run 4 missed; joined or portmanteau words split into a
+   substitution plus an omission despite a rule written for exactly that, fitted
+   on train examples; single-word omissions invented beside repeats. These are
+   regressions introduced after run 3's stopping point.
+
+The deployed solution fails mostly on span placement (26 gold events overlapped
+but mislocated) and on orthography: eight `spelling_benign` events reported as
+mistakes, because it was built on the folded reference and cannot see the
+hamza distinctions the current reference preserves.
+
+---
+
+## What is hardcoded
+
+Every solution audits clean: no case ids, ayah ids, transcript literals or I/O.
+What each does encode:
+
+| | run 3, Fable partial | run 2, Opus | run 4, Fable |
+|---|---|---|---|
+| lines | 511 | 627 | 468 |
+| opening formulas | isti'adha and basmala word lists | same | same |
+| muqatta'at | letter-name table | letter-name table with variant spellings | letter-name table |
+| orthographic word lists | 5 words with a silent final alif; 21 with an elided final yā'; the إذا/إذن pair | 18 words the mushaf spells with open tā' | 8 silent-final-alif words; 11 wasl nouns |
+| other lists | — | 6 article/clitic prefixes | 7 particles; 11 attached pronouns |
+| folding | hamza seats, alif forms | hamza seats, ة/ه, ى/ي | hamza seats, alif forms, ة/ه, ى/ي |
+| numeric constants | 10 costs and thresholds | 5 thresholds | 8, including a 1e9 sentinel |
+
+The word lists are facts about Quranic orthography rather than copies of the
+data. For run 3, the deployment candidate, this was checked: of its twenty-six
+listed words, three occur anywhere in the train transcripts or references, and
+none in gold. That is the pattern the rules
+allow — knowledge the agent brought, not answers it read.
+
+What the tables cannot show is the fitting inside ordinary code: a window of two
+words chosen because it separates two training units, an attempt boundary keyed
+on a distance found by diffing two units, a dedupe rule. Those are thresholds
+and conditions, not literals, and an audit for literals does not see them. Run
+4's transcript names several; its gold gap is where they show.
+
+---
+
+## Deployment candidate
+
+Run 3's solution, `f9509aac13c77b27a120d74ab32c09366acd2b6e741aa828dbd316366ad03653`.
+
+| | gold F1 | vs run 3, paired bootstrap over recordings |
+|---|---:|---|
+| **run 3, Fable partial** | **0.9448** | — |
+| run 2, Opus | 0.9157 | +0.029, 95% CI [−0.030, +0.093], P(better) 0.83 |
+| run 4, Fable | 0.9051 | +0.040, 95% CI [−0.005, +0.084], P(better) 0.96 |
+| deployed | 0.7844 | +0.159, 95% CI [+0.073, +0.248], P(better) 1.00 |
+
+Why this one:
+
+- **It is the only clear improvement over production that is also the best
+  point estimate.** Every candidate beats the deployed solution by a margin whose
+  interval excludes zero; run 3 by the most.
+- **It is the least fitted.** Its train/gold gap is −0.014, against −0.031 and
+  −0.090; it kept fewer changes on train evidence, and its word lists come from
+  orthography rather than the data.
+- **It fits production without adaptation.** It reads only `chunk_idx`,
+  `transcript_tokens` and `reference_tokens`, all of which the production
+  adapter supplies; the production reference matches the corpus reference on all
+  984 units; latency is median 0.3 ms, p95 9 ms, max 36 ms per ayah, comparable
+  to the deployed solution.
+
+Caveats that belong with the choice:
+
+- Its lead over Opus is not significant; the bootstrap interval spans zero. The
+  choice rests on the point estimate and the smaller gap, not on a demonstrated
+  difference.
+- Selecting the best of three on gold makes 0.9448 an optimistic estimate of its
+  production accuracy. For deployment that is acceptable; it means gold no longer
+  gives an unbiased figure for the deployed system, and a fresh sample of bot
+  recordings would.
+- It remains excluded as a *study* result. Deploying it is an engineering
+  decision and does not change what is reported for the experiment.
+- Known gap to close at deployment: attached punctuation on tokens. Stripping
+  punctuation characters inside each token in the adapter, without removing
+  tokens, keeps span indices valid and should remove the attached-punctuation cases; it needs checking on the corpus before it ships.
+
+---
+
+## Protocol for the next run
+
+Changes made after run 4, before any further gold reading:
+
+- **TASK.md states the evaluation up front**: the solution is scored on 100
+  unseen recordings, the workspace is for development only, and a rule that
+  fixes one or two training recordings will usually not help there. The
+  development strategy asks, before keeping a change, how many training
+  recordings it affects, and allows robustness rules for patterns absent from
+  train to be kept on judgement.
+- **Study 1's stopping rule is enforced**: stop after 15 consecutive experiments
+  without improvement. `score.py` appends every scoring to `.scores.jsonl`, and
+  the loop counts distinct solution versions scored since the last new best —
+  from the history, not from the agent's account. Re-scoring an unchanged file is
+  not an experiment; reverting to an older one is.
+- **The continuation prompt no longer demands keep-only-if-improved and forbids
+  stopping.** It reports the plateau count, restates the unseen evaluation, asks
+  for a change expected to hold there, and allows the agent to stop when it has
+  none.
+
+What these do not do: the plateau rule stops a run that has stopped improving,
+and run 4's fitted changes were made while train was still improving. The
+framing and the prompt address that directly but depend on the agent heeding
+them. A development split held out from train — scored by the harness and used
+to decide whether a change is kept — would enforce it, and remains the stronger
+fix if the next run's gap is still large.

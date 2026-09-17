@@ -4,6 +4,18 @@ You have **{BUDGET}**. Work autonomously — do not ask for confirmation, do not
 for input. Save your best `solution.py` before time runs out; a partial working
 solution beats no solution.
 
+**Your solution will be scored on {N_HOLDOUT} recordings you will never see.** The
+{N_CASES} in your workspace are for development only; the result that counts is
+on a separate set of {N_HOLDOUT} unseen transcripts, annotated to the same rubric. A
+change that fixes one or two training recordings will usually do nothing there,
+and a rule tuned to separate specific training cases will often do harm. Train
+micro F1 is a guide, not the goal: a solution at 0.95 on train that generalises
+beats one at 0.99 that does not.
+
+**Stop when you plateau.** When 15 consecutive experiments fail to improve the
+train score, stop — further tuning at that point fits the training set rather
+than the task. The run loop enforces this from your scoring history.
+
 ## The problem
 
 A Quran memorization app compares an ASR transcript of a recitation against the
@@ -179,6 +191,15 @@ long literal transcript fragments and file access. Its findings are reported
 alongside your score.
 
 ## Development strategy
+
+Prefer a change you would expect to hold on an unseen recording: a structural fix
+to how attempts, repeats and repairs are linked, or a fact about Arabic and
+Quranic orthography. Before keeping a change, ask how many training recordings it
+affects. If the answer is one or two, it is probably fitting, even when train
+micro F1 rises. A threshold chosen because it separates two particular cases is
+fitting by construction. Robustness rules for patterns absent from train — a
+formula variant, punctuation attached to a token — may be kept on judgement even
+when train does not move, because the unseen set may contain them.
 
 Use the rubric across all ten labels. Repetitions and repairs require linking
 attempts, not just isolated diff positions. Accepted spelling differences require

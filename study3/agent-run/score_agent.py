@@ -39,6 +39,23 @@ def input_view(record):
         }
 
 
+def record_scoring(metrics, crashes):
+    """Append this scoring to .scores.jsonl, which the run loop reads.
+
+    The stopping rule is decided from this history rather than from the agent's
+    account of its own progress: it counts distinct solution versions scored
+    since the train score last reached a new best.
+    """
+    import hashlib, time
+    row = {"t": round(time.time()), "micro_f1": metrics["micro_f1"], "crashes": crashes,
+           "solution_sha256": hashlib.sha256((HERE / "solution.py").read_bytes()).hexdigest()}
+    try:
+        with open(HERE / ".scores.jsonl", "a") as f:
+            f.write(json.dumps(row) + "\n")
+    except OSError:
+        pass
+
+
 def main() -> int:
     corpus = eval21.load_corpus(HERE / "data/corpus-train.jsonl")
     spec = importlib.util.spec_from_file_location("solution", HERE / "solution.py")
@@ -69,6 +86,7 @@ def main() -> int:
         predictions[record["case_id"]] = rows
 
     metrics = eval21.score(corpus, predictions)
+    record_scoring(metrics, crashes)
     if "--json" in sys.argv:
         print(json.dumps({"split": "train", "crashes": crashes, "metrics": metrics},
                          ensure_ascii=False, indent=2))

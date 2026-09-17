@@ -28,6 +28,10 @@ AGENT=${AGENT:-claude}
 # loop may call the model, and a hard ceiling on passes.
 MIN_PASS_SECONDS=${MIN_PASS_SECONDS:-20}
 MAX_PASSES=${MAX_PASSES:-40}
+# Study 1's stopping rule: stop after this many consecutive experiments that do
+# not improve the score. Counted from score.py's history, not the agent's account.
+PLATEAU=${PLATEAU:-15}
+HOLDOUT=${HOLDOUT:-100}
 STUDY3=$(cd "$(dirname "$0")/.." && pwd)
 
 if [ -z "${!CRED:-}" ]; then
@@ -42,7 +46,29 @@ set -u
 END=\$(( \$(date +%s) + $BUDGET ))
 PASS=0
 $AGENT --model $MODEL --permission-mode bypassPermissions -p "\$(cat TASK.md)" || true
+# Distinct solution versions scored since train micro F1 last set a new best.
+streak() {
+  python3 -c '
+import json
+best, seen, n = -1.0, set(), 0
+try:
+    rows = [json.loads(l) for l in open(".scores.jsonl") if l.strip()]
+except OSError:
+    rows = []
+for r in rows:
+    if r["micro_f1"] > best + 1e-9:
+        best, seen, n = r["micro_f1"], {r["solution_sha256"]}, 0
+    elif r["solution_sha256"] not in seen:
+        seen.add(r["solution_sha256"]); n += 1
+print(n)
+' 2>/dev/null || echo 0
+}
 while [ "\$(date +%s)" -lt "\$END" ]; do
+  STREAK=\$(streak)
+  if [ "\$STREAK" -ge $PLATEAU ]; then
+    echo "=== plateau: \$STREAK consecutive scored versions without improvement - stopping ==="
+    break
+  fi
   PASS=\$(( PASS + 1 ))
   if [ "\$PASS" -gt $MAX_PASSES ]; then
     echo "=== stopping: $MAX_PASSES continuation passes reached ==="
@@ -52,7 +78,7 @@ while [ "\$(date +%s)" -lt "\$END" ]; do
   echo "=== continuation pass \$PASS - ~\${LEFT} min left ==="
   STARTED=\$(date +%s)
   $AGENT --model $MODEL --permission-mode bypassPermissions -c -p \
-    "About \${LEFT} minutes remain and you must keep working until they are gone. Run python3 score.py, identify the weakest label, make one targeted change, re-score, and keep it only if micro F1 improved -- revert it otherwise. State the before and after numbers for every change. Do not stop early." \
+    "About \${LEFT} minutes remain. \${STREAK} consecutive scored versions have not improved train micro F1; the run stops at $PLATEAU. The result that counts is on $HOLDOUT unseen recordings. Make one change you would expect to hold there -- a structural fix or a fact about Arabic orthography, not a rule that separates one or two training recordings -- score it with python3 score.py, and state before and after. If you have no idea left that would generalise, say so and stop." \
     || true
   # Floor every pass, whatever its exit status. A pass that returns immediately
   # -- a refusal, an expired session, a quota message, all of which can exit 0 --
@@ -63,7 +89,7 @@ while [ "\$(date +%s)" -lt "\$END" ]; do
     sleep \$(( $MIN_PASS_SECONDS - \$SPENT ))
   fi
 done
-echo "=== budget spent after \$PASS continuation passes ==="
+echo "=== loop ended after \$PASS continuation passes, streak \$(streak) ==="
 DRIVER
 )
 

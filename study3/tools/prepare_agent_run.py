@@ -126,7 +126,8 @@ def main():
     task = (HERE / "agent-run/TASK.md").read_text()
     task = (task.replace("{BUDGET}", a.budget).replace("{N_CASES}", str(len(train)))
                 .replace("{N_UNITS}", str(sum(len(r["units"]) for r in train)))
-                .replace("{N_EVENTS}", str(sum(len(r.get("events", [])) for r in train))))
+                .replace("{N_EVENTS}", str(sum(len(r.get("events", [])) for r in train)))
+                .replace("{N_HOLDOUT}", str(len(gold))))
     if a.preflight: task = "PREFLIGHT WORKSPACE: not a measured experiment.\n\n" + task
     (a.out / "TASK.md").write_text(task)
     shutil.copyfile(HERE / "agent-run/score_agent.py", a.out / "score.py")
