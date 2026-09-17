@@ -184,3 +184,82 @@ against −0.031). Fewer kept changes means less selection on train, which fits 
 smaller gap; the rerun will show whether the extra time closes, holds or widens
 it.
 
+
+---
+
+## Run 4 — 2026-09-16 — Fable 5.1 — **REPORTED**
+
+| | |
+|---|---|
+| workspace | `260917-fable51-r2` |
+| solution | `ca226574a4f6db232a6cba44ae21ed3f7035f1e7b1e4a5a58be7400933c212a9` |
+| used | 1815s (92%), host suspended 1s, not interrupted |
+| passes | 1 initial + 31 continuations |
+| transcript | `260917-fable51-r2.owner.20260916-212306.run.log` |
+
+The rerun of run 3, and as committed before it was launched, the Fable result
+that is reported -- although run 3's partial solution scored higher on gold.
+
+| | train | gold | Δ |
+|---|---|---|---|
+| micro F1 | 0.9948 | **0.9051** | **−0.090** |
+| exact-span F1 | 0.9740 | 0.8780 | −0.096 |
+| macro F1 | 0.9887 | 0.8554 | −0.133 |
+| localization F1 | 0.9948 | 0.9160 | −0.079 |
+
+| label | train n | train F1 | gold n | gold pred | gold F1 |
+|---|---:|---:|---:|---:|---:|
+| substitution_mistake | 106 | 1.00 | 67 | 68 | 0.89 |
+| omission_mistake | 47 | 1.00 | 25 | **34** | **0.81** |
+| repetition_benign | 29 | 0.96 | 18 | 18 | 1.00 |
+| spelling_benign | 55 | 1.00 | 11 | 11 | 0.91 |
+| isti3adha / basmala | 17 / 13 | 1.00 | 28 / 16 | | 1.00 |
+| substitution_corrected | 8 | 1.00 | 5 | 5 | 1.00 |
+| omission_corrected | 7 | 0.92 | 2 | 3 | 0.80 |
+| letters_benign | 2 | 1.00 | 4 | 3 | 0.86 |
+| insertion_mistake | 6 | 1.00 | 3 | 4 | **0.29** |
+
+**Reading it: this run overfit train.** It reached 0.9948 on train -- every
+in-unit discrepancy resolved, precision 1.000 -- and lost 0.090 on gold, three
+times Opus's gap. The same model, on the same task, stopped by accident after
+three continuation passes, scored 0.9448 on gold; thirty-one passes of
+keep-if-train-improves took it to 0.9051.
+
+The transcript shows how. Several kept changes were fitted to one or two
+recordings, which the agent sometimes said outright: a forward window set to two
+words because "every accepted restored-omission case in the data jumps at most
+two", chosen to separate exactly two units; an attempt boundary keyed on a
+restart distance found by diffing two units; a dedupe rule; a wasl rule written
+around one misfiring word. Each was a defensible reading of the data. Together
+they encode train's particular cases. `omission_mistake` over-predicts on gold
+(34 for 25), the clearest single sign.
+
+From pass 13 on, the agent reported "no in-unit discrepancies left on the train
+split" and spent the remaining eighteen passes on probes that could not move the
+number -- robustness rules for patterns absent from train, each reverted because
+the rule kept only changes that improved train. Several of those, such as the
+longer isti'adhah with السميع العليم, are plausible gains on unseen recordings.
+The keep rule could not see that.
+
+Audit clean. Notes are letter names, particles, and the article.
+
+---
+
+## Summary across reported runs
+
+| run | model | passes | train | gold | gap |
+|---|---|---:|---:|---:|---:|
+| 2 | Opus 5 | 23 | 0.9463 | **0.9157** | −0.031 |
+| 4 | Fable 5.1 | 31 | 0.9948 | **0.9051** | −0.090 |
+
+Excluded runs, for the record: run 1 (Opus pilot, gold 0.8621), run 3 (Fable,
+host slept, gold 0.9448 read afterwards on request). Gold has been read four
+times.
+
+The comparison that matters for the method is not Opus against Fable, whose
+reported numbers are close and within what 179 gold events can separate. It is
+that the loop's own selection rule -- keep a change only if train improves --
+rewards fitting once train stops being informative, and that the model which
+drove train closer to 1.0 lost more on held-out data. A development split held
+out from train, or a stopping rule, would address that; neither was in this
+protocol.
