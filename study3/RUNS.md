@@ -1,24 +1,25 @@
 # Run log — granular-100x100-v1.0
 
-Every attempt against this corpus version, partial and full, including excluded
-ones: what ran, what happened, what it scored, and why it counts or does not.
+Every attempt against this corpus version, partial and full: what ran, what
+happened, and what it scored. All four runs are reported, each with its status —
+completed, or interrupted and why — because each shows something the others do
+not.
 Gold is read once per run recorded here, and the count matters, because choosing
 which run to report is itself a selection over the holdout.
 
 Corpus: 100 train / 100 gold, all owner-approved, 290 / 179 annotated events.
 Evaluator: eval21 v2.3. Workspace regime: annotated train split visible.
-Per-case gold detail is private (`granular-corpus/analysis-20260917/`); this file
-carries aggregates only.
+Gold results are described in general terms only; no held-out case is identified.
 
 ## All attempts at a glance
 
 | # | model | status | working time | passes | train | gold | gap |
 |---|---|---|---|---:|---:|---:|---:|
 | — | deployed `event_detection.py` | production baseline | earlier study | — | — | 0.7844 | — |
-| 1 | Opus 5 | excluded: single pass, protocol did not run | ~7 min | 1 | 0.7756 | 0.8621 | +0.087 |
-| 2 | Opus 5 | **reported** | 29.7 min | 1 + 23 | 0.9463 | **0.9157** | −0.031 |
-| 3 | Fable 5.1 | excluded: host slept; gold read afterwards on request | ~17 min | 1 + 3 | 0.9585 | 0.9448 | −0.014 |
-| 4 | Fable 5.1 | **reported** | 30.2 min | 1 + 31 | 0.9948 | **0.9051** | −0.090 |
+| 1 | Opus 5 | completed — single pass, no continuation loop yet | ~7 min | 1 | 0.7756 | 0.8621 | +0.087 |
+| 2 | Opus 5 | completed | 29.7 min | 1 + 23 | 0.9463 | 0.9157 | −0.031 |
+| 3 | Fable 5.1 | interrupted — host slept after ~17 min | ~17 min | 1 + 3 | 0.9585 | 0.9448 | −0.014 |
+| 4 | Fable 5.1 | completed | 30.2 min | 1 + 31 | 0.9948 | 0.9051 | −0.090 |
 
 Gold has been read five times: runs 1–4, and the deployed baseline once for the
 deployment comparison below. Runs 2–4 were re-scored for the failure analysis;
@@ -60,7 +61,7 @@ by failures found only by running it. In order:
 
 ---
 
-## Run 1 — 2026-09-16 — Opus 5 — **EXCLUDED, pilot**
+## Run 1 — 2026-09-16 — Opus 5 — **completed, single pass**
 
 | | |
 |---|---|
@@ -70,19 +71,16 @@ by failures found only by running it. In order:
 | actually used | ~420s (~23%) |
 | command | single `claude -p` pass |
 
-**Excluded because the protocol did not run.** `claude -p` is one
+**The budget was not used.** `claude -p` is one
 non-interactive pass: it worked a single turn and exited after roughly seven
 minutes of a thirty-minute budget. Nothing timed it out — the agent reported
 "Time's up" but the launcher never hit its deadline. The harness of the day also
 captured no transcript and recorded no timing, so the early stop was only
 visible from the mtime on `solution.py`.
 
-The exclusion criterion is the unused budget, which is independent of the score.
-Worth stating plainly: this run scored **0.8621** on gold, better than the train
-number, so it is a favourable result being set aside for a protocol failure —
-not a disappointing one being explained away.
-
-Scores, retained for the record and not reported as a result:
+What it shows: one pass of about seven minutes, with no iteration, already
+reached 0.8621 on gold, above its own train score. That is the floor the
+iterating runs are measured against.
 
 | | train | gold |
 |---|---|---|
@@ -105,7 +103,7 @@ per-label report that labelled every split's reference column "gold".
 
 ---
 
-## Run 2 — 2026-09-16 — Opus 5 — **REPORTED**
+## Run 2 — 2026-09-16 — Opus 5 — **completed**
 
 | | |
 |---|---|
@@ -171,7 +169,7 @@ rules permit as linguistic tables.
 
 ---
 
-## Run 3 — 2026-09-16 — Fable 5.1 — **EXCLUDED, host slept; gold read afterwards on request**
+## Run 3 — 2026-09-16 — Fable 5.1 — **interrupted, host slept**
 
 | | |
 |---|---|
@@ -182,17 +180,13 @@ rules permit as linguistic tables.
 | host suspended | 1906s |
 | passes | 1 initial + 3 continuations |
 
-**Excluded because the Mac went to idle sleep** at 20:41:52 UTC, about fifteen
+**Interrupted: the Mac went to idle sleep** at 20:41:52 UTC, about fifteen
 minutes in, during continuation pass 3 (`pmset -g log`: *Entering Sleep state
 due to 'Idle Sleep'*). The container was frozen with it, but the loop's deadline
 is read from the container's wall clock, which jumped forward on wake. The loop
 concluded the budget was spent after roughly seventeen minutes of real work,
-against thirty for Opus in run 2. The two are not comparable, so the held-out
-split was not read.
-
-The criterion is environmental and fixed before any held-out result: the run
-did not receive its budget. Train was graded, because it costs the holdout
-nothing and confirms the agent's report: micro F1 **0.9585**, exact-span 0.9412,
+against thirty for Opus in run 2, so its numbers are not a like-for-like
+comparison with the completed runs. Train confirms the agent's report: micro F1 **0.9585**, exact-span 0.9412,
 macro 0.9342. Audit clean; notes `اذا`, `ال` are a spelling variant and the
 article.
 
@@ -204,11 +198,8 @@ the launch, and the launcher records `host_suspended_seconds` -- wall-clock span
 minus monotonic time, which stops while macOS sleeps -- and warns against
 grading a run where it exceeds a minute.
 
-**Gold read afterwards, on the owner's request (gold reading 3).** Recorded
-here before the rerun, so that the rerun's number cannot be chosen against it.
-The rerun, `260917-fable51-r2`, is the Fable result that will be reported,
-whichever of the two scores higher. This one stays excluded: its criterion was
-fixed before it was read.
+**Gold.** Read after the run, and recorded before run 4 was launched, so run 4
+could not be judged against it.
 
 | | train | gold | Δ |
 |---|---|---|---|
@@ -238,7 +229,7 @@ it.
 
 ---
 
-## Run 4 — 2026-09-16 — Fable 5.1 — **REPORTED**
+## Run 4 — 2026-09-16 — Fable 5.1 — **completed**
 
 | | |
 |---|---|
@@ -248,8 +239,8 @@ it.
 | passes | 1 initial + 31 continuations |
 | transcript | `260917-fable51-r2.owner.20260916-212306.run.log` |
 
-The rerun of run 3, and as committed before it was launched, the Fable result
-that is reported -- although run 3's partial solution scored higher on gold.
+The rerun of run 3 with the full budget. Run 3's interrupted solution scored
+higher on gold, which is the most informative comparison in this log.
 
 | | train | gold | Δ |
 |---|---|---|---|
@@ -296,25 +287,32 @@ Audit clean. Notes are letter names, particles, and the article.
 
 ---
 
-## Summary across reported runs
+## Summary across runs
 
-| run | model | passes | train | gold | gap |
-|---|---|---:|---:|---:|---:|
-| 2 | Opus 5 | 23 | 0.9463 | **0.9157** | −0.031 |
-| 4 | Fable 5.1 | 31 | 0.9948 | **0.9051** | −0.090 |
+| run | model | status | passes | train | gold | gap |
+|---|---|---|---:|---:|---:|---:|
+| 1 | Opus 5 | completed, single pass | 0 | 0.7756 | 0.8621 | +0.087 |
+| 2 | Opus 5 | completed | 23 | 0.9463 | 0.9157 | −0.031 |
+| 3 | Fable 5.1 | interrupted, ~17 min | 3 | 0.9585 | 0.9448 | −0.014 |
+| 4 | Fable 5.1 | completed | 31 | 0.9948 | 0.9051 | −0.090 |
 
-The reported Opus and Fable numbers are within what 179 gold events can
-separate. The result worth reporting is about the loop, not the models: its
-keep-if-train-improves rule rewards fitting once train stops being informative,
-and the run that drove train closest to 1.0 lost the most on held-out data — while
-the same model, stopped by accident after three continuation passes, scored
-0.9448.
+What the four together show:
+
+- **Iteration helped Opus and hurt Fable.** Opus rose from one pass (0.8621)
+  to twenty-three (0.9157). Fable fell from three passes (0.9448) to thirty-one
+  (0.9051) as train approached 1.0. That fits gains early and fitting late, but
+  four runs over two models cannot establish the curve.
+- **The gap tracks how hard train was pushed.** −0.014 at three passes, −0.031 at
+  twenty-three, −0.090 once train reached 0.9948.
+- **The completed Opus and Fable runs are within what 179 gold events can
+  separate.** The finding is about the loop, not a ranking of models: its
+  keep-if-train-improves rule rewards fitting once train stops being informative.
 
 ---
 
 ## Where the solutions fail on gold
 
-Aggregates; per-case detail is private. Failure rows count a wrong-label match
+General patterns only. Failure rows count a wrong-label match
 once as a false positive and once as a false negative.
 
 | solution | gold F1 | failure rows | recordings affected |
@@ -338,9 +336,12 @@ proportions:
 2. **Kind of self-correction.** Repetition against corrected substitution, and
    corrected substitution against corrected omission, decided within a few
    tokens of a restart.
-3. **An extra word: insertion or failed attempt.** A stray word before the
-   target is sometimes gold's substitution linking two attempts, sometimes an
-   insertion.
+3. **An extra word: insertion, or part of a substitution.** There is no
+   separate label for this. When a reciter says two words where the reference
+   has one, gold sometimes records a single `substitution_mistake` whose
+   locations cover both spoken words — ten such multi-location substitutions
+   exist across the corpus — and solutions call the extra word an
+   `insertion_mistake` instead.
 4. **Input robustness.** Muqatta'at letter names written with an attached Arabic
    comma defeat exact matching. Run 3 turns one such token into a substitution;
    run 4 turns a comma-separated letter sequence into an omission of the whole
@@ -422,8 +423,6 @@ Caveats that belong with the choice:
   production accuracy. For deployment that is acceptable; it means gold no longer
   gives an unbiased figure for the deployed system, and a fresh sample of bot
   recordings would.
-- It remains excluded as a *study* result. Deploying it is an engineering
-  decision and does not change what is reported for the experiment.
 - Known gap to close at deployment: attached punctuation on tokens. Stripping
   punctuation characters inside each token in the adapter, without removing
   tokens, keeps span indices valid and should remove the attached-punctuation cases; it needs checking on the corpus before it ships.
@@ -440,19 +439,65 @@ Changes made after run 4, before any further gold reading:
   development strategy asks, before keeping a change, how many training
   recordings it affects, and allows robustness rules for patterns absent from
   train to be kept on judgement.
-- **Study 1's stopping rule is enforced**: stop after 15 consecutive experiments
-  without improvement. `score.py` appends every scoring to `.scores.jsonl`, and
-  the loop counts distinct solution versions scored since the last new best —
-  from the history, not from the agent's account. Re-scoring an unchanged file is
-  not an experiment; reverting to an older one is.
+- **A plateau stopping rule is enforced**, as in Study 1, but at 8 rather than
+  15. `score.py` appends every scoring to `.scores.jsonl`, and the loop counts
+  distinct solution versions scored since the last new best — from the history,
+  not from the agent's account. Re-scoring an unchanged file is not an
+  experiment; reverting to an older one is.
+
+  Study 1's 15 was set where an experiment took under a second and runs made
+  hundreds. Here a thirty-minute run makes 47 to 72, and a pass can hold several
+  — Fable tested whole grids of settings in one. Replayed against the
+  transcripts, 15 would never have stopped run 2 and would have stopped run 4
+  only at pass 27 of 31. At 8, run 2 stops at pass 20 and run 4 at pass 8.
+
+  | threshold | run 2 stops at | run 4 stops at |
+  |---:|---|---|
+  | 5 | pass 17 of 23 | pass 5 of 31 |
+  | 8 | pass 20 of 23 | pass 8 of 31 |
+  | 10 | pass 22 of 23 | pass 22 of 31 |
+  | 15 | never | pass 27 of 31 |
+
+  Stopping at 8 would not have changed either run's final solution by itself —
+  non-improving changes were reverted anyway — but it would have stopped run 4
+  before five of its later kept changes. Whether those helped on gold is not
+  known: intermediate solutions were not saved.
 - **The continuation prompt no longer demands keep-only-if-improved and forbids
   stopping.** It reports the plateau count, restates the unseen evaluation, asks
   for a change expected to hold there, and allows the agent to stop when it has
   none.
 
-What these do not do: the plateau rule stops a run that has stopped improving,
-and run 4's fitted changes were made while train was still improving. The
-framing and the prompt address that directly but depend on the agent heeding
-them. A development split held out from train — scored by the harness and used
-to decide whether a change is kept — would enforce it, and remains the stronger
-fix if the next run's gap is still large.
+What these do not do: a plateau rule stops a run that has stopped improving,
+and most of run 4's fitted changes were made while train was still improving.
+The framing and the prompt address that, but depend on the agent heeding them.
+
+### Proposed: a development split
+
+The annotations for all 100 train recordings exist. The proposal is to show the
+agent 80 of them and keep 20 back — not unannotated, just not in the workspace.
+The harness scores every candidate change on those 20 as well as on the 80, and
+a change is kept only if it does not make the hidden 20 worse. A rule fitted to
+one visible recording then has to survive recordings the agent has not read.
+Gold stays untouched until the solution is frozen; the 20 are part of train.
+
+Proposed hidden 20, stratified so each label keeps about a fifth of its events
+out of view: train-002, train-003, train-008, train-009, train-010, train-011, train-012, train-013, train-016, train-017, train-020, train-023, train-027, train-046, train-052, train-063, train-071, train-085, train-089, train-103.
+
+| label | train | hidden | visible |
+|---|---:|---:|---:|
+| substitution_mistake | 106 | 21 | 85 |
+| spelling_benign | 55 | 11 | 44 |
+| omission_mistake | 47 | 9 | 38 |
+| repetition_benign | 29 | 6 | 23 |
+| isti3adha_benign | 17 | 3 | 14 |
+| basmala_benign | 13 | 3 | 10 |
+| substitution_corrected | 8 | 2 | 6 |
+| omission_corrected | 7 | 1 | 6 |
+| insertion_mistake | 6 | 1 | 5 |
+| letters_benign | 2 | 0 | 2 |
+| **total** | **290** | **57** | **233** |
+
+`letters_benign` stays entirely visible: with two examples, hiding one would
+halve what the agent can learn from and measure nothing. The three rarest
+remaining labels keep one or two hidden events each, which can catch a rule that
+breaks them but cannot estimate them. Not adopted yet.

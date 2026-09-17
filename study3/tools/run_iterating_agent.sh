@@ -28,9 +28,11 @@ AGENT=${AGENT:-claude}
 # loop may call the model, and a hard ceiling on passes.
 MIN_PASS_SECONDS=${MIN_PASS_SECONDS:-20}
 MAX_PASSES=${MAX_PASSES:-40}
-# Study 1's stopping rule: stop after this many consecutive experiments that do
-# not improve the score. Counted from score.py's history, not the agent's account.
-PLATEAU=${PLATEAU:-15}
+# Stop after this many consecutive experiments that do not improve the score,
+# counted from score.py's history, not the agent's account. Study 1 used 15, but
+# there an experiment took under a second; a thirty-minute run here makes 47 to
+# 72, and at 15 run 2 would never have stopped (see RUNS.md).
+PLATEAU=${PLATEAU:-8}
 HOLDOUT=${HOLDOUT:-100}
 STUDY3=$(cd "$(dirname "$0")/.." && pwd)
 

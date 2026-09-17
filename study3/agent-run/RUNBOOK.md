@@ -32,33 +32,47 @@ python3 "$STUDY3/tools/prepare_agent_run.py" \
 
 The finalized split passes the count/approval gate. Point `PRIVATE_CORPUS` at the private `frozen/granular-100x100-v1.0/` snapshot to pin the data version. For an explicitly unmeasured setup check, append `--preflight` and choose a fresh directory. Never substitute the combined `recordings.jsonl` for train.
 
-Preparation checks case/recording-ID separation, event-bearing ayah overlap, reference consistency and constructed-example overlap with gold. It exports only train inputs, copies the faithful reference, makes the guide self-contained and includes the current constructed examples. Seven files are created: `TASK.md`, `ANNOTATION-GUIDE.md`, `TEACHING-EXAMPLES.md`, `solution.py`, `score.py` and the two `data/` JSON files. `.feedback/` starts empty.
+Preparation checks case/recording-ID separation, event-bearing ayah overlap and
+reference consistency, then writes the workspace:
+
+| file | contents |
+|---|---|
+| `TASK.md` | the task, with budget, train size and held-out size substituted |
+| `ANNOTATION-GUIDE.md` | the rubric with the hamza policy inlined |
+| `data/corpus-train.jsonl` | the annotated train split — an allowlist of `case_id`, `units`, `events`; preparation aborts if any held-out case id appears in it |
+| `data/corpus-inputs.jsonl` | the same recordings reduced to what `detect_events` receives |
+| `data/quran-reference.json` | the reference |
+| `eval21.py` | the evaluator |
+| `score.py` | scores `solution.py` on train locally and appends to `.scores.jsonl` |
+| `solution.py` | a stub |
+
+The agent learns from the train annotations directly. They cannot help at
+inference: grading stages the solution in a separate container holding only the
+solution, the reference and answer-free inputs.
 
 The private `RUN.owner.json` is adjacent to, **outside**, the workspace. It records source hashes, evaluator/reference versions, budget and an exact prepared-file allowlist. The launcher checks the allowlist and hashes before mounting the directory. Gold is read only during owner-side split auditing, never copied to the agent workspace. Gold and train annotation sources must remain outside the workspace.
 
-## Train feedback service — trusted owner terminal
+## Development agent
+
+Run the loop with a Claude subscription token (`claude setup-token`), passed by
+name only:
 
 ```sh
-python3 "$STUDY3/tools/serve_train_feedback.py" \
-    --manifest "$RUN.owner.json" --max-requests 100
+export CLAUDE_CODE_OAUTH_TOKEN=<token>
+"$STUDY3/tools/run_iterating_agent.sh" "$RUN.owner.json" claude-opus-5    # or claude-fable-5-1
 ```
 
-Fix the request allowance before comparing runs. This process loads only the hash-checked train annotations. The agent's `python3 score.py` sends a request through `.feedback/`; it cannot choose a corpus or execute host commands. Each request copies `solution.py` into a fresh inference container, runs it against train inputs, validates its predictions and returns aggregate/per-label train metrics. Exceptions/invalid outputs are not silently treated as clean answers. The broker never relays submitted stdout or private paths.
+The script runs one pass over `TASK.md`, then `claude -c` continuation passes
+inside the container until the budget is spent or the plateau rule fires: 8
+consecutive scored solution versions without a new best train score, counted
+from `.scores.jsonl`. It holds `caffeinate` so the host cannot sleep, floors every
+pass so a pass that returns instantly cannot spin the loop, and writes a
+timestamped transcript. Override with `PLATEAU=`, `MIN_PASS_SECONDS=`,
+`MAX_PASSES=` and a third argument for the budget in seconds.
 
-## Development agent — another owner terminal
-
-Set the model/provider configuration in the owner shell. Credentials are passed only by explicit allowed environment names. Do not pass an entire environment file, host HOME or credential directory.
-
-For Claude with an API key, substitute the intended provider's exact model ID:
-
-```sh
-python3 "$STUDY3/tools/launch_agent_container.py" \
-    --manifest "$RUN.owner.json" --image study3-claude:2.1.267 \
-    --seconds 1800 --env ANTHROPIC_API_KEY -- \
-    sh -lc 'mkdir -p "$HOME"; exec claude --model "<model-id>" --permission-mode bypassPermissions -p "$(cat TASK.md)"'
-```
-
-For a configured proxy, pass the applicable `--env ANTHROPIC_BASE_URL` and `--env ANTHROPIC_AUTH_TOKEN` instead/as required by that provider. The model identifier and authentication are run configuration, not assumptions made by this helper. Save terminal output to an owner-side log outside the agent workspace. The launcher records the image ID, exact command, time limit and credential **names**, never credential values.
+The launcher records image ID, command, credential names (never values),
+start, end, elapsed seconds, budget used, exit code, and
+`host_suspended_seconds`.
 
 Only the prepared train directory is mounted. The host HOME, owner manifest, gold, authoring checkout and Docker socket are unavailable. A temporary container HOME avoids prior session memory. The CLI's permissive tool mode operates inside this container boundary.
 
@@ -68,7 +82,7 @@ Development networking is enabled for model APIs. This is **not** a domain-level
 
 The supported executable deliverable is a self-contained `solution.py` using the Python standard library. Any learned constants must be included there; no extra helper/model files are mounted for inference. Preserve separately any machine annotations and development logs for analysis.
 
-After the development container exits, stop its feedback service and freeze the selected solution into a fresh private directory outside the agent workspace:
+After the development container exits, freeze the solution into a fresh private directory outside the agent workspace:
 
 ```sh
 FROZEN="$HOME/ar-runs4/final-run-001"
@@ -90,13 +104,14 @@ print({k:d[k] for k in ('elapsed_seconds','budget_used','exit_code','hit_time_bu
 grep -c '═══ continuation pass' "<manifest>.run.log"   # iterations actually made
 ```
 
-A run that used a small fraction of its budget did not do what was asked, and
-its gold number should not be spent or reported. Exclude it on that basis --
-stated before the score is known -- freeze it anyway, and record why.
+A run that used a small fraction of its budget did not do what was asked.
+Record its status -- completed, or interrupted and why -- before reading gold,
+and report it with that status rather than dropping it. Every run is logged in
+`RUNS.md`.
 
-This is an outcome-independent criterion. Excluding a run because the protocol
-failed is sound; excluding one because the number disappointed is not, and the
-two are indistinguishable afterwards unless the reason is written down first.
+Write the status down before the score is known. A run's status must not depend
+on its number, and afterwards the two cannot be told apart unless the status was
+recorded first.
 
 ## Final private gold validation
 

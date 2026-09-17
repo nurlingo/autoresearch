@@ -12,7 +12,7 @@ and a rule tuned to separate specific training cases will often do harm. Train
 micro F1 is a guide, not the goal: a solution at 0.95 on train that generalises
 beats one at 0.99 that does not.
 
-**Stop when you plateau.** When 15 consecutive experiments fail to improve the
+**Stop when you plateau.** When 8 consecutive experiments fail to improve the
 train score, stop — further tuning at that point fits the training set rather
 than the task. The run loop enforces this from your scoring history.
 
