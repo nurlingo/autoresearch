@@ -439,7 +439,7 @@ Changes made after run 4, before any further gold reading:
   development strategy asks, before keeping a change, how many training
   recordings it affects, and allows robustness rules for patterns absent from
   train to be kept on judgement.
-- **A plateau stopping rule is enforced**, as in Study 1, but at 8 rather than
+- **A plateau stopping rule is enforced**, as in Study 1, but at 10 rather than
   15. `score.py` appends every scoring to `.scores.jsonl`, and the loop counts
   distinct solution versions scored since the last new best — from the history,
   not from the agent's account. Re-scoring an unchanged file is not an
@@ -448,20 +448,21 @@ Changes made after run 4, before any further gold reading:
   Study 1's 15 was set where an experiment took under a second and runs made
   hundreds. Here a thirty-minute run makes 47 to 72, and a pass can hold several
   — Fable tested whole grids of settings in one. Replayed against the
-  transcripts, 15 would never have stopped run 2 and would have stopped run 4
-  only at pass 27 of 31. At 8, run 2 stops at pass 20 and run 4 at pass 8.
+  transcripts:
 
-  | threshold | run 2 stops at | run 4 stops at |
-  |---:|---|---|
-  | 5 | pass 17 of 23 | pass 5 of 31 |
-  | 8 | pass 20 of 23 | pass 8 of 31 |
-  | 10 | pass 22 of 23 | pass 22 of 31 |
-  | 15 | never | pass 27 of 31 |
+  | threshold | run 2 stops at | run 4 stops at | kept changes cut off |
+  |---:|---|---|---|
+  | 5 | pass 17 of 23 | pass 5 of 31 | run 4: several |
+  | 8 | pass 20 of 23 | pass 8 of 31 | run 4: two, at passes 9 and 12 |
+  | **10** | pass 22 of 23 | pass 22 of 31 | none |
+  | 15 | never | pass 27 of 31 | none |
 
-  Stopping at 8 would not have changed either run's final solution by itself —
-  non-improving changes were reverted anyway — but it would have stopped run 4
-  before five of its later kept changes. Whether those helped on gold is not
-  known: intermediate solutions were not saved.
+  10 is the lowest of these that cuts only passes in which nothing was kept, in
+  both runs. It saves time; it does not change a final solution, because
+  non-improving changes are reverted anyway. A lower value would stop an agent
+  before changes whose value on gold is unknown, since intermediate solutions
+  were not saved.
+
 - **The continuation prompt no longer demands keep-only-if-improved and forbids
   stopping.** It reports the plateau count, restates the unseen evaluation, asks
   for a change expected to hold there, and allows the agent to stop when it has

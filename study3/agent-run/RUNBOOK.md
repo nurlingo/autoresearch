@@ -63,7 +63,7 @@ export CLAUDE_CODE_OAUTH_TOKEN=<token>
 ```
 
 The script runs one pass over `TASK.md`, then `claude -c` continuation passes
-inside the container until the budget is spent or the plateau rule fires: 8
+inside the container until the budget is spent or the plateau rule fires: 10
 consecutive scored solution versions without a new best train score, counted
 from `.scores.jsonl`. It holds `caffeinate` so the host cannot sleep, floors every
 pass so a pass that returns instantly cannot spin the loop, and writes a
